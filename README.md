@@ -1,68 +1,36 @@
-# Form Service
-
-A Formspree alternative that allows users to create forms, receive submissions, and manage them through a web dashboard.
-
-## Features
-
-- User authentication via email magic links
-- Form creation and management
-- Public form submission endpoints
-- Email notifications for form submissions
-- Submission management dashboard
-
-## Tech Stack
-
-- **Frontend**: Next.js + Tailwind CSS + Clerk
-- **Backend**: Node.js + TypeScript + Fastify
-- **Database**: PostgreSQL
-- **Queue**: Redis + BullMQ
-- **Email**: SendGrid
-- **Deployment**: Vercel (Frontend) + Railway (Backend)
-
-## Prerequisites
-
-- Node.js 18+
-- Docker and Docker Compose
-- PostgreSQL (provided via Docker)
-- Redis (provided via Docker)
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+First, run the development server:
 
-3. Start the development environment:
-   ```bash
-   # Start PostgreSQL and Redis
-   docker-compose up -d
-
-   # Start the development servers
-   npm run dev
-   ```
-
-4. Set up environment variables:
-   - Copy `.env.example` to `.env` in both frontend and backend directories
-   - Fill in the required environment variables
-
-## Project Structure
-
-```
-form-service/
-├── frontend/          # Next.js frontend application
-├── backend/           # Fastify backend API
-└── shared/           # Shared TypeScript types and utilities
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-## Development
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- Frontend runs on http://localhost:3000
-- Backend API runs on http://localhost:4000
-- PostgreSQL runs on localhost:5432
-- Redis runs on localhost:6379
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## License
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-MIT 
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
