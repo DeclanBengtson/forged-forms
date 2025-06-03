@@ -11,6 +11,7 @@ import FormDeleteModal from '@/components/dashboard/FormDeleteModal'
 import Sidebar from '@/components/dashboard/Sidebar'
 import DashboardOverview from '@/components/dashboard/DashboardOverview'
 import FormDetails from '@/components/dashboard/FormDetails'
+import CodeExample from '@/components/dashboard/CodeExample'
 
 interface DashboardClientProps {
   user: User
@@ -113,20 +114,22 @@ export default function DashboardClient({ user }: DashboardClientProps) {
       />
 
       {/* Main Content */}
-      {selectedForm ? (
-        <FormDetails
-          form={selectedForm}
-          onFormUpdated={handleFormUpdated}
-          onDeleteForm={handleDeleteForm}
-        />
-      ) : (
-        <DashboardOverview
-          forms={forms}
-          onCreateForm={handleCreateForm}
-          onDeleteForm={handleDeleteForm}
-          user={user}
-        />
-      )}
+      <div className="flex-1">
+        {selectedForm ? (
+          <FormDetails
+            form={selectedForm}
+            onFormUpdated={handleFormUpdated}
+            onDeleteForm={handleDeleteForm}
+          />
+        ) : (
+          <DashboardOverview
+            forms={forms}
+            onCreateForm={handleCreateForm}
+            onDeleteForm={handleDeleteForm}
+            user={user}
+          />
+        )}
+      </div>
 
       {/* Create Form Modal */}
       <FormCreateModal

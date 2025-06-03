@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Form } from '@/lib/types/database';
+import CodeExample from '@/components/dashboard/CodeExample'
 
 interface FormDetailsProps {
   form: Form;
@@ -212,46 +213,7 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
 
         {/* Integration Examples */}
         <div className="space-y-6">
-          {/* HTML Example */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                HTML Integration
-              </h3>
-              <button
-                onClick={() => copyToClipboard(exampleHtml, 'html')}
-                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
-              >
-                {copied === 'html' ? 'Copied!' : 'Copy Code'}
-              </button>
-            </div>
-            <div className="bg-gray-900 dark:bg-gray-950 rounded-lg p-4 overflow-x-auto">
-              <pre className="text-green-400 font-mono text-sm leading-relaxed">
-                {exampleHtml}
-              </pre>
-            </div>
-          </div>
-
-          {/* JavaScript Example */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                JavaScript Integration
-              </h3>
-              <button
-                onClick={() => copyToClipboard(exampleJavaScript, 'js')}
-                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
-              >
-                {copied === 'js' ? 'Copied!' : 'Copy Code'}
-              </button>
-            </div>
-            <div className="bg-gray-900 dark:bg-gray-950 rounded-lg p-4 overflow-x-auto">
-              <pre className="text-blue-400 font-mono text-sm leading-relaxed">
-                {exampleJavaScript}
-              </pre>
-            </div>
-          </div>
-
+          <CodeExample />
           {/* Configuration */}
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
