@@ -14,7 +14,7 @@ A lightweight Formspree alternative that allows users to create forms, receive s
 
 - **Fullstack App**: Next.js (Pages Router)
 - **Styling**: Tailwind CSS
-- **Auth**: Clerk.dev or Supabase Auth (magic links)
+- **Auth**: Supabase Auth (magic links)
 - **Database**: PostgreSQL (via Supabase)
 - **Email**:  SendGrid
 - **Hosting**: Vercel (Frontend + API routes)
