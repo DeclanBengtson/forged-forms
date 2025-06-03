@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>External Form Submission Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        
+        .container {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #666;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 0.5rem;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        input, textarea {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        .test-button {
+            background: #28a745;
+            margin: 0.5rem 0;
+        }
+        
+        .test-button:hover {
+            background: #1e7e34;
+        }
+        
+        #results {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            margin-top: 1rem;
+            min-height: 100px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 4px;
+            border: 1px solid #ffeaa7;
+            margin-bottom: 1rem;
+        }
+        
+        .code {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+            font-family: monospace;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 External Form Submission Test</h1>
+    
+    <div class="warning">
+        <strong>⚠️ Before Testing:</strong> Make sure your Form Service is running at 
+        <code>http://localhost:3000</code> and you have created a form with slug 
+        <code id="form-slug">contact-form</code>
+    </div>
+
+    <div class="container">
+        <h2>📝 Test Configuration</h2>
+        <label for="api-url">Form Service URL:</label>
+        <input type="text" id="api-url" value="http://localhost:3000" placeholder="http://localhost:3000">
+        
+        <label for="form-slug-input">Form Slug:</label>
+        <input type="text" id="form-slug-input" value="contact-form" placeholder="contact-form">
+        
+        <button onclick="updateEndpoints()" class="test-button">Update Endpoints</button>
+    </div>
+
+    <div class="container">
+        <h2>🌐 Standard HTML Form (No JavaScript)</h2>
+        <p>This tests regular form submission that would work from any website:</p>
+        
+        <form id="html-form" method="POST" target="_blank">
+            <input name="name" placeholder="Your Name" required>
+            <input name="email" type="email" placeholder="Your Email" required>
+            <input name="company" placeholder="Company (optional)">
+            <textarea name="message" placeholder="Your Message" rows="4" required></textarea>
+            <input name="source" type="hidden" value="external-html-form">
+            <button type="submit">Submit via HTML Form</button>
+        </form>
+        
+        <div class="code">
+            <strong>Generated HTML:</strong><br>
+            <span id="html-code"></span>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>⚡ JavaScript Fetch API</h2>
+        <p>This tests AJAX-style submission with JavaScript:</p>
+        
+        <form id="js-form">
+            <input name="name" placeholder="Your Name" required>
+            <input name="email" type="email" placeholder="Your Email" required>
+            <input name="phone" placeholder="Phone (optional)">
+            <textarea name="message" placeholder="Your Message" rows="4" required></textarea>
+            <label>
+                <input name="newsletter" type="checkbox">
+                Subscribe to newsletter
+            </label>
+            <button type="submit" class="test-button">Submit via JavaScript</button>
+        </form>
+        
+        <div class="code">
+            <strong>JavaScript Code:</strong><br>
+            <span id="js-code"></span>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔧 Manual Testing</h2>
+        <button onclick="testCORS()" class="test-button">Test CORS Headers</button>
+        <button onclick="testInvalidForm()" class="test-button">Test Invalid Form</button>
+        <button onclick="testEmptySubmission()" class="test-button">Test Empty Submission</button>
+        <button onclick="testMultipleValues()" class="test-button">Test Array Values</button>
+    </div>
+
+    <div class="container">
+        <h2>📊 Test Results</h2>
+        <div id="results">Click any test button to see results here...</div>
+    </div>
+
+    <script>
+        let currentApiUrl = 'http://localhost:3000';
+        let currentFormSlug = 'contact-form';
+
+        function updateEndpoints() {
+            currentApiUrl = document.getElementById('api-url').value;
+            currentFormSlug = document.getElementById('form-slug-input').value;
+            
+            // Update HTML form action
+            const htmlForm = document.getElementById('html-form');
+            htmlForm.action = `${currentApiUrl}/api/forms/${currentFormSlug}/submit`;
+            
+            // Update form slug display
+            document.getElementById('form-slug').textContent = currentFormSlug;
+            
+            // Update code examples
+            updateCodeExamples();
+            
+            log(`✅ Updated endpoints to use: ${currentApiUrl}/api/forms/${currentFormSlug}`);
+        }
+
+        function updateCodeExamples() {
+            // HTML form example
+            const htmlCode = `&lt;form action="${currentApiUrl}/api/forms/${currentFormSlug}/submit" method="POST"&gt;
+    &lt;input name="name" placeholder="Your Name" required&gt;
+    &lt;input name="email" type="email" placeholder="Your Email" required&gt;
+    &lt;textarea name="message" placeholder="Message" required&gt;&lt;/textarea&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;`;
+            document.getElementById('html-code').innerHTML = htmlCode;
+
+            // JavaScript example
+            const jsCode = `fetch('${currentApiUrl}/api/forms/${currentFormSlug}/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        name: 'John Doe',
+        email: 'john@example.com',
+        message: 'Hello from JavaScript!'
+    })
+})`;
+            document.getElementById('js-code').textContent = jsCode;
+        }
+
+        function log(message) {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            results.textContent += `[${timestamp}] ${message}\n`;
+            results.scrollTop = results.scrollHeight;
+        }
+
+        // Handle JavaScript form submission
+        document.getElementById('js-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {};
+            
+            // Convert FormData to object, handling checkboxes
+            for (let [key, value] of formData.entries()) {
+                if (data[key]) {
+                    // Handle multiple values (arrays)
+                    if (Array.isArray(data[key])) {
+                        data[key].push(value);
+                    } else {
+                        data[key] = [data[key], value];
+                    }
+                } else {
+                    data[key] = value;
+                }
+            }
+            
+            // Handle unchecked checkboxes
+            const checkboxes = e.target.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                if (!cb.checked) {
+                    data[cb.name] = false;
+                }
+            });
+            
+            // Add metadata
+            data.source = 'external-js-form';
+            data.timestamp = new Date().toISOString();
+            data.user_agent = navigator.userAgent;
+            
+            try {
+                log(`🚀 Sending JavaScript submission...`);
+                log(`📤 Data: ${JSON.stringify(data, null, 2)}`);
+                
+                const response = await fetch(`${currentApiUrl}/api/forms/${currentFormSlug}/submit`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    log(`✅ Success: ${result.message}`);
+                    log(`📝 Submission ID: ${result.data?.id}`);
+                    e.target.reset();
+                } else {
+                    log(`❌ Error (${response.status}): ${result.error}`);
+                }
+                
+            } catch (error) {
+                log(`💥 Network Error: ${error.message}`);
+            }
+        });
+
+        async function testCORS() {
+            try {
+                log(`🔍 Testing CORS preflight...`);
+                
+                const response = await fetch(`${currentApiUrl}/api/forms/${currentFormSlug}/submit`, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Origin': 'https://example.com',
+                        'Access-Control-Request-Method': 'POST',
+                        'Access-Control-Request-Headers': 'Content-Type'
+                    }
+                });
+                
+                log(`📋 CORS Headers:`);
+                log(`   Access-Control-Allow-Origin: ${response.headers.get('access-control-allow-origin')}`);
+                log(`   Access-Control-Allow-Methods: ${response.headers.get('access-control-allow-methods')}`);
+                log(`   Status: ${response.status}`);
+                
+                if (response.headers.get('access-control-allow-origin') === '*') {
+                    log(`✅ CORS is properly configured`);
+                } else {
+                    log(`❌ CORS might not be configured correctly`);
+                }
+                
+            } catch (error) {
+                log(`💥 CORS Test Error: ${error.message}`);
+            }
+        }
+
+        async function testInvalidForm() {
+            try {
+                log(`🔍 Testing submission to non-existent form...`);
+                
+                const response = await fetch(`${currentApiUrl}/api/forms/nonexistent-form-123/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ test: 'data' })
+                });
+                
+                const result = await response.json();
+                log(`📤 Response (${response.status}): ${result.error || result.message}`);
+                
+                if (response.status === 404) {
+                    log(`✅ Correctly returned 404 for invalid form`);
+                } else {
+                    log(`❓ Unexpected response for invalid form`);
+                }
+                
+            } catch (error) {
+                log(`💥 Invalid Form Test Error: ${error.message}`);
+            }
+        }
+
+        async function testEmptySubmission() {
+            try {
+                log(`🔍 Testing empty submission...`);
+                
+                const response = await fetch(`${currentApiUrl}/api/forms/${currentFormSlug}/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+                
+                const result = await response.json();
+                log(`📤 Response (${response.status}): ${result.error || result.message}`);
+                
+                if (response.status === 400) {
+                    log(`✅ Correctly rejected empty submission`);
+                } else {
+                    log(`❓ Unexpected response for empty submission`);
+                }
+                
+            } catch (error) {
+                log(`💥 Empty Submission Test Error: ${error.message}`);
+            }
+        }
+
+        async function testMultipleValues() {
+            try {
+                log(`🔍 Testing submission with array values...`);
+                
+                const data = {
+                    name: 'Array Test User',
+                    email: 'arraytest@example.com',
+                    interests: ['web-dev', 'mobile', 'ai'],
+                    skills: ['javascript', 'python', 'react'],
+                    experience: '5+ years',
+                    available: true,
+                    source: 'array-test'
+                };
+                
+                log(`📤 Sending data with arrays: ${JSON.stringify(data, null, 2)}`);
+                
+                const response = await fetch(`${currentApiUrl}/api/forms/${currentFormSlug}/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    log(`✅ Successfully handled array values`);
+                    log(`📝 Submission ID: ${result.data?.id}`);
+                } else {
+                    log(`❌ Error with arrays (${response.status}): ${result.error}`);
+                }
+                
+            } catch (error) {
+                log(`💥 Array Test Error: ${error.message}`);
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateEndpoints();
+            log(`🎯 External form testing page loaded`);
+            log(`🌐 Test cross-origin submissions to your Form Service`);
+            log(`⚡ Make sure your dev server is running on localhost:3000`);
+        });
+    </script>
+</body>
+</html> 
