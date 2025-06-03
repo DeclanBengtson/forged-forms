@@ -28,7 +28,7 @@ export default function FormCreateModal({ isOpen, onClose, onFormCreated }: Form
 
     try {
       const result = await createForm(formData)
-      if (result.success) {
+      if (result.success && result.data) {
         onFormCreated(result.data)
         onClose()
         // Reset form

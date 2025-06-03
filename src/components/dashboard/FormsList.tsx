@@ -11,7 +11,7 @@ interface FormsListProps {
   onFormUpdated: () => void
 }
 
-export default function FormsList({ forms, onFormDeleted, onFormUpdated }: FormsListProps) {
+export default function FormsList({ forms, onFormDeleted, onFormUpdated: _onFormUpdated }: FormsListProps) {
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({})
   const [formStats, setFormStats] = useState<Record<string, any>>({})
 

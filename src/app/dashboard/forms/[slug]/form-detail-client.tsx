@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { User } from '@supabase/supabase-js'
@@ -19,7 +19,7 @@ interface FormStats {
   latest_submission: string | null
 }
 
-export default function FormDetailClient({ slug, user }: FormDetailClientProps) {
+export default function FormDetailClient({ slug, user: _user }: FormDetailClientProps) {
   const [form, setForm] = useState<Form | null>(null)
   const [stats, setStats] = useState<FormStats | null>(null)
   const [submissions, setSubmissions] = useState<Submission[]>([])
@@ -29,11 +29,22 @@ export default function FormDetailClient({ slug, user }: FormDetailClientProps) 
   const [activeTab, setActiveTab] = useState<'overview' | 'submissions' | 'settings'>('overview')
   const router = useRouter()
 
-  useEffect(() => {
-    loadFormData()
+  const loadSubmissions = useCallback(async (page = 1) => {
+    setSubmissionsLoading(true)
+    
+    try {
+      const result = await listSubmissions(slug, { page, limit: 10, sortOrder: 'desc' })
+      if (result.success && result.data) {
+        setSubmissions(result.data)
+      }
+    } catch (err) {
+      console.error('Failed to load submissions:', err)
+    } finally {
+      setSubmissionsLoading(false)
+    }
   }, [slug])
 
-  const loadFormData = async () => {
+  const loadFormData = useCallback(async () => {
     setLoading(true)
     setError(null)
     
@@ -63,22 +74,11 @@ export default function FormDetailClient({ slug, user }: FormDetailClientProps) 
     } finally {
       setLoading(false)
     }
-  }
+  }, [slug, loadSubmissions])
 
-  const loadSubmissions = async (page = 1) => {
-    setSubmissionsLoading(true)
-    
-    try {
-      const result = await listSubmissions(slug, { page, limit: 10, sortOrder: 'desc' })
-      if (result.success && result.data) {
-        setSubmissions(result.data)
-      }
-    } catch (err) {
-      console.error('Failed to load submissions:', err)
-    } finally {
-      setSubmissionsLoading(false)
-    }
-  }
+  useEffect(() => {
+    loadFormData()
+  }, [loadFormData])
 
   const handleDeleteForm = async () => {
     if (!form) return
