@@ -16,7 +16,7 @@ Most endpoints require authentication via Supabase Auth. The user session is aut
 ## Base URL
 
 - **Development**: `http://localhost:3000/api`
-- **Production**: `https://your-domain.com/api`
+- **Production**: `https://forgedforms.com/api`
 
 ## Response Format
 
@@ -274,7 +274,7 @@ Returns submission statistics for a form.
 
 ### HTML Form Submission
 ```html
-<form action="https://your-domain.com/api/forms/contact-form/submit" method="POST">
+<form action="https://forgedforms.com/api/forms/contact-form/submit" method="POST">
   <input name="name" type="text" placeholder="Your Name" required>
   <input name="email" type="email" placeholder="Your Email" required>
   <textarea name="message" placeholder="Your Message" required></textarea>

@@ -26,27 +26,6 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
     }
   };
 
-  const exampleHtml = `<form action="${endpointUrl}" method="POST">
-  <input name="name" placeholder="Your Name" required />
-  <input name="email" type="email" placeholder="Your Email" required />
-  <textarea name="message" placeholder="Your Message" required></textarea>
-  <button type="submit">Send Message</button>
-</form>`;
-
-  const exampleJavaScript = `fetch('${endpointUrl}', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    name: 'John Doe',
-    email: 'john@example.com',
-    message: 'Hello from my website!'
-  })
-})
-.then(response => response.json())
-.then(data => console.log('Success:', data))
-.catch(error => console.error('Error:', error));`;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {

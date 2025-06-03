@@ -11,7 +11,6 @@ import FormDeleteModal from '@/components/dashboard/FormDeleteModal'
 import Sidebar from '@/components/dashboard/Sidebar'
 import DashboardOverview from '@/components/dashboard/DashboardOverview'
 import FormDetails from '@/components/dashboard/FormDetails'
-import CodeExample from '@/components/dashboard/CodeExample'
 
 interface DashboardClientProps {
   user: User
