@@ -9,16 +9,19 @@ export default function Home() {
           <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
             FormFlow
           </div>
-          <div className="flex gap-6">
+          <div className="flex gap-6 items-center">
             <Link href="#features" className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors">
               Features
             </Link>
             <Link href="#how-it-works" className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors">
               How It Works
             </Link>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+            <Link href="/login" className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors">
+              Sign In
+            </Link>
+            <Link href="/signup" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
               Get Started
-            </button>
+            </Link>
           </div>
         </nav>
       </header>
@@ -35,9 +38,9 @@ export default function Home() {
             No server setup required.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg">
+            <Link href="/signup" className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg">
               Start Building Today
-            </button>
+            </Link>
             <button className="border-2 border-blue-600 text-blue-600 dark:text-blue-400 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">
               View Demo
             </button>
@@ -49,7 +52,7 @@ export default function Home() {
       <section className="container mx-auto px-6 py-16">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
-            It's as Simple as This
+            It&apos;s as Simple as This
           </h2>
           <div className="bg-gray-900 dark:bg-gray-800 rounded-xl p-8 shadow-2xl">
             <div className="flex items-center gap-2 mb-4">
@@ -68,7 +71,7 @@ export default function Home() {
             </pre>
           </div>
           <p className="text-center text-gray-600 dark:text-gray-400 mt-6">
-            Just point your form to our endpoint. That's it! ✨
+            Just point your form to our endpoint. That&apos;s it! ✨
           </p>
         </div>
       </section>
@@ -172,7 +175,7 @@ export default function Home() {
                     Sign Up & Create Your Form
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 text-lg">
-                    Create your account with magic link authentication and set up a new form project with a custom name like "contact-form".
+                    Create your account with magic link authentication and set up a new form project with a custom name like &quot;contact-form&quot;.
                   </p>
                 </div>
               </div>
@@ -186,7 +189,7 @@ export default function Home() {
                     Add the Endpoint to Your Site
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 text-lg">
-                    Simply point your HTML form's action attribute to our endpoint. Works with any framework or plain HTML.
+                    Simply point your HTML form&apos;s action attribute to our endpoint. Works with any framework or plain HTML.
                   </p>
                 </div>
               </div>
@@ -200,7 +203,7 @@ export default function Home() {
                     Receive & Manage Submissions
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 text-lg">
-                    Get instant email notifications and view all submissions in your dashboard. That's it - you're done!
+                    Get instant email notifications and view all submissions in your dashboard. That&apos;s it - you&apos;re done!
                   </p>
                 </div>
               </div>
@@ -216,7 +219,7 @@ export default function Home() {
             Ready to Simplify Your Forms?
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-            Join developers who've already simplified their form handling workflow.
+            Join developers who&apos;ve already simplified their form handling workflow.
           </p>
           <button className="bg-blue-600 text-white px-12 py-4 rounded-lg text-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg">
             Get Started Free
