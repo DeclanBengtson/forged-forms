@@ -35,9 +35,7 @@ export default function Sidebar({
           <div className="flex items-center justify-between">
             {!isCollapsed && (
               <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">F</span>
-                </div>
+                <img src="/ForgedForms.png" alt="FormFlow Logo" className="w-8 h-8" />
                 <span className="text-xl font-bold text-gray-900 dark:text-white">
                   FormFlow
                 </span>
