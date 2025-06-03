@@ -5,6 +5,7 @@ import { Form } from '@/lib/types/database';
 interface DashboardOverviewProps {
   forms: Form[];
   onCreateForm: () => void;
+  onDeleteForm: (form: Form) => void;
   user: { email?: string };
 }
 
@@ -21,7 +22,7 @@ interface ActivityItem {
   time: string;
 }
 
-export default function DashboardOverview({ forms, onCreateForm, user }: DashboardOverviewProps) {
+export default function DashboardOverview({ forms, onCreateForm, onDeleteForm, user }: DashboardOverviewProps) {
   const stats: DashboardStats = {
     totalForms: forms.length,
     totalSubmissions: 0, // This would come from API in real implementation
@@ -153,7 +154,7 @@ export default function DashboardOverview({ forms, onCreateForm, user }: Dashboa
                   {forms.slice(0, 5).map((form) => (
                     <div
                       key={form.id}
-                      className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
                     >
                       <div className="flex items-center space-x-3">
                         <div className={`w-3 h-3 rounded-full ${
@@ -168,13 +169,24 @@ export default function DashboardOverview({ forms, onCreateForm, user }: Dashboa
                           </p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">
-                          0 submissions
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Created {new Date(form.created_at).toLocaleDateString()}
-                        </p>
+                      <div className="flex items-center space-x-3">
+                        <div className="text-right">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            0 submissions
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Created {new Date(form.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => onDeleteForm(form)}
+                          className="opacity-0 group-hover:opacity-100 p-1 rounded text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
+                          title={`Delete ${form.name}`}
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
                       </div>
                     </div>
                   ))}

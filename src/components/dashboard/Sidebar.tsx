@@ -9,6 +9,7 @@ interface SidebarProps {
   selectedForm: Form | null;
   onSelectForm: (form: Form | null) => void;
   onCreateForm: () => void;
+  onDeleteForm: (form: Form) => void;
   onLogout: () => void;
   user: { email?: string };
   loading?: boolean;
@@ -19,6 +20,7 @@ export default function Sidebar({
   selectedForm, 
   onSelectForm, 
   onCreateForm, 
+  onDeleteForm,
   onLogout, 
   user, 
   loading = false 
@@ -114,31 +116,46 @@ export default function Sidebar({
                   )
                 ) : (
                   forms.map((form) => (
-                    <button
-                      key={form.id}
-                      onClick={() => onSelectForm(form)}
-                      className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-3 rounded-lg text-left transition-all duration-200 group ${
-                        selectedForm?.id === form.id 
-                          ? 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800' 
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                      }`}
-                    >
-                      <div className="w-6 h-6 flex items-center justify-center">
-                        <div className={`w-3 h-3 rounded-full ${
-                          form.is_active 
-                            ? 'bg-green-500' 
-                            : 'bg-gray-400'
-                        }`} />
-                      </div>
-                      {!isCollapsed && (
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium truncate">{form.name}</div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                            /{form.slug}
-                          </div>
+                    <div key={form.id} className="group relative">
+                      <button
+                        onClick={() => onSelectForm(form)}
+                        className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-3 rounded-lg text-left transition-all duration-200 ${
+                          selectedForm?.id === form.id 
+                            ? 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800' 
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        <div className="w-6 h-6 flex items-center justify-center">
+                          <div className={`w-3 h-3 rounded-full ${
+                            form.is_active 
+                              ? 'bg-green-500' 
+                              : 'bg-gray-400'
+                          }`} />
                         </div>
+                        {!isCollapsed && (
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium truncate">{form.name}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                              /{form.slug}
+                            </div>
+                          </div>
+                        )}
+                      </button>
+                      {!isCollapsed && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDeleteForm(form);
+                          }}
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
+                          title={`Delete ${form.name}`}
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
                       )}
-                    </button>
+                    </div>
                   ))
                 )}
               </div>

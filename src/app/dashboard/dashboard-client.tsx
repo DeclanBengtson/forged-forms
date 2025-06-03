@@ -7,6 +7,7 @@ import { User } from '@supabase/supabase-js'
 import { Form } from '@/lib/types/database'
 import { listForms } from '@/lib/api/client'
 import FormCreateModal from '@/components/dashboard/FormCreateModal'
+import FormDeleteModal from '@/components/dashboard/FormDeleteModal'
 import Sidebar from '@/components/dashboard/Sidebar'
 import DashboardOverview from '@/components/dashboard/DashboardOverview'
 import FormDetails from '@/components/dashboard/FormDetails'
@@ -20,6 +21,8 @@ export default function DashboardClient({ user }: DashboardClientProps) {
   const [forms, setForms] = useState<Form[]>([])
   const [selectedForm, setSelectedForm] = useState<Form | null>(null)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [formToDelete, setFormToDelete] = useState<Form | null>(null)
   const [formsLoading, setFormsLoading] = useState(true)
   const supabase = createClient()
   const router = useRouter()
@@ -55,7 +58,7 @@ export default function DashboardClient({ user }: DashboardClientProps) {
     setSelectedForm(newForm) // Auto-select the newly created form
   }
 
-  const _handleFormDeleted = (slug: string) => {
+  const handleFormDeleted = (slug: string) => {
     setForms(prev => prev.filter(form => form.slug !== slug))
     // If the deleted form was selected, go back to overview
     if (selectedForm?.slug === slug) {
@@ -73,6 +76,11 @@ export default function DashboardClient({ user }: DashboardClientProps) {
 
   const handleCreateForm = () => {
     setIsCreateModalOpen(true)
+  }
+
+  const handleDeleteForm = (form: Form) => {
+    setFormToDelete(form)
+    setIsDeleteModalOpen(true)
   }
 
   if (formsLoading) {
@@ -98,6 +106,7 @@ export default function DashboardClient({ user }: DashboardClientProps) {
         selectedForm={selectedForm}
         onSelectForm={handleSelectForm}
         onCreateForm={handleCreateForm}
+        onDeleteForm={handleDeleteForm}
         onLogout={handleLogout}
         user={user}
         loading={loading}
@@ -108,11 +117,13 @@ export default function DashboardClient({ user }: DashboardClientProps) {
         <FormDetails
           form={selectedForm}
           onFormUpdated={handleFormUpdated}
+          onDeleteForm={handleDeleteForm}
         />
       ) : (
         <DashboardOverview
           forms={forms}
           onCreateForm={handleCreateForm}
+          onDeleteForm={handleDeleteForm}
           user={user}
         />
       )}
@@ -122,6 +133,14 @@ export default function DashboardClient({ user }: DashboardClientProps) {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onFormCreated={handleFormCreated}
+      />
+
+      {/* Delete Form Modal */}
+      <FormDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onFormDeleted={handleFormDeleted}
+        form={formToDelete}
       />
     </div>
   )
