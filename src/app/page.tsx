@@ -267,9 +267,7 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center space-x-2 mb-6">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">F</span>
-                </div>
+                <img src="/ForgedForms.png" alt="FormFlow Logo" className="w-8 h-8" />
                 <span className="text-xl font-bold">FormFlow</span>
               </div>
               <p className="text-gray-400 mb-6">
