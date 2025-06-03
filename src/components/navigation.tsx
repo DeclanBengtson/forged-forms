@@ -14,7 +14,7 @@ export default function Navigation() {
           <Link href="/" className="flex items-center space-x-2">
             <img src="/ForgedForms.png" alt="FormFlow Logo" className="w-8 h-8" />
             <span className="text-xl font-bold text-gray-900 dark:text-white">
-              FormFlow
+            ForgedForms
             </span>
           </Link>
 
