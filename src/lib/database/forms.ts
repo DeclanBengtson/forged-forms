@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { Form, FormInsert, FormUpdate, FormWithStats, Database } from '@/lib/types/database'
-import { SupabaseClient } from '@supabase/supabase-js'
+import { Form, FormInsert, FormUpdate, FormWithStats } from '@/lib/types/database'
 
 // Utility function to generate URL-safe slug from form name
 export function generateSlug(name: string): string {
