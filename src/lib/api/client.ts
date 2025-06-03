@@ -175,4 +175,16 @@ export const apiHelpers = {
       throw error
     }
   }
-} 
+}
+
+// Convenience exports for easier importing
+export const listForms = formsApi.list
+export const createForm = formsApi.create
+export const getForm = formsApi.get
+export const updateForm = formsApi.update
+export const deleteForm = formsApi.delete
+export const getFormStats = formsApi.getStats
+
+export const listSubmissions = submissionsApi.list
+export const exportSubmissions = submissionsApi.export
+export const submitForm = submissionsApi.submit 

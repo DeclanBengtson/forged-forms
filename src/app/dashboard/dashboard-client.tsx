@@ -1,24 +1,84 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { User } from '@supabase/supabase-js'
+import { Form } from '@/lib/types/database'
+import { listForms } from '@/lib/api/client'
+import FormCreateModal from '@/components/dashboard/FormCreateModal'
+import FormsList from '@/components/dashboard/FormsList'
 
 interface DashboardClientProps {
   user: User
 }
 
+interface DashboardStats {
+  totalForms: number
+  totalSubmissions: number
+  submissionsThisWeek: number
+}
+
 export default function DashboardClient({ user }: DashboardClientProps) {
   const [loading, setLoading] = useState(false)
+  const [forms, setForms] = useState<Form[]>([])
+  const [stats, setStats] = useState<DashboardStats>({
+    totalForms: 0,
+    totalSubmissions: 0,
+    submissionsThisWeek: 0
+  })
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [formsLoading, setFormsLoading] = useState(true)
   const supabase = createClient()
   const router = useRouter()
+
+  // Load forms and stats on component mount
+  useEffect(() => {
+    loadForms()
+  }, [])
+
+  const loadForms = async () => {
+    setFormsLoading(true)
+    try {
+      const result = await listForms()
+      if (result.success && result.data) {
+        setForms(result.data)
+        
+        // Calculate basic stats from forms data
+        const totalForms = result.data.length
+        // Note: We'll enhance this with real submission counts when we implement form stats
+        setStats({
+          totalForms,
+          totalSubmissions: 0, // Will be calculated from API
+          submissionsThisWeek: 0 // Will be calculated from API
+        })
+      }
+    } catch (error) {
+      console.error('Failed to load forms:', error)
+    } finally {
+      setFormsLoading(false)
+    }
+  }
 
   const handleLogout = async () => {
     setLoading(true)
     await supabase.auth.signOut()
     router.push('/')
     router.refresh()
+  }
+
+  const handleFormCreated = (newForm: Form) => {
+    setForms(prev => [newForm, ...prev])
+    setStats(prev => ({ ...prev, totalForms: prev.totalForms + 1 }))
+  }
+
+  const handleFormDeleted = (slug: string) => {
+    setForms(prev => prev.filter(form => form.slug !== slug))
+    setStats(prev => ({ ...prev, totalForms: prev.totalForms - 1 }))
+  }
+
+  const handleFormUpdated = () => {
+    loadForms() // Reload forms when one is updated
   }
 
   return (
@@ -52,13 +112,24 @@ export default function DashboardClient({ user }: DashboardClientProps) {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Welcome to your Dashboard
-          </h2>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Manage your forms and view submissions
-          </p>
+        {/* Page Header */}
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+              Dashboard
+            </h2>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
+              Manage your forms and view submissions
+            </p>
+          </div>
+          
+          <button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center gap-2"
+          >
+            <span className="text-lg">+</span>
+            Create Form
+          </button>
         </div>
 
         {/* Quick Stats */}
@@ -70,7 +141,9 @@ export default function DashboardClient({ user }: DashboardClientProps) {
               </div>
               <div className="ml-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Forms</h3>
-                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">0</p>
+                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  {formsLoading ? '...' : stats.totalForms}
+                </p>
               </div>
             </div>
           </div>
@@ -81,8 +154,10 @@ export default function DashboardClient({ user }: DashboardClientProps) {
                 <span className="text-2xl">📊</span>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Submissions</h3>
-                <p className="text-2xl font-bold text-green-600 dark:text-green-400">0</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Total Submissions</h3>
+                <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                  {stats.totalSubmissions}
+                </p>
               </div>
             </div>
           </div>
@@ -94,28 +169,88 @@ export default function DashboardClient({ user }: DashboardClientProps) {
               </div>
               <div className="ml-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">This Week</h3>
-                <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">0</p>
+                <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                  {stats.submissionsThisWeek}
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Empty State */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center">
-          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span className="text-2xl">🚀</span>
+        {/* Forms Section */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Your Forms
+            </h3>
+            {forms.length > 0 && (
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {forms.length} form{forms.length !== 1 ? 's' : ''}
+              </div>
+            )}
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-            Ready to create your first form?
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
-            Create a form endpoint to start collecting submissions from your website or application.
-          </p>
-          <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-            Create Your First Form
-          </button>
+
+          {formsLoading ? (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
+              <div className="text-gray-600 dark:text-gray-400">Loading forms...</div>
+            </div>
+          ) : (
+            <FormsList 
+              forms={forms}
+              onFormDeleted={handleFormDeleted}
+              onFormUpdated={handleFormUpdated}
+            />
+          )}
         </div>
+
+        {/* Getting Started Section (only show if no forms) */}
+        {!formsLoading && forms.length === 0 && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              🚀 Getting Started
+            </h3>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  1. Create your first form
+                </h4>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Click "Create Form" to set up a new form endpoint. You'll get a unique URL that can receive submissions.
+                </p>
+                
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  2. Integrate with your website
+                </h4>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Use the provided endpoint URL in your HTML forms or JavaScript to start collecting submissions.
+                </p>
+              </div>
+              
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  Example HTML Form:
+                </h4>
+                <pre className="text-xs text-gray-600 dark:text-gray-400 overflow-x-auto">
+{`<form action="YOUR_FORM_URL" method="POST">
+  <input name="name" placeholder="Name" required>
+  <input name="email" type="email" placeholder="Email" required>
+  <textarea name="message" placeholder="Message"></textarea>
+  <button type="submit">Submit</button>
+</form>`}
+                </pre>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
+
+      {/* Create Form Modal */}
+      <FormCreateModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onFormCreated={handleFormCreated}
+      />
     </div>
   )
 } 
