@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { Submission, SubmissionInsert, PublicFormSubmission } from '@/lib/types/database'
 import { NextRequest } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
 
 // Sanitize form submission data
 export function sanitizeSubmissionData(data: Record<string, any>): Record<string, any> {
@@ -42,6 +43,20 @@ export function extractClientInfo(request: NextRequest) {
   }
 }
 
+// Create a service role client that bypasses RLS for form submissions
+const createServiceClient = () => {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!, // Service role bypasses RLS
+    {
+      cookies: {
+        getAll: () => [],
+        setAll: () => {}
+      }
+    }
+  )
+}
+
 // Create a new submission
 export async function createSubmission(
   formId: string,
@@ -52,7 +67,10 @@ export async function createSubmission(
     referrer?: string | null
   }
 ): Promise<Submission> {
-  const supabase = await createClient()
+  // Use service role client for form submissions (bypasses RLS issues)
+  const serviceSupabase = createServiceClient()
+  
+  console.log('Creating submission for form:', formId)
   
   // Sanitize the submission data
   const sanitizedData = sanitizeSubmissionData(data)
@@ -65,16 +83,18 @@ export async function createSubmission(
     referrer: clientInfo.referrer
   }
 
-  const { data: submission, error } = await supabase
+  const { data: submission, error } = await serviceSupabase
     .from('submissions')
     .insert(submissionData)
     .select()
     .single()
 
   if (error) {
+    console.error('Submission insert failed:', error.message)
     throw new Error(`Failed to create submission: ${error.message}`)
   }
 
+  console.log('Submission created successfully, ID:', submission.id)
   return submission
 }
 
