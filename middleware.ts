@@ -1,7 +1,13 @@
-import { updateSession } from './src/lib/supabase/server'
+import { createClient } from './src/lib/supabase/middleware'
+import { NextRequest } from 'next/server'
 
-export async function middleware(request: any) {
-  return await updateSession(request)
+export async function middleware(request: NextRequest) {
+  const { supabase, supabaseResponse } = createClient(request)
+
+  // This will refresh session if expired - required for Server Components
+  await supabase.auth.getUser()
+
+  return supabaseResponse
 }
 
 export const config = {

@@ -9,6 +9,7 @@ import { listForms } from '@/lib/api/client'
 import FormCreateModal from '@/components/dashboard/FormCreateModal'
 import FormDeleteModal from '@/components/dashboard/FormDeleteModal'
 import Sidebar from '@/components/dashboard/Sidebar'
+import FormsSidebar from '@/components/dashboard/FormsSidebar'
 import DashboardOverview from '@/components/dashboard/DashboardOverview'
 import FormDetails from '@/components/dashboard/FormDetails'
 
@@ -99,8 +100,8 @@ export default function DashboardClient({ user }: DashboardClientProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-      {/* Sidebar */}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Fixed Top Navigation */}
       <Sidebar
         forms={forms}
         selectedForm={selectedForm}
@@ -112,8 +113,17 @@ export default function DashboardClient({ user }: DashboardClientProps) {
         loading={loading}
       />
 
+      {/* Fixed Left Sidebar with Forms */}
+      <FormsSidebar
+        forms={forms}
+        selectedForm={selectedForm}
+        onSelectForm={handleSelectForm}
+        onCreateForm={handleCreateForm}
+        onDeleteForm={handleDeleteForm}
+      />
+
       {/* Main Content */}
-      <div className="flex-1">
+      <main className="pt-[73px] pl-64">
         {selectedForm ? (
           <FormDetails
             form={selectedForm}
@@ -128,7 +138,7 @@ export default function DashboardClient({ user }: DashboardClientProps) {
             user={user}
           />
         )}
-      </div>
+      </main>
 
       {/* Create Form Modal */}
       <FormCreateModal
