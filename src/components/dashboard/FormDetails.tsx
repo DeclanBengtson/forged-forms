@@ -38,8 +38,8 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
   };
 
   return (
-    <div className="flex-1 bg-gray-50 dark:bg-gray-900 overflow-y-auto">
-      <div className="max-w-4xl mx-auto p-8">
+    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
@@ -63,6 +63,7 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
                 </span>
               </div>
             </div>
+            
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => setIsEditing(true)}

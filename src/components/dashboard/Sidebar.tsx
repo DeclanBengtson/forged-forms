@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Form } from '@/lib/types/database';
 
-interface SidebarProps {
+interface NavbarProps {
   forms: Form[];
   selectedForm: Form | null;
   onSelectForm: (form: Form | null) => void;
@@ -15,7 +15,7 @@ interface SidebarProps {
   loading?: boolean;
 }
 
-export default function Sidebar({ 
+export default function Navbar({ 
   forms, 
   selectedForm, 
   onSelectForm, 
@@ -24,169 +24,111 @@ export default function Sidebar({
   onLogout, 
   user, 
   loading = false 
-}: SidebarProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+}: NavbarProps) {
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard');
+
+  // Get initials for profile picture
+  const getInitials = (email: string) => {
+    return email.split('@')[0].substring(0, 2).toUpperCase();
+  };
 
   return (
-    <div className={`${isCollapsed ? 'w-16' : 'w-80'} flex-shrink-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300`}>
-      <div className="flex flex-col h-full">
-        {/* Header */}
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            {!isCollapsed && (
-              <Link href="/" className="flex items-center space-x-2">
-                <img src="/ForgedForms.png" alt="FormFlow Logo" className="w-8 h-8" />
-                <span className="text-xl font-bold text-gray-900 dark:text-white">
-                  FormFlow
-                </span>
-              </Link>
-            )}
-            <button
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 transition-colors"
-            >
-              <svg 
-                className={`w-5 h-5 transition-transform duration-200 ${isCollapsed ? 'rotate-180' : ''}`} 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {/* Navigation */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-4">
-            {/* Dashboard Overview Button */}
-            <button
-              onClick={() => onSelectForm(null)}
-              className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-3 rounded-lg text-left transition-all duration-200 ${
-                !selectedForm 
-                  ? 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800' 
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-              }`}
-            >
-              <div className="w-6 h-6 flex items-center justify-center">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              {!isCollapsed && (
-                <span className="font-medium">Dashboard</span>
-              )}
-            </button>
-
-            {/* Forms Section */}
-            <div className="mt-6">
-              <div className={`flex items-center justify-between ${isCollapsed ? 'justify-center' : ''} mb-3`}>
-                {!isCollapsed && (
-                  <span className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Forms ({forms.length})
-                  </span>
-                )}
-                <button
-                  onClick={onCreateForm}
-                  className={`${isCollapsed ? 'w-8 h-8' : 'w-7 h-7'} bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center`}
-                  title="Create new form"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Forms List */}
-              <div className="space-y-1">
-                {forms.length === 0 ? (
-                  !isCollapsed && (
-                    <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">
-                      <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mx-auto mb-3">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                      </div>
-                      <p className="font-medium mb-1">No forms yet</p>
-                      <p className="text-xs">Create your first form to get started</p>
-                    </div>
-                  )
-                ) : (
-                  forms.map((form) => (
-                    <div key={form.id} className="group relative">
-                      <button
-                        onClick={() => onSelectForm(form)}
-                        className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-3 rounded-lg text-left transition-all duration-200 ${
-                          selectedForm?.id === form.id 
-                            ? 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800' 
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        <div className="w-6 h-6 flex items-center justify-center">
-                          <div className={`w-3 h-3 rounded-full ${
-                            form.is_active 
-                              ? 'bg-green-500' 
-                              : 'bg-gray-400'
-                          }`} />
-                        </div>
-                        {!isCollapsed && (
-                          <div className="flex-1 min-w-0">
-                            <div className="font-medium truncate">{form.name}</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                              /{form.slug}
-                            </div>
-                          </div>
-                        )}
-                      </button>
-                      {!isCollapsed && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDeleteForm(form);
-                          }}
-                          className="absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
-                          title={`Delete ${form.name}`}
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-          {!isCollapsed && (
-            <div className="mb-3">
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
-                {user.email}
-              </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Signed in
-              </div>
+    <nav className="w-full bg-white border-b border-gray-200 px-6 py-4">
+      <div className="flex items-center justify-between">
+        {/* Left Side - Logo and Username */}
+        <div className="flex items-center space-x-6">
+          <Link href="/" className="flex items-center space-x-3 group">
+            <img src="/ForgedForms.png" alt="ForgedForms Logo" className="w-8 h-8" />
+            <span className="text-lg font-semibold text-gray-900 group-hover:text-gray-700 transition-colors">
+              ForgedForms
+            </span>
+          </Link>
+          
+          {user.email && (
+            <div className="text-sm text-gray-600">
+              Welcome, <span className="font-medium">{user.email.split('@')[0]}</span>
             </div>
           )}
+        </div>
+
+        {/* Center - Navigation Tabs */}
+        <div className="flex items-center space-x-1">
           <button
-            onClick={onLogout}
-            disabled={loading}
-            className={`${isCollapsed ? 'w-8 h-8' : 'w-full'} flex items-center ${isCollapsed ? 'justify-center' : 'space-x-2'} px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50`}
+            onClick={() => {
+              setActiveTab('dashboard');
+              onSelectForm(null);
+            }}
+            className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+              activeTab === 'dashboard'
+                ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            }`}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            {!isCollapsed && (
-              <span>{loading ? 'Signing out...' : 'Sign out'}</span>
-            )}
+            Dashboard
+          </button>
+          <button
+            onClick={() => setActiveTab('documentation')}
+            className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+              activeTab === 'documentation'
+                ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            }`}
+          >
+            Documentation
           </button>
         </div>
+
+        {/* Right Side - Create Form Button and Profile */}
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={onCreateForm}
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Create Form
+          </button>
+
+          {/* Profile Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium hover:shadow-md transition-all duration-200"
+            >
+              {user.email ? getInitials(user.email) : 'U'}
+            </button>
+
+            {showProfileMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <div className="text-sm font-medium text-gray-900">{user.email?.split('@')[0]}</div>
+                  <div className="text-xs text-gray-500">{user.email}</div>
+                </div>
+                <button
+                  onClick={() => {
+                    onLogout();
+                    setShowProfileMenu(false);
+                  }}
+                  disabled={loading}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Signing out...' : 'Sign out'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* Click outside handler for profile menu */}
+      {showProfileMenu && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={() => setShowProfileMenu(false)}
+        />
+      )}
+    </nav>
   );
 } 

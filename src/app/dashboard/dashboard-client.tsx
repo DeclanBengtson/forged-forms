@@ -9,6 +9,7 @@ import { listForms } from '@/lib/api/client'
 import FormCreateModal from '@/components/dashboard/FormCreateModal'
 import FormDeleteModal from '@/components/dashboard/FormDeleteModal'
 import Sidebar from '@/components/dashboard/Sidebar'
+import FormsSidebar from '@/components/dashboard/FormsSidebar'
 import DashboardOverview from '@/components/dashboard/DashboardOverview'
 import FormDetails from '@/components/dashboard/FormDetails'
 
@@ -99,8 +100,8 @@ export default function DashboardClient({ user }: DashboardClientProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-      {/* Sidebar */}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+      {/* Top Navigation */}
       <Sidebar
         forms={forms}
         selectedForm={selectedForm}
@@ -112,22 +113,34 @@ export default function DashboardClient({ user }: DashboardClientProps) {
         loading={loading}
       />
 
-      {/* Main Content */}
-      <div className="flex-1">
-        {selectedForm ? (
-          <FormDetails
-            form={selectedForm}
-            onFormUpdated={handleFormUpdated}
-            onDeleteForm={handleDeleteForm}
-          />
-        ) : (
-          <DashboardOverview
-            forms={forms}
-            onCreateForm={handleCreateForm}
-            onDeleteForm={handleDeleteForm}
-            user={user}
-          />
-        )}
+      {/* Main Layout with Sidebar and Content */}
+      <div className="flex flex-1">
+        {/* Left Sidebar with Forms */}
+        <FormsSidebar
+          forms={forms}
+          selectedForm={selectedForm}
+          onSelectForm={handleSelectForm}
+          onCreateForm={handleCreateForm}
+          onDeleteForm={handleDeleteForm}
+        />
+
+        {/* Main Content */}
+        <main className="flex-1">
+          {selectedForm ? (
+            <FormDetails
+              form={selectedForm}
+              onFormUpdated={handleFormUpdated}
+              onDeleteForm={handleDeleteForm}
+            />
+          ) : (
+            <DashboardOverview
+              forms={forms}
+              onCreateForm={handleCreateForm}
+              onDeleteForm={handleDeleteForm}
+              user={user}
+            />
+          )}
+        </main>
       </div>
 
       {/* Create Form Modal */}
