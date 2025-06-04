@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getFormBySlug } from '@/lib/database/forms'
 import { createSubmission, extractClientInfo } from '@/lib/database/submissions'
 import { ApiResponse } from '@/lib/types/database'
+import { sendFormSubmissionNotification } from '@/lib/email/sendgrid'
 
 // POST /api/forms/[slug]/submit - Public endpoint for form submissions
 export async function POST(
@@ -73,10 +74,19 @@ export async function POST(
     // Create the submission
     const submission = await createSubmission(form.id, submissionData, clientInfo)
 
-    // TODO: Send email notification if enabled (Phase 4)
-    // if (form.email_notifications && form.notification_email) {
-    //   await sendEmailNotification(form, submission)
-    // }
+    // Send email notification if enabled
+    if (form.email_notifications && form.notification_email) {
+      try {
+        await sendFormSubmissionNotification({
+          form,
+          submission,
+          submissionData
+        })
+      } catch (error) {
+        // Log error but don't fail the submission
+        console.error('Failed to send email notification:', error)
+      }
+    }
 
     const response: ApiResponse = {
       success: true,

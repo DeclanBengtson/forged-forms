@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Form } from '@/lib/types/database';
 
 interface NavbarProps {
@@ -36,7 +37,7 @@ export default function Navbar({
         {/* Left Side - Logo and Username */}
         <div className="flex items-center space-x-6">
           <Link href="/" className="flex items-center space-x-3 group">
-            <img src="/ForgedForms.png" alt="ForgedForms Logo" className="w-8 h-8" />
+            <Image src="/ForgedForms.png" alt="ForgedForms Logo" width={32} height={32} />
             <span className="text-lg font-semibold text-gray-900 group-hover:text-gray-700 transition-colors">
               ForgedForms
             </span>
