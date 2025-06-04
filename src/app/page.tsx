@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import Navigation from "@/components/navigation";
 
 export default function Home() {
@@ -255,7 +256,7 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center space-x-2 mb-6">
-                <img src="/ForgedForms.png" alt="ForgedForms Logo" className="w-8 h-8" />
+                <Image src="/ForgedForms.png" alt="ForgedForms Logo" width={32} height={32} />
                 <span className="text-xl font-bold">ForgedForms</span>
               </div>
               <p className="text-gray-400 mb-6">

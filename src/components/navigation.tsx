@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 
 export default function Navigation() {
@@ -12,7 +13,7 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <img src="/ForgedForms.png" alt="FormFlow Logo" className="w-8 h-8" />
+            <Image src="/ForgedForms.png" alt="FormFlow Logo" width={32} height={32} />
             <span className="text-xl font-bold text-gray-900 dark:text-white">
             ForgedForms
             </span>

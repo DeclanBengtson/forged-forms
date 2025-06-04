@@ -55,7 +55,7 @@ export default function Documentation() {
                     
                     <div className="space-y-6">
                       <p className="text-gray-600 dark:text-gray-300">
-                        ForgedForms is a simple form handling service that processes form submissions from any website without requiring backend code. Here's how to get started in just a few minutes.
+                        ForgedForms is a simple form handling service that processes form submissions from any website without requiring backend code. Here&apos;s how to get started in just a few minutes.
                       </p>
                       
                       <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
@@ -84,14 +84,14 @@ export default function Documentation() {
                     
                     <div className="space-y-6">
                       <p className="text-gray-600 dark:text-gray-300">
-                        Once you're logged in to your dashboard, creating a form is straightforward:
+                        Once you&apos;re logged in to your dashboard, creating a form is straightforward:
                       </p>
                       
                       <div className="space-y-4">
                         <div className="border-l-4 border-green-500 pl-6">
                           <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Step 1: Create a New Form</h4>
                           <p className="text-gray-600 dark:text-gray-300">
-                            Click "New Form" in your dashboard and give your form a descriptive name (e.g., "Contact Form", "Newsletter Signup").
+                            Click &quot;New Form&quot; in your dashboard and give your form a descriptive name (e.g., &quot;Contact Form&quot;, &quot;Newsletter Signup&quot;).
                           </p>
                         </div>
                         
@@ -105,7 +105,7 @@ export default function Documentation() {
                         <div className="border-l-4 border-green-500 pl-6">
                           <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Step 3: Get Your Endpoint</h4>
                           <p className="text-gray-600 dark:text-gray-300">
-                            Copy the generated endpoint URL - this is what you'll use in your form's action attribute.
+                            Copy the generated endpoint URL - this is what you&apos;ll use in your form&apos;s action attribute.
                           </p>
                         </div>
                       </div>
@@ -125,7 +125,7 @@ export default function Documentation() {
                     
                     <div className="space-y-6">
                       <p className="text-gray-600 dark:text-gray-300">
-                        The simplest way to use ForgedForms is with a standard HTML form. Just point your form's action to your endpoint URL.
+                        The simplest way to use ForgedForms is with a standard HTML form. Just point your form&apos;s action to your endpoint URL.
                       </p>
                       
                       <div className="bg-gray-900 dark:bg-gray-800 rounded-lg p-6 overflow-x-auto">
@@ -164,7 +164,7 @@ export default function Documentation() {
                       <div className="bg-yellow-50 dark:bg-yellow-900/20 p-6 rounded-lg border border-yellow-200 dark:border-yellow-800">
                         <h4 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">💡 Pro Tip</h4>
                         <p className="text-yellow-800 dark:text-yellow-200 text-sm">
-                          Replace "your-form-slug" with the actual slug from your form's endpoint URL. You can find this in your dashboard.
+                          Replace &quot;your-form-slug&quot; with the actual slug from your form&apos;s endpoint URL. You can find this in your dashboard.
                         </p>
                       </div>
                     </div>
@@ -255,7 +255,7 @@ document.getElementById('contact-form').addEventListener('submit', handleFormSub
                     
                     <div className="space-y-6">
                       <p className="text-gray-600 dark:text-gray-300">
-                        Here's how to integrate ForgedForms with a React component:
+                        Here&apos;s how to integrate ForgedForms with a React component:
                       </p>
                       
                       <div className="bg-gray-900 dark:bg-gray-800 rounded-lg p-6 overflow-x-auto">
@@ -554,7 +554,7 @@ export default ContactForm;`}
                       <span className="w-8 h-8 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center mr-3">
                         🔒
                       </span>
-                      Security & Spam Protection
+                      Security &amp; Spam Protection
                     </h2>
                     
                     <div className="space-y-6">
@@ -630,7 +630,7 @@ export default ContactForm;`}
                           <h4 className="font-semibold text-red-700 dark:text-red-300 mb-2">❌ Form submissions not working</h4>
                           <div className="text-gray-600 dark:text-gray-300 text-sm space-y-2">
                             <p><strong>Check:</strong> Form action URL matches your endpoint exactly</p>
-                            <p><strong>Check:</strong> Form method is set to "POST"</p>
+                            <p><strong>Check:</strong> Form method is set to &quot;POST&quot;</p>
                             <p><strong>Check:</strong> Form is active in your dashboard</p>
                             <p><strong>Check:</strong> No JavaScript errors in browser console</p>
                           </div>
@@ -660,7 +660,7 @@ export default ContactForm;`}
                       <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
                         <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Need More Help?</h4>
                         <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
-                          If you're still having trouble, we're here to help! Here are your options:
+                          If you&apos;re still having trouble, we&apos;re here to help! Here are your options:
                         </p>
                         <div className="flex flex-wrap gap-3">
                           <Link href="/contact" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
