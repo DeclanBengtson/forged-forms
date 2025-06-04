@@ -118,13 +118,13 @@ export default function FormsList({ forms, onFormDeleted, onFormUpdated: _onForm
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {formStats[form.slug]?.total_submissions ?? '-'}
+                    {formStats[form.slug]?.total ?? '-'}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">Submissions</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    {formStats[form.slug]?.submissions_this_week ?? '-'}
+                    {formStats[form.slug]?.thisWeek ?? '-'}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">This Week</div>
                 </div>

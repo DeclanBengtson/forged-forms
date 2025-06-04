@@ -70,8 +70,6 @@ export async function createSubmission(
   // Use service role client for form submissions (bypasses RLS issues)
   const serviceSupabase = createServiceClient()
   
-  console.log('Creating submission for form:', formId)
-  
   // Sanitize the submission data
   const sanitizedData = sanitizeSubmissionData(data)
   
@@ -94,7 +92,6 @@ export async function createSubmission(
     throw new Error(`Failed to create submission: ${error.message}`)
   }
 
-  console.log('Submission created successfully, ID:', submission.id)
   return submission
 }
 
@@ -117,7 +114,10 @@ export async function getFormSubmissions(
     totalPages: number
   }
 }> {
+  // Use regular client to verify form ownership (respects RLS)
   const supabase = await createClient()
+  // Use service role client for submissions queries (bypasses RLS)
+  const serviceSupabase = createServiceClient()
   
   const page = options.page || 1
   const limit = Math.min(options.limit || 20, 100) // Max 100 per page
@@ -125,7 +125,7 @@ export async function getFormSubmissions(
   const sortBy = options.sortBy || 'submitted_at'
   const sortOrder = options.sortOrder || 'desc'
 
-  // First, verify the user owns this form
+  // First, verify the user owns this form (using regular client with RLS)
   const { data: form, error: formError } = await supabase
     .from('forms')
     .select('id')
@@ -137,8 +137,8 @@ export async function getFormSubmissions(
     throw new Error('Form not found or access denied')
   }
 
-  // Get total count
-  const { count, error: countError } = await supabase
+  // Get total count (using service role client to bypass RLS)
+  const { count, error: countError } = await serviceSupabase
     .from('submissions')
     .select('*', { count: 'exact', head: true })
     .eq('form_id', formId)
@@ -147,8 +147,8 @@ export async function getFormSubmissions(
     throw new Error(`Failed to count submissions: ${countError.message}`)
   }
 
-  // Get submissions with pagination
-  const { data: submissions, error: submissionsError } = await supabase
+  // Get submissions with pagination (using service role client to bypass RLS)
+  const { data: submissions, error: submissionsError } = await serviceSupabase
     .from('submissions')
     .select('*')
     .eq('form_id', formId)
@@ -162,7 +162,7 @@ export async function getFormSubmissions(
   const total = count || 0
   const totalPages = Math.ceil(total / limit)
 
-  return {
+  const result = {
     submissions: submissions || [],
     pagination: {
       page,
@@ -171,6 +171,8 @@ export async function getFormSubmissions(
       totalPages
     }
   }
+
+  return result
 }
 
 // Get a single submission
@@ -178,26 +180,42 @@ export async function getSubmission(
   submissionId: string,
   userId: string
 ): Promise<Submission | null> {
+  // Use regular client to verify form ownership (respects RLS)
   const supabase = await createClient()
+  // Use service role client for submissions queries (bypasses RLS)
+  const serviceSupabase = createServiceClient()
   
-  const { data, error } = await supabase
+  // First get the submission to find its form_id
+  const { data: submission, error: submissionError } = await serviceSupabase
     .from('submissions')
-    .select(`
-      *,
-      forms!inner(user_id)
-    `)
+    .select('*')
     .eq('id', submissionId)
-    .eq('forms.user_id', userId)
     .single()
 
-  if (error) {
-    if (error.code === 'PGRST116') {
+  if (submissionError) {
+    if (submissionError.code === 'PGRST116') {
       return null // Submission not found
     }
-    throw new Error(`Failed to fetch submission: ${error.message}`)
+    throw new Error(`Failed to fetch submission: ${submissionError.message}`)
   }
 
-  return data
+  if (!submission) {
+    return null
+  }
+
+  // Verify the user owns the form this submission belongs to
+  const { data: form, error: formError } = await supabase
+    .from('forms')
+    .select('id')
+    .eq('id', submission.form_id)
+    .eq('user_id', userId)
+    .single()
+
+  if (formError || !form) {
+    throw new Error('Form not found or access denied')
+  }
+
+  return submission
 }
 
 // Delete a submission
@@ -245,7 +263,10 @@ export async function getSubmissionStats(
   thisMonth: number
   avgPerDay: number
 }> {
+  // Use regular client to verify form ownership (respects RLS)
   const supabase = await createClient()
+  // Use service role client for submissions queries (bypasses RLS)
+  const serviceSupabase = createServiceClient()
   
   // Verify user owns the form
   const { data: form, error: formError } = await supabase
@@ -263,21 +284,21 @@ export async function getSubmissionStats(
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
   const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
 
-  // Get total count
-  const { count: total } = await supabase
+  // Get total count (using service role client)
+  const { count: total } = await serviceSupabase
     .from('submissions')
     .select('*', { count: 'exact', head: true })
     .eq('form_id', formId)
 
-  // Get this week's count
-  const { count: thisWeek } = await supabase
+  // Get this week's count (using service role client)
+  const { count: thisWeek } = await serviceSupabase
     .from('submissions')
     .select('*', { count: 'exact', head: true })
     .eq('form_id', formId)
     .gte('submitted_at', weekAgo.toISOString())
 
-  // Get this month's count
-  const { count: thisMonth } = await supabase
+  // Get this month's count (using service role client)
+  const { count: thisMonth } = await serviceSupabase
     .from('submissions')
     .select('*', { count: 'exact', head: true })
     .eq('form_id', formId)
@@ -301,7 +322,10 @@ export async function exportSubmissionsToCSV(
   formId: string,
   userId: string
 ): Promise<string> {
+  // Use regular client to verify form ownership (respects RLS)
   const supabase = await createClient()
+  // Use service role client for submissions queries (bypasses RLS)
+  const serviceSupabase = createServiceClient()
   
   // Verify user owns the form
   const { data: form, error: formError } = await supabase
@@ -315,8 +339,8 @@ export async function exportSubmissionsToCSV(
     throw new Error('Form not found or access denied')
   }
 
-  // Get all submissions
-  const { data: submissions, error } = await supabase
+  // Get all submissions (using service role client)
+  const { data: submissions, error } = await serviceSupabase
     .from('submissions')
     .select('*')
     .eq('form_id', formId)
