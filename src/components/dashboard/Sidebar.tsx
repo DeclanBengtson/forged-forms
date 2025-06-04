@@ -15,12 +15,9 @@ interface NavbarProps {
   loading?: boolean;
 }
 
-export default function Navbar({ 
-  forms, 
-  selectedForm, 
+export default function Navbar({  
   onSelectForm, 
   onCreateForm, 
-  onDeleteForm,
   onLogout, 
   user, 
   loading = false 
@@ -34,7 +31,7 @@ export default function Navbar({
   };
 
   return (
-    <nav className="w-full bg-white border-b border-gray-200 px-6 py-4">
+    <nav className="fixed top-0 left-0 right-0 w-full bg-white border-b border-gray-200 px-6 py-4 z-20">
       <div className="flex items-center justify-between">
         {/* Left Side - Logo and Username */}
         <div className="flex items-center space-x-6">

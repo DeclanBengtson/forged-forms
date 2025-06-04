@@ -100,8 +100,8 @@ export default function DashboardClient({ user }: DashboardClientProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-      {/* Top Navigation */}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Fixed Top Navigation */}
       <Sidebar
         forms={forms}
         selectedForm={selectedForm}
@@ -113,35 +113,32 @@ export default function DashboardClient({ user }: DashboardClientProps) {
         loading={loading}
       />
 
-      {/* Main Layout with Sidebar and Content */}
-      <div className="flex flex-1">
-        {/* Left Sidebar with Forms */}
-        <FormsSidebar
-          forms={forms}
-          selectedForm={selectedForm}
-          onSelectForm={handleSelectForm}
-          onCreateForm={handleCreateForm}
-          onDeleteForm={handleDeleteForm}
-        />
+      {/* Fixed Left Sidebar with Forms */}
+      <FormsSidebar
+        forms={forms}
+        selectedForm={selectedForm}
+        onSelectForm={handleSelectForm}
+        onCreateForm={handleCreateForm}
+        onDeleteForm={handleDeleteForm}
+      />
 
-        {/* Main Content */}
-        <main className="flex-1">
-          {selectedForm ? (
-            <FormDetails
-              form={selectedForm}
-              onFormUpdated={handleFormUpdated}
-              onDeleteForm={handleDeleteForm}
-            />
-          ) : (
-            <DashboardOverview
-              forms={forms}
-              onCreateForm={handleCreateForm}
-              onDeleteForm={handleDeleteForm}
-              user={user}
-            />
-          )}
-        </main>
-      </div>
+      {/* Main Content */}
+      <main className="pt-[73px] pl-64">
+        {selectedForm ? (
+          <FormDetails
+            form={selectedForm}
+            onFormUpdated={handleFormUpdated}
+            onDeleteForm={handleDeleteForm}
+          />
+        ) : (
+          <DashboardOverview
+            forms={forms}
+            onCreateForm={handleCreateForm}
+            onDeleteForm={handleDeleteForm}
+            user={user}
+          />
+        )}
+      </main>
 
       {/* Create Form Modal */}
       <FormCreateModal
