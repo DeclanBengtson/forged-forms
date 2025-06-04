@@ -42,7 +42,7 @@ export default function FormDeleteModal({ isOpen, onClose, onFormDeleted, form }
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-white/10 dark:bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full mx-4">
         <div className="p-6">
           {/* Header */}
