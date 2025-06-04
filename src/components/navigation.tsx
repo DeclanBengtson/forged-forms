@@ -27,10 +27,10 @@ export default function Navigation() {
               Features
             </Link>
             <Link
-              href="#how-it-works"
+              href="/documentation"
               className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors duration-200 font-medium"
             >
-              How It Works
+              Documentation
             </Link>
             <Link
               href="#pricing"
@@ -98,11 +98,11 @@ export default function Navigation() {
                 Features
               </Link>
               <Link
-                href="#how-it-works"
+                href="/documentation"
                 className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors duration-200 font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
-                How It Works
+                Documentation
               </Link>
               <Link
                 href="#pricing"
