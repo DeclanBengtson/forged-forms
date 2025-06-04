@@ -13,10 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FormFlow - Handle Form Submissions Without Backend Code",
+  title: "ForgedForms - Handle Form Submissions Without Backend Code",
   description: "A lightweight, developer-friendly service that handles form submissions from any static or client-rendered website. No server setup required.",
   keywords: ["forms", "form handling", "no backend", "static sites", "form submissions", "developer tools"],
-  authors: [{ name: "FormFlow Team" }],
+  authors: [{ name: "ForgedForms Team" }],
   icons: {
     icon: [
       { url: '/ForgedForms.png', sizes: '32x32', type: 'image/png' },

@@ -42,7 +42,7 @@ export default function Signup() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
             <Link href="/" className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-              FormFlow
+            ForgedForms
             </Link>
             <h2 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
               Create your account
