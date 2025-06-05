@@ -13,6 +13,11 @@ export interface Database {
         Insert: SubmissionInsert
         Update: SubmissionUpdate
       }
+      user_profiles: {
+        Row: UserProfile
+        Insert: UserProfileInsert
+        Update: UserProfileUpdate
+      }
     }
     Views: {
       [_ in never]: never
@@ -33,9 +38,51 @@ export interface Database {
       }
     }
     Enums: {
-      [_ in never]: never
+      subscription_status: 'free' | 'pro' | 'enterprise'
     }
   }
+}
+
+// User Profile types
+export interface UserProfile {
+  id: string
+  user_id: string
+  full_name: string | null
+  avatar_url: string | null
+  subscription_status: 'free' | 'pro' | 'enterprise'
+  subscription_id: string | null
+  customer_id: string | null
+  current_period_start: string | null
+  current_period_end: string | null
+  cancel_at_period_end: boolean
+  trial_end: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface UserProfileInsert {
+  user_id: string
+  full_name?: string | null
+  avatar_url?: string | null
+  subscription_status?: 'free' | 'pro' | 'enterprise'
+  subscription_id?: string | null
+  customer_id?: string | null
+  current_period_start?: string | null
+  current_period_end?: string | null
+  cancel_at_period_end?: boolean
+  trial_end?: string | null
+}
+
+export interface UserProfileUpdate {
+  full_name?: string | null
+  avatar_url?: string | null
+  subscription_status?: 'free' | 'pro' | 'enterprise'
+  subscription_id?: string | null
+  customer_id?: string | null
+  current_period_start?: string | null
+  current_period_end?: string | null
+  cancel_at_period_end?: boolean
+  trial_end?: string | null
 }
 
 // Form types
@@ -91,13 +138,13 @@ export interface SubmissionUpdate {
   data?: Record<string, any>
 }
 
-// Form with submission count (for dashboard)
+// Extended types for UI
 export interface FormWithStats extends Form {
   submission_count: number
   latest_submission: string | null
 }
 
-// API response types
+// API Response types
 export interface ApiResponse<T = any> {
   success: boolean
   data?: T
@@ -105,7 +152,7 @@ export interface ApiResponse<T = any> {
   message?: string
 }
 
-export interface PaginatedResponse<T> extends ApiResponse<T[]> {
+export interface PaginatedResponse<T = any> extends ApiResponse<T[]> {
   pagination: {
     page: number
     limit: number
@@ -120,10 +167,6 @@ export interface FormValidation {
     isValid: boolean
     message?: string
   }
-  slug: {
-    isValid: boolean
-    message?: string
-  }
   notification_email?: {
     isValid: boolean
     message?: string
@@ -133,4 +176,23 @@ export interface FormValidation {
 // Public form submission types (for external use)
 export interface PublicFormSubmission {
   [fieldName: string]: string | number | boolean | string[]
+}
+
+// Subscription and rate limiting types
+export interface SubscriptionLimits {
+  maxForms: number
+  maxSubmissionsPerMonth: number
+  maxSubmissionsPerForm: number
+  emailNotifications: boolean
+  customDomains: boolean
+  apiAccess: boolean
+  exportData: boolean
+  priority_support: boolean
+}
+
+export interface RateLimitInfo {
+  limit: number
+  remaining: number
+  resetTime: number
+  retryAfter?: number
 } 
