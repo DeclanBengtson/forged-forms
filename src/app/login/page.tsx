@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -12,8 +12,12 @@ export default function Login() {
   const [error, setError] = useState('')
   const [needsVerification, setNeedsVerification] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const supabase = createClient()
+
+  // Get redirect URL from search params
+  const redirectUrl = searchParams.get('redirect') || '/dashboard'
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,7 +42,8 @@ export default function Login() {
         return
       }
 
-      router.push('/dashboard')
+      // Redirect to the intended page or dashboard
+      router.push(redirectUrl)
       router.refresh()
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred')
@@ -85,7 +90,10 @@ export default function Login() {
               Welcome back
             </h2>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Sign in to your account
+              {redirectUrl === '/pricing' 
+                ? 'Sign in to complete your subscription' 
+                : 'Sign in to your account'
+              }
             </p>
           </div>
 
@@ -164,7 +172,10 @@ export default function Login() {
           <div className="mt-6 text-center">
             <p className="text-gray-600 dark:text-gray-400">
               Don&apos;t have an account?{' '}
-              <Link href="/signup" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+              <Link 
+                href={`/signup${redirectUrl !== '/dashboard' ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`} 
+                className="text-blue-600 dark:text-blue-400 font-semibold hover:underline"
+              >
                 Sign up
               </Link>
             </p>

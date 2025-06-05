@@ -58,12 +58,12 @@ export async function updateUserProfile(userId: string, updates: UserProfileUpda
 }
 
 // Get subscription limits based on user's subscription status
-export function getSubscriptionLimits(subscriptionStatus: 'free' | 'pro' | 'enterprise'): SubscriptionLimits {
+export function getSubscriptionLimits(subscriptionStatus: 'free' | 'starter' | 'pro' | 'enterprise'): SubscriptionLimits {
   switch (subscriptionStatus) {
     case 'free':
       return {
         maxForms: 3,
-        maxSubmissionsPerMonth: 100,
+        maxSubmissionsPerMonth: 250,
         maxSubmissionsPerForm: 50,
         emailNotifications: true,
         customDomains: false,
@@ -71,16 +71,27 @@ export function getSubscriptionLimits(subscriptionStatus: 'free' | 'pro' | 'ente
         exportData: false,
         priority_support: false
       }
+    case 'starter':
+      return {
+        maxForms: -1, // Unlimited
+        maxSubmissionsPerMonth: 2000,
+        maxSubmissionsPerForm: 500,
+        emailNotifications: true,
+        customDomains: false,
+        apiAccess: false,
+        exportData: true,
+        priority_support: false
+      }
     case 'pro':
       return {
-        maxForms: 25,
+        maxForms: -1, // Unlimited
         maxSubmissionsPerMonth: 10000,
-        maxSubmissionsPerForm: 1000,
+        maxSubmissionsPerForm: 2000,
         emailNotifications: true,
         customDomains: true,
         apiAccess: true,
         exportData: true,
-        priority_support: false
+        priority_support: true
       }
     case 'enterprise':
       return {
@@ -151,22 +162,36 @@ export async function canUserReceiveSubmission(userId: string, formId: string): 
   const now = new Date()
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
-  // Check monthly limit
+  // Check monthly limit (Issue #6 Fix: Check across all user forms)
   if (limits.maxSubmissionsPerMonth !== -1) {
-    const { count: monthlyCount, error: monthlyError } = await supabase
-      .from('submissions')
-      .select('*', { count: 'exact', head: true })
-      .eq('form_id', formId)
-      .gte('submitted_at', startOfMonth.toISOString())
+    // Get all user's forms first
+    const { data: userForms, error: formsError } = await supabase
+      .from('forms')
+      .select('id')
+      .eq('user_id', userId)
 
-    if (monthlyError) {
-      throw new Error(`Failed to count monthly submissions: ${monthlyError.message}`)
+    if (formsError) {
+      throw new Error(`Failed to get user forms: ${formsError.message}`)
     }
 
-    if ((monthlyCount || 0) >= limits.maxSubmissionsPerMonth) {
-      return { 
-        canReceive: false, 
-        reason: `Monthly submission limit (${limits.maxSubmissionsPerMonth}) reached for your ${profile.subscription_status} plan.` 
+    const formIds = userForms?.map(f => f.id) || []
+    
+    if (formIds.length > 0) {
+      const { count: monthlyCount, error: monthlyError } = await supabase
+        .from('submissions')
+        .select('*', { count: 'exact', head: true })
+        .in('form_id', formIds)
+        .gte('submitted_at', startOfMonth.toISOString())
+
+      if (monthlyError) {
+        throw new Error(`Failed to count monthly submissions: ${monthlyError.message}`)
+      }
+
+      if ((monthlyCount || 0) >= limits.maxSubmissionsPerMonth) {
+        return { 
+          canReceive: false, 
+          reason: `Monthly submission limit (${limits.maxSubmissionsPerMonth}) reached for your ${profile.subscription_status} plan.` 
+        }
       }
     }
   }
@@ -197,7 +222,7 @@ export async function canUserReceiveSubmission(userId: string, formId: string): 
 export async function updateUserSubscription(
   userId: string, 
   subscriptionData: {
-    subscription_status: 'free' | 'pro' | 'enterprise'
+    subscription_status: 'free' | 'starter' | 'pro' | 'enterprise'
     subscription_id?: string | null
     customer_id?: string | null
     current_period_start?: string | null
