@@ -136,7 +136,7 @@ export default function Documentation() {
                           <span className="ml-4 text-gray-400 text-sm font-mono">contact-form.html</span>
                         </div>
                         <pre className="text-green-400 font-mono text-sm">
-{`<form action="https://forgedforms.dev/api/forms/your-form-slug" method="POST">
+{`<form action="https://forgedforms.dev/api/forms/your-form-id" method="POST">
   <!-- Basic contact form -->
   <div>
     <label for="name">Name:</label>
@@ -164,7 +164,7 @@ export default function Documentation() {
                       <div className="bg-yellow-50 dark:bg-yellow-900/20 p-6 rounded-lg border border-yellow-200 dark:border-yellow-800">
                         <h4 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">💡 Pro Tip</h4>
                         <p className="text-yellow-800 dark:text-yellow-200 text-sm">
-                          Replace &quot;your-form-slug&quot; with the actual slug from your form&apos;s endpoint URL. You can find this in your dashboard.
+                          Replace &quot;your-form-id&quot; with the actual form ID from your form&apos;s endpoint URL. You can find this in your dashboard.
                         </p>
                       </div>
                     </div>
@@ -202,7 +202,7 @@ async function handleFormSubmit(event) {
   const formData = new FormData(form);
   
   try {
-    const response = await fetch('https://forgedforms.dev/api/forms/your-form-slug', {
+    const response = await fetch('https://forgedforms.dev/api/forms/your-form-id', {
       method: 'POST',
       body: formData
     });
@@ -232,7 +232,7 @@ document.getElementById('contact-form').addEventListener('submit', handleFormSub
                           You can also send JSON data by setting the Content-Type header:
                         </p>
                         <pre className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded text-blue-900 dark:text-blue-100 text-xs font-mono overflow-x-auto">
-{`fetch('https://forgedforms.dev/api/forms/your-form-slug', {
+{`fetch('https://forgedforms.dev/api/forms/your-form-id', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ name: 'John', email: 'john@example.com' })
@@ -280,7 +280,7 @@ function ContactForm() {
 
     try {
       const response = await fetch(
-        'https://forgedforms.dev/api/forms/your-form-slug',
+        'https://forgedforms.dev/api/forms/your-form-id',
         {
           method: 'POST',
           body: formData
@@ -428,7 +428,7 @@ export default ContactForm;`}
                           <div className="flex items-center space-x-3">
                             <span className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300 px-2 py-1 rounded text-sm font-mono">POST</span>
                             <code className="text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">
-                              https://forgedforms.dev/api/forms/{`{slug}`}
+                              https://forgedforms.dev/api/forms/{`{id}`}
                             </code>
                           </div>
                           <p className="text-gray-600 dark:text-gray-300 text-sm">
