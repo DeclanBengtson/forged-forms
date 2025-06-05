@@ -10,6 +10,7 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [needsVerification, setNeedsVerification] = useState(false)
   const router = useRouter()
 
   const supabase = createClient()
@@ -18,6 +19,7 @@ export default function Login() {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setNeedsVerification(false)
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -25,12 +27,47 @@ export default function Login() {
         password,
       })
 
-      if (error) throw error
+      if (error) {
+        // Check if it's an email verification error
+        if (error.message.includes('Email not confirmed') || error.message.includes('email_not_confirmed')) {
+          setNeedsVerification(true)
+          setError('Please verify your email address before signing in. Check your inbox for the confirmation link.')
+        } else {
+          setError(error.message)
+        }
+        return
+      }
 
       router.push('/dashboard')
       router.refresh()
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResendVerification = async () => {
+    setLoading(true)
+    setError('')
+    
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        }
+      })
+
+      if (error) throw error
+      
+      setError('')
+      setNeedsVerification(false)
+      // Show success message
+      setError('Verification email sent! Please check your inbox and spam folder.')
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : 'Failed to resend verification email')
     } finally {
       setLoading(false)
     }
@@ -84,8 +121,28 @@ export default function Login() {
             </div>
 
             {error && (
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                <p className="text-red-800 dark:text-red-300 text-sm">{error}</p>
+              <div className={`border rounded-lg p-4 ${
+                error.includes('Verification email sent') 
+                  ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                  : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+              }`}>
+                <p className={`text-sm ${
+                  error.includes('Verification email sent')
+                    ? 'text-green-800 dark:text-green-300'
+                    : 'text-red-800 dark:text-red-300'
+                }`}>
+                  {error}
+                </p>
+                {needsVerification && (
+                  <button
+                    type="button"
+                    onClick={handleResendVerification}
+                    disabled={loading}
+                    className="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50"
+                  >
+                    {loading ? 'Sending...' : 'Resend verification email'}
+                  </button>
+                )}
               </div>
             )}
 
