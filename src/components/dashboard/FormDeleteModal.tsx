@@ -7,7 +7,7 @@ import { deleteForm } from '@/lib/api/client'
 interface FormDeleteModalProps {
   isOpen: boolean
   onClose: () => void
-  onFormDeleted: (slug: string) => void
+  onFormDeleted: (formId: string) => void
   form: Form | null
 }
 
