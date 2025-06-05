@@ -65,8 +65,8 @@ export default function DashboardNavigation({
           >
             Dashboard
           </button>
-          <button
-            onClick={() => setActiveTab('documentation')}
+          <Link
+            href="/documentation"
             className={`px-6 py-3 text-sm font-normal rounded-none border-b-2 transition-all duration-300 ${
               activeTab === 'documentation'
                 ? 'text-gray-900 border-gray-900'
@@ -74,7 +74,7 @@ export default function DashboardNavigation({
             }`}
           >
             Documentation
-          </button>
+          </Link>
         </div>
 
         {/* Right Side - Create Form Button and Profile */}
