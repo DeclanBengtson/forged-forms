@@ -161,12 +161,8 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
     if (submissionsLoading) {
       return (
         <div className="text-center py-12">
-          <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mx-auto mb-4 animate-spin">
-            <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-          </div>
-          <p className="text-gray-600 dark:text-gray-400">Loading submissions...</p>
+          <div className="w-8 h-8 mx-auto mb-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+          <p className="text-gray-500 font-normal">Loading submissions...</p>
         </div>
       );
     }
@@ -174,16 +170,16 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
     if (submissionsError) {
       return (
         <div className="text-center py-12">
-          <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-12 h-12 bg-red-50 border border-red-200 rounded-sm flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 15.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Error loading submissions</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-4">{submissionsError}</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Error loading submissions</h3>
+          <p className="text-gray-500 font-light mb-4">{submissionsError}</p>
           <button
             onClick={() => loadSubmissions(currentPage)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+            className="px-4 py-2 bg-gray-900 text-white rounded-sm hover:bg-gray-800 transition-all duration-300 text-sm font-normal"
           >
             Try Again
           </button>
@@ -194,18 +190,18 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
     if (submissions.length === 0) {
       return (
         <div className="text-center py-12">
-          <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-12 h-12 bg-gray-50 border border-gray-200 rounded-sm flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No submissions yet</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-4">
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No submissions yet</h3>
+          <p className="text-gray-500 font-light mb-4">
             When people submit your form, their responses will appear here.
           </p>
           <button
             onClick={() => copyToClipboard(endpointUrl, 'submissions-url')}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+            className="px-4 py-2 bg-gray-900 text-white rounded-sm hover:bg-gray-800 transition-all duration-300 text-sm font-normal"
           >
             {copied === 'submissions-url' ? 'Copied!' : 'Copy Form URL'}
           </button>
@@ -223,31 +219,31 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
     return (
       <div className="space-y-4">
         {/* Table */}
-        <div className="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-800">
+        <div className="overflow-x-auto border border-gray-200 rounded-sm">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-normal text-gray-400 uppercase tracking-wide">
                   Submitted
                 </th>
                 {fieldNames.map((field) => (
-                  <th key={field} className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th key={field} className="px-6 py-3 text-left text-xs font-normal text-gray-400 uppercase tracking-wide">
                     {field}
                   </th>
                 ))}
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-normal text-gray-400 uppercase tracking-wide">
                   IP Address
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="bg-white divide-y divide-gray-200">
               {submissions.map((submission) => (
-                <tr key={submission.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <tr key={submission.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-normal">
                     {formatSubmissionDate(submission.submitted_at)}
                   </td>
                   {fieldNames.map((field) => (
-                    <td key={field} className="px-6 py-4 text-sm text-gray-900 dark:text-white">
+                    <td key={field} className="px-6 py-4 text-sm text-gray-900 font-normal">
                       <div className="max-w-xs truncate" title={String(submission.data[field] || '')}>
                         {submission.data[field] 
                           ? Array.isArray(submission.data[field]) 
@@ -258,7 +254,7 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
                       </div>
                     </td>
                   ))}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-normal">
                     {submission.ip_address || '-'}
                   </td>
                 </tr>
@@ -270,14 +266,14 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-sm text-gray-500 font-normal">
               Showing {((currentPage - 1) * submissionsPerPage) + 1} to {Math.min(currentPage * submissionsPerPage, totalSubmissions)} of {totalSubmissions} submissions
             </div>
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage <= 1}
-                className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300"
+                className="px-3 py-1 text-sm border border-gray-200 rounded-sm hover:bg-gray-50 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 font-normal transition-all duration-300"
               >
                 Previous
               </button>
@@ -299,10 +295,10 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
                   <button
                     key={pageNum}
                     onClick={() => handlePageChange(pageNum)}
-                    className={`px-3 py-1 text-sm border rounded ${
+                    className={`px-3 py-1 text-sm border rounded-sm font-normal transition-all duration-300 ${
                       currentPage === pageNum
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                        ? 'bg-gray-900 text-white border-gray-900'
+                        : 'border-gray-200 hover:bg-gray-50 hover:border-gray-300 text-gray-700'
                     }`}
                   >
                     {pageNum}
@@ -313,7 +309,7 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage >= totalPages}
-                className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300"
+                className="px-3 py-1 text-sm border border-gray-200 rounded-sm hover:bg-gray-50 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 font-normal transition-all duration-300"
               >
                 Next
               </button>
@@ -330,14 +326,14 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
         return (
           <div className="space-y-6">
             {/* Form Endpoint */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            <div className="bg-white border border-gray-200 rounded-sm p-6">
+              <h2 className="text-xl font-medium text-gray-900 mb-4">
                 Form Endpoint
               </h2>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-normal text-gray-700 mb-2">
                     Endpoint URL
                   </label>
                   <div className="flex items-center space-x-2">
@@ -346,12 +342,12 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
                         type="text"
                         value={endpointUrl}
                         readOnly
-                        className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white font-mono text-sm"
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-sm text-gray-900 font-mono text-sm"
                       />
                     </div>
                     <button
                       onClick={() => copyToClipboard(endpointUrl, 'url')}
-                      className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                      className="px-4 py-3 bg-gray-900 text-white rounded-sm hover:bg-gray-800 transition-all duration-300 text-sm font-normal"
                     >
                       {copied === 'url' ? 'Copied!' : 'Copy'}
                     </button>
@@ -361,71 +357,44 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
             </div>
 
             {/* Code Examples */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            <div className="bg-white border border-gray-200 rounded-sm p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
                 Implementation Examples
               </h3>
               <CodeExample />
             </div>
 
             {/* Form Configuration */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            <div className="bg-white border border-gray-200 rounded-sm p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
                 Form Configuration
               </h3>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-normal text-gray-700 mb-1">
                       Redirect URL (optional)
                     </label>
                     <input
                       type="url"
                       placeholder="https://yoursite.com/thank-you"
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-white text-gray-900 text-sm font-normal"
                     />
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-xs text-gray-500 font-light mt-1">
                       Where to redirect users after form submission
                     </p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-normal text-gray-700 mb-1">
                       Notification Email
                     </label>
                     <input
                       type="email"
                       value={form.notification_email || ''}
                       placeholder="notifications@yoursite.com"
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-white text-gray-900 text-sm font-normal"
                     />
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      Email to receive form submissions
-                    </p>
                   </div>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="spam-protection"
-                    checked={true}
-                    className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label htmlFor="spam-protection" className="text-sm text-gray-700 dark:text-gray-300">
-                    Enable spam protection
-                  </label>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="store-submissions"
-                    checked={true}
-                    className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label htmlFor="store-submissions" className="text-sm text-gray-700 dark:text-gray-300">
-                    Store submissions in dashboard
-                  </label>
                 </div>
               </div>
             </div>
@@ -435,182 +404,137 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
       case 'submissions':
         return (
           <div className="space-y-6">
-            {/* Submissions Header */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    Form Submissions
-                  </h2>
-                  {totalSubmissions > 0 && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      {totalSubmissions} total submission{totalSubmissions !== 1 ? 's' : ''}
-                    </p>
-                  )}
+            {/* Stats */}
+            {statsLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="bg-white border border-gray-200 rounded-sm p-6">
+                    <div className="animate-pulse">
+                      <div className="h-3 bg-gray-200 rounded w-16 mb-3"></div>
+                      <div className="h-8 bg-gray-200 rounded w-12"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : stats && (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="bg-white border border-gray-200 rounded-sm p-6 hover:border-gray-300 transition-all duration-300">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs font-normal text-gray-400 uppercase tracking-wide mb-2">Total</div>
+                      <div className="text-2xl font-medium text-gray-900">{stats.total}</div>
+                    </div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  {submissions.length > 0 && (
-                    <button 
-                      onClick={handleExportCsv}
-                      className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                    >
-                      Export CSV
-                    </button>
-                  )}
-                  <button 
-                    onClick={() => loadSubmissions(currentPage)}
-                    className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    Refresh
-                  </button>
+                
+                <div className="bg-white border border-gray-200 rounded-sm p-6 hover:border-gray-300 transition-all duration-300">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs font-normal text-gray-400 uppercase tracking-wide mb-2">This Week</div>
+                      <div className="text-2xl font-medium text-gray-900">{stats.thisWeek}</div>
+                    </div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  </div>
+                </div>
+                
+                <div className="bg-white border border-gray-200 rounded-sm p-6 hover:border-gray-300 transition-all duration-300">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs font-normal text-gray-400 uppercase tracking-wide mb-2">This Month</div>
+                      <div className="text-2xl font-medium text-gray-900">{stats.thisMonth}</div>
+                    </div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  </div>
+                </div>
+                
+                <div className="bg-white border border-gray-200 rounded-sm p-6 hover:border-gray-300 transition-all duration-300">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs font-normal text-gray-400 uppercase tracking-wide mb-2">Avg/Day</div>
+                      <div className="text-2xl font-medium text-gray-900">{stats.avgPerDay.toFixed(1)}</div>
+                    </div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  </div>
                 </div>
               </div>
-              
-              {/* Render submissions table or empty state */}
-              {renderSubmissionsTable()}
+            )}
+
+            {/* Export */}
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-medium text-gray-900">Submissions</h3>
+              <button
+                onClick={handleExportCsv}
+                className="px-4 py-2 bg-gray-900 text-white rounded-sm hover:bg-gray-800 transition-all duration-300 text-sm font-normal"
+              >
+                Export CSV
+              </button>
             </div>
+
+            {/* Submissions Table */}
+            {renderSubmissionsTable()}
           </div>
         );
 
       case 'settings':
         return (
           <div className="space-y-6">
-            {/* Form Settings */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                Form Settings
-              </h2>
-              
-              <div className="space-y-6">
-                {/* Basic Settings */}
+            {/* Form Information */}
+            <div className="bg-white border border-gray-200 rounded-sm p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Form Information
+              </h3>
+              <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Basic Information</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Form Name
-                      </label>
-                      <input
-                        type="text"
-                        value={form.name}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Description (optional)
-                      </label>
-                      <textarea
-                        value={form.description || ''}
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        placeholder="Describe what this form is for..."
-                      />
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="form-active"
-                        checked={form.is_active}
-                        className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
-                      />
-                      <label htmlFor="form-active" className="text-sm text-gray-700 dark:text-gray-300">
-                        Form is active and accepting submissions
-                      </label>
-                    </div>
-                  </div>
+                  <label className="block text-sm font-normal text-gray-700 mb-1">
+                    Form Name
+                  </label>
+                  <input
+                    type="text"
+                    value={form.name}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-white text-gray-900 text-sm font-normal"
+                    readOnly
+                  />
                 </div>
-
-                {/* Email Notifications */}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Email Notifications</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="email-notifications"
-                        checked={form.email_notifications}
-                        className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
-                      />
-                      <label htmlFor="email-notifications" className="text-sm text-gray-700 dark:text-gray-300">
-                        Send email notifications for new submissions
-                      </label>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Notification Email
-                      </label>
-                      <input
-                        type="email"
-                        value={form.notification_email || ''}
-                        placeholder="Enter email address"
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      />
-                    </div>
-                  </div>
+                  <label className="block text-sm font-normal text-gray-700 mb-1">
+                    Form Slug
+                  </label>
+                  <input
+                    type="text"
+                    value={form.slug}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-500 text-sm font-mono"
+                    readOnly
+                  />
                 </div>
-
-                {/* Security Settings */}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Security & Privacy</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="captcha-enabled"
-                        checked={true}
-                        className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
-                      />
-                      <label htmlFor="captcha-enabled" className="text-sm text-gray-700 dark:text-gray-300">
-                        Enable CAPTCHA protection
-                      </label>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="ip-logging"
-                        checked={false}
-                        className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
-                      />
-                      <label htmlFor="ip-logging" className="text-sm text-gray-700 dark:text-gray-300">
-                        Log IP addresses with submissions
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Save Button */}
-                <div className="pt-4">
-                  <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    Save Changes
-                  </button>
+                  <label className="block text-sm font-normal text-gray-700 mb-1">
+                    Created
+                  </label>
+                  <input
+                    type="text"
+                    value={formatDate(form.created_at)}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-500 text-sm font-normal"
+                    readOnly
+                  />
                 </div>
               </div>
             </div>
 
             {/* Danger Zone */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-red-200 dark:border-red-700">
-              <h3 className="text-lg font-medium text-red-700 dark:text-red-400 mb-4">Danger Zone</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border border-red-200 dark:border-red-700 rounded-lg">
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900 dark:text-white">Delete this form</h4>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Once you delete a form, there is no going back. All submissions will be permanently deleted.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => onDeleteForm(form)}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
-                  >
-                    Delete Form
-                  </button>
-                </div>
-              </div>
+            <div className="bg-red-50 border border-red-200 rounded-sm p-6">
+              <h3 className="text-lg font-medium text-red-900 mb-2">
+                Danger Zone
+              </h3>
+              <p className="text-sm text-red-700 font-light mb-4">
+                Once you delete a form, there is no going back. Please be certain.
+              </p>
+              <button
+                onClick={() => onDeleteForm(form)}
+                className="px-4 py-2 bg-red-600 text-white rounded-sm hover:bg-red-700 transition-all duration-300 text-sm font-normal"
+              >
+                Delete Form
+              </button>
             </div>
           </div>
         );
@@ -621,115 +545,50 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 h-full overflow-y-auto">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                {form.name}
-              </h1>
-              <div className="flex items-center space-x-4">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  form.is_active 
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300'
-                    : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300'
-                }`}>
-                  <div className={`w-2 h-2 rounded-full mr-1.5 ${
-                    form.is_active ? 'bg-green-500' : 'bg-gray-400'
-                  }`} />
-                  {form.is_active ? 'Active' : 'Inactive'}
-                </span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Created {formatDate(form.created_at)}
-                </span>
-              </div>
-            </div>
+    <div className="h-full flex flex-col">
+      {/* Header */}
+      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-8 py-6 pt-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-medium text-gray-900">{form.name}</h1>
+            <p className="text-sm text-gray-500 font-light mt-1">/{form.slug}</p>
           </div>
-          {form.description && (
-            <p className="text-gray-600 dark:text-gray-400">
-              {form.description}
-            </p>
-          )}
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Submissions</h3>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {statsLoading ? '...' : (stats?.total ?? 0)}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">This Week</h3>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {statsLoading ? '...' : (stats?.thisWeek ?? 0)}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">This Month</h3>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {statsLoading ? '...' : (stats?.thisMonth ?? 0)}
-                </p>
-              </div>
-            </div>
+          <div className="flex items-center space-x-3">
+            <div className={`w-2 h-2 rounded-full ${
+              form.is_active ? 'bg-gray-900' : 'bg-gray-300'
+            }`} />
+            <span className="text-sm font-normal text-gray-500">
+              {form.is_active ? 'Active' : 'Inactive'}
+            </span>
           </div>
         </div>
+      </div>
 
-        {/* Navigation Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
-          <div className="border-b border-gray-200 dark:border-gray-700">
-            <nav className="flex space-x-8 px-6">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
-                    activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
-                  }`}
-                >
-                  <span>{tab.icon}</span>
-                  <span>{tab.label}</span>
-                </button>
-              ))}
-            </nav>
-          </div>
-          
-          {/* Tab Content */}
-          <div className="p-6">
-            {renderTabContent()}
-          </div>
+      {/* Tabs */}
+      <div className="flex-shrink-0 bg-white border-b border-gray-100">
+        <div className="px-8">
+          <nav className="flex space-x-8">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`py-4 px-2 border-b-2 font-normal text-sm transition-all duration-300 ${
+                  activeTab === tab.id
+                    ? 'border-gray-900 text-gray-900'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto bg-gray-50 dot-grid">
+        <div className="max-w-6xl mx-auto p-8">
+          {renderTabContent()}
         </div>
       </div>
     </div>
