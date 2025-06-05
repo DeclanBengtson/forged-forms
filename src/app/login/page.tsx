@@ -1,19 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function Login() {
+function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [needsVerification, setNeedsVerification] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const supabase = createClient()
+
+  // Get redirect URL from search params
+  const redirectUrl = searchParams.get('redirect') || '/dashboard'
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,7 +42,8 @@ export default function Login() {
         return
       }
 
-      router.push('/dashboard')
+      // Redirect to the intended page or dashboard
+      router.push(redirectUrl)
       router.refresh()
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred')
@@ -85,7 +90,10 @@ export default function Login() {
               Welcome back
             </h2>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Sign in to your account
+              {redirectUrl === '/pricing' 
+                ? 'Sign in to complete your subscription' 
+                : 'Sign in to your account'
+              }
             </p>
           </div>
 
@@ -164,7 +172,10 @@ export default function Login() {
           <div className="mt-6 text-center">
             <p className="text-gray-600 dark:text-gray-400">
               Don&apos;t have an account?{' '}
-              <Link href="/signup" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+              <Link 
+                href={`/signup${redirectUrl !== '/dashboard' ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`} 
+                className="text-blue-600 dark:text-blue-400 font-semibold hover:underline"
+              >
                 Sign up
               </Link>
             </p>
@@ -172,5 +183,24 @@ export default function Login() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function Login() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center px-4">
+        <div className="max-w-md w-full">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 } 

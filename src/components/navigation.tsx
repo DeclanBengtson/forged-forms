@@ -34,7 +34,7 @@ export default function Navigation() {
               Documentation
             </Link>
             <Link
-              href="#pricing"
+              href="/pricing"
               className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors duration-200 font-medium"
             >
               Pricing
@@ -106,7 +106,7 @@ export default function Navigation() {
                 Documentation
               </Link>
               <Link
-                href="#pricing"
+                href="/pricing"
                 className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors duration-200 font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
