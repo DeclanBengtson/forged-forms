@@ -40,8 +40,6 @@ export async function createSubscription(customerId: string, priceId: string) {
     const subscription = await stripe.subscriptions.create({
       customer: customerId,
       items: [{ price: priceId }],
-      payment_behavior: 'default_incomplete',
-      payment_settings: { save_default_payment_method: 'on_subscription' },
       expand: ['latest_invoice.payment_intent'],
     });
     return subscription;
@@ -117,9 +115,7 @@ export async function createCheckoutSession(
       mode: 'subscription',
       success_url: successUrl,
       cancel_url: cancelUrl,
-      subscription_data: {
-        trial_period_days: 7, // Optional: 7-day trial
-      },
+      // No trial period - subscriptions will be charged immediately
     });
     return session;
   } catch (error) {
