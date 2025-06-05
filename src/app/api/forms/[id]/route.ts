@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { updateForm, deleteForm, getUserForms } from '@/lib/database/forms'
+import { updateForm, deleteForm, getFormById } from '@/lib/database/forms'
 import { ApiResponse, FormUpdate } from '@/lib/types/database'
 
-// GET /api/forms/[slug] - Get a specific form
+// GET /api/forms/[id] - Get a specific form
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
@@ -21,11 +21,10 @@ export async function GET(
       )
     }
 
-    const { slug } = await params
+    const { id } = await params
 
-    // First, get all user forms to find the one with matching slug
-    const userForms = await getUserForms(user.id)
-    const form = userForms.find(f => f.slug === slug)
+    // Get the form by ID
+    const form = await getFormById(id, user.id)
     
     if (!form) {
       return NextResponse.json(
@@ -54,10 +53,10 @@ export async function GET(
   }
 }
 
-// PUT /api/forms/[slug] - Update a specific form
+// PUT /api/forms/[id] - Update a specific form
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
@@ -72,11 +71,10 @@ export async function PUT(
       )
     }
 
-    const { slug } = await params
+    const { id } = await params
 
-    // First, find the form by slug
-    const userForms = await getUserForms(user.id)
-    const existingForm = userForms.find(f => f.slug === slug)
+    // First, verify the form exists and belongs to the user
+    const existingForm = await getFormById(id, user.id)
     
     if (!existingForm) {
       return NextResponse.json(
@@ -87,7 +85,7 @@ export async function PUT(
 
     // Parse request body
     const body = await request.json()
-    const { name, description, slug: newSlug, email_notifications, notification_email, is_active } = body
+    const { name, description, email_notifications, notification_email, is_active } = body
 
     // Prepare update data (only include fields that are provided)
     const updateData: FormUpdate = {}
@@ -106,10 +104,6 @@ export async function PUT(
       updateData.description = description?.trim() || null
     }
     
-    if (newSlug !== undefined) {
-      updateData.slug = newSlug?.trim() || null
-    }
-    
     if (email_notifications !== undefined) {
       updateData.email_notifications = Boolean(email_notifications)
     }
@@ -123,7 +117,7 @@ export async function PUT(
     }
 
     // Update the form
-    const updatedForm = await updateForm(existingForm.id, user.id, updateData)
+    const updatedForm = await updateForm(id, user.id, updateData)
     
     const response: ApiResponse = {
       success: true,
@@ -138,14 +132,7 @@ export async function PUT(
     
     // Handle specific validation errors
     if (error instanceof Error) {
-      if (error.message.includes('slug already exists')) {
-        return NextResponse.json(
-          { success: false, error: 'A form with this URL already exists. Please choose a different slug.' },
-          { status: 409 }
-        )
-      }
-      
-      if (error.message.includes('Validation failed') || error.message.includes('Form slug can only')) {
+      if (error.message.includes('Validation failed')) {
         return NextResponse.json(
           { success: false, error: error.message },
           { status: 400 }
@@ -162,10 +149,10 @@ export async function PUT(
   }
 }
 
-// DELETE /api/forms/[slug] - Delete a specific form
+// DELETE /api/forms/[id] - Delete a specific form
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
@@ -180,11 +167,10 @@ export async function DELETE(
       )
     }
 
-    const { slug } = await params
+    const { id } = await params
 
-    // First, find the form by slug
-    const userForms = await getUserForms(user.id)
-    const existingForm = userForms.find(f => f.slug === slug)
+    // First, verify the form exists and belongs to the user
+    const existingForm = await getFormById(id, user.id)
     
     if (!existingForm) {
       return NextResponse.json(
@@ -194,7 +180,7 @@ export async function DELETE(
     }
 
     // Delete the form (this will also delete all associated submissions due to CASCADE)
-    await deleteForm(existingForm.id, user.id)
+    await deleteForm(id, user.id)
     
     const response: ApiResponse = {
       success: true,

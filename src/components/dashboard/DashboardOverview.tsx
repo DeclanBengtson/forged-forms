@@ -22,6 +22,11 @@ interface ActivityItem {
   time: string;
 }
 
+// Utility function to format UUID for display
+function formatUUID(uuid: string): string {
+  return `${uuid.substring(0, 8)}...${uuid.substring(uuid.length - 8)}`
+}
+
 export default function DashboardOverview({ forms, onCreateForm, onDeleteForm, user }: DashboardOverviewProps) {
   const stats: DashboardStats = {
     totalForms: forms.length,
@@ -149,7 +154,7 @@ export default function DashboardOverview({ forms, onCreateForm, onDeleteForm, u
                               {form.name}
                             </div>
                             <div className="text-xs text-gray-400 font-mono mt-1">
-                              /{form.slug}
+                              ID: {formatUUID(form.id)}
                             </div>
                           </div>
                         </div>

@@ -39,8 +39,8 @@ export const formsApi = {
   },
 
   // Get a specific form
-  async get(slug: string): Promise<ApiResponse<Form>> {
-    const response = await fetch(`${API_BASE}/forms/${slug}`, {
+  async get(id: string): Promise<ApiResponse<Form>> {
+    const response = await fetch(`${API_BASE}/forms/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -50,8 +50,8 @@ export const formsApi = {
   },
 
   // Update a form
-  async update(slug: string, updates: FormUpdate): Promise<ApiResponse<Form>> {
-    const response = await fetch(`${API_BASE}/forms/${slug}`, {
+  async update(id: string, updates: FormUpdate): Promise<ApiResponse<Form>> {
+    const response = await fetch(`${API_BASE}/forms/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -62,8 +62,8 @@ export const formsApi = {
   },
 
   // Delete a form
-  async delete(slug: string): Promise<ApiResponse<void>> {
-    const response = await fetch(`${API_BASE}/forms/${slug}`, {
+  async delete(id: string): Promise<ApiResponse<void>> {
+    const response = await fetch(`${API_BASE}/forms/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -73,8 +73,8 @@ export const formsApi = {
   },
 
   // Get form statistics
-  async getStats(slug: string): Promise<ApiResponse<any>> {
-    const response = await fetch(`${API_BASE}/forms/${slug}/stats`, {
+  async getStats(id: string): Promise<ApiResponse<any>> {
+    const response = await fetch(`${API_BASE}/forms/${id}/stats`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -88,7 +88,7 @@ export const formsApi = {
 export const submissionsApi = {
   // List submissions for a form
   async list(
-    slug: string, 
+    id: string, 
     options: {
       page?: number
       limit?: number
@@ -103,7 +103,7 @@ export const submissionsApi = {
     if (options.sortOrder) params.set('sortOrder', options.sortOrder)
 
     const queryString = params.toString()
-    const url = `${API_BASE}/forms/${slug}/submissions${queryString ? `?${queryString}` : ''}`
+    const url = `${API_BASE}/forms/${id}/submissions${queryString ? `?${queryString}` : ''}`
     
     const response = await fetch(url, {
       method: 'GET',
@@ -115,8 +115,8 @@ export const submissionsApi = {
   },
 
   // Export submissions as CSV
-  async export(slug: string): Promise<Blob> {
-    const response = await fetch(`${API_BASE}/forms/${slug}/submissions/export`, {
+  async export(id: string): Promise<Blob> {
+    const response = await fetch(`${API_BASE}/forms/${id}/submissions/export`, {
       method: 'GET',
     })
     
@@ -129,8 +129,8 @@ export const submissionsApi = {
   },
 
   // Submit to a form (public endpoint)
-  async submit(slug: string, data: Record<string, any>): Promise<ApiResponse<any>> {
-    const response = await fetch(`${API_BASE}/forms/${slug}/submit`, {
+  async submit(id: string, data: Record<string, any>): Promise<ApiResponse<any>> {
+    const response = await fetch(`${API_BASE}/forms/${id}/submit`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -144,26 +144,26 @@ export const submissionsApi = {
 // Helper functions for common operations
 export const apiHelpers = {
   // Generate a preview URL for a form
-  getFormSubmissionUrl(slug: string, baseUrl?: string): string {
+  getFormSubmissionUrl(id: string, baseUrl?: string): string {
     const base = baseUrl || (typeof window !== 'undefined' ? window.location.origin : '')
-    return `${base}/api/forms/${slug}/submit`
+    return `${base}/api/forms/${id}/submit`
   },
 
   // Generate a form management URL
-  getFormManagementUrl(slug: string): string {
-    return `/dashboard/forms/${slug}`
+  getFormManagementUrl(id: string): string {
+    return `/dashboard/forms/${id}`
   },
 
   // Download CSV export
-  async downloadCsvExport(slug: string, filename?: string): Promise<void> {
+  async downloadCsvExport(id: string, filename?: string): Promise<void> {
     try {
-      const blob = await submissionsApi.export(slug)
+      const blob = await submissionsApi.export(id)
       
       // Create download link
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = filename || `${slug}-submissions.csv`
+      link.download = filename || `${id}-submissions.csv`
       document.body.appendChild(link)
       link.click()
       
