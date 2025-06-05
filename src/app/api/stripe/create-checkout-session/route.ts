@@ -6,6 +6,7 @@ import { headers } from 'next/headers';
 
 // Define price mapping for different subscription tiers
 const PRICE_MAPPING = {
+  starter: process.env.STRIPE_STARTER_PRICE_ID,
   pro: process.env.STRIPE_PRO_PRICE_ID,
   enterprise: process.env.STRIPE_ENTERPRISE_PRICE_ID,
 };
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
     const { priceId, plan } = await request.json();
 
     // Validate the plan
-    if (!plan || !['pro', 'enterprise'].includes(plan)) {
+    if (!plan || !['starter', 'pro', 'enterprise'].includes(plan)) {
       return NextResponse.json(
         { error: 'Invalid subscription plan' },
         { status: 400 }

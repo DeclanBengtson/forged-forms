@@ -38,7 +38,7 @@ export interface Database {
       }
     }
     Enums: {
-      subscription_status: 'free' | 'pro' | 'enterprise'
+      subscription_status: 'free' | 'starter' | 'pro' | 'enterprise'
     }
   }
 }
@@ -49,7 +49,7 @@ export interface UserProfile {
   user_id: string
   full_name: string | null
   avatar_url: string | null
-  subscription_status: 'free' | 'pro' | 'enterprise'
+  subscription_status: 'free' | 'starter' | 'pro' | 'enterprise'
   subscription_id: string | null
   customer_id: string | null
   current_period_start: string | null
@@ -64,7 +64,7 @@ export interface UserProfileInsert {
   user_id: string
   full_name?: string | null
   avatar_url?: string | null
-  subscription_status?: 'free' | 'pro' | 'enterprise'
+  subscription_status?: 'free' | 'starter' | 'pro' | 'enterprise'
   subscription_id?: string | null
   customer_id?: string | null
   current_period_start?: string | null
@@ -76,7 +76,7 @@ export interface UserProfileInsert {
 export interface UserProfileUpdate {
   full_name?: string | null
   avatar_url?: string | null
-  subscription_status?: 'free' | 'pro' | 'enterprise'
+  subscription_status?: 'free' | 'starter' | 'pro' | 'enterprise'
   subscription_id?: string | null
   customer_id?: string | null
   current_period_start?: string | null

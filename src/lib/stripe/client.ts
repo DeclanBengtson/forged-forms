@@ -32,12 +32,14 @@ export async function redirectToCheckout(sessionId: string) {
 }
 
 // Check subscription status helper
-export type SubscriptionStatus = 'free' | 'pro' | 'enterprise';
+export type SubscriptionStatus = 'free' | 'starter' | 'pro' | 'enterprise';
 
 export function getSubscriptionDisplayName(status: SubscriptionStatus): string {
   switch (status) {
     case 'free':
       return 'Free Plan';
+    case 'starter':
+      return 'Starter Plan';
     case 'pro':
       return 'Pro Plan';
     case 'enterprise':
@@ -51,26 +53,39 @@ export function getSubscriptionFeatures(status: SubscriptionStatus): string[] {
   switch (status) {
     case 'free':
       return [
-        '10 form submissions per month',
+        '250 submissions per month',
+        '3 forms maximum',
         'Basic email notifications',
         'Community support'
       ];
+    case 'starter':
+      return [
+        '2,000 submissions per month',
+        'Unlimited forms',
+        'Email notifications',
+        'Email support',
+        'Form analytics'
+      ];
     case 'pro':
       return [
-        '500 form submissions per month',
+        '10,000 submissions per month',
+        'Unlimited forms',
         'Priority email notifications',
-        'Email support',
+        'Priority support',
+        'Advanced analytics',
         'Custom form styling',
-        'Analytics dashboard'
+        'API access'
       ];
     case 'enterprise':
       return [
-        'Unlimited form submissions',
-        'Advanced email notifications',
-        'Priority support',
+        'Unlimited submissions',
+        'Unlimited forms',
+        'Real-time notifications',
+        'Dedicated support',
         'Custom integrations',
         'Advanced analytics',
-        'Team management'
+        'Team management',
+        'SLA guarantee'
       ];
     default:
       return [];

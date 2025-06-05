@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function Signup() {
   const [email, setEmail] = useState('')
@@ -14,8 +14,12 @@ export default function Signup() {
   const [message, setMessage] = useState('')
   const [emailSent, setEmailSent] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const supabase = createClient()
+
+  // Get redirect URL from search params
+  const redirectUrl = searchParams.get('redirect') || '/dashboard'
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -40,7 +44,7 @@ export default function Signup() {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectUrl)}`,
         },
       })
 
@@ -49,9 +53,9 @@ export default function Signup() {
       if (data.user) {
         if (data.user.email_confirmed_at) {
           // User is immediately confirmed (email verification disabled)
-          setMessage('Account created successfully! Redirecting to dashboard...')
+          setMessage('Account created successfully! Redirecting...')
           setTimeout(() => {
-            router.push('/dashboard')
+            router.push(redirectUrl)
             router.refresh()
           }, 1000)
         } else {
@@ -76,7 +80,7 @@ export default function Signup() {
         type: 'signup',
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectUrl)}`,
         }
       })
 
@@ -102,7 +106,12 @@ export default function Signup() {
               {emailSent ? 'Check your email' : 'Create your account'}
             </h2>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              {emailSent ? 'We sent you a confirmation link' : 'Join ForgedForms to create powerful forms'}
+              {emailSent 
+                ? 'We sent you a confirmation link' 
+                : redirectUrl === '/pricing' 
+                  ? 'Create an account to choose your plan'
+                  : 'Join ForgedForms to create powerful forms'
+              }
             </p>
           </div>
 
@@ -178,7 +187,10 @@ export default function Signup() {
               <div className="mt-6 text-center">
                 <p className="text-gray-600 dark:text-gray-400">
                   Already have an account?{' '}
-                  <Link href="/login" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+                  <Link 
+                    href={`/login${redirectUrl !== '/dashboard' ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`} 
+                    className="text-blue-600 dark:text-blue-400 font-semibold hover:underline"
+                  >
                     Sign in
                   </Link>
                 </p>
