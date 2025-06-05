@@ -1,17 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { Form, FormInsert, FormUpdate, FormWithStats } from '@/lib/types/database'
 
-// Utility function to generate URL-safe slug from form name
-export function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single
-    .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
-}
-
-// Validate form data
+// Validate form data (simplified - no slug validation needed)
 export function validateForm(data: Partial<FormInsert>): {
   isValid: boolean
   errors: Record<string, string>
@@ -22,14 +12,6 @@ export function validateForm(data: Partial<FormInsert>): {
     errors.name = 'Form name is required'
   } else if (data.name.length > 255) {
     errors.name = 'Form name must be less than 255 characters'
-  }
-
-  if (!data.slug || data.slug.trim().length === 0) {
-    errors.slug = 'Form slug is required'
-  } else if (!/^[a-z0-9-]+$/.test(data.slug)) {
-    errors.slug = 'Form slug can only contain lowercase letters, numbers, and hyphens'
-  } else if (data.slug.length > 255) {
-    errors.slug = 'Form slug must be less than 255 characters'
   }
 
   if (data.notification_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.notification_email)) {
@@ -107,15 +89,15 @@ export async function getFormById(id: string, userId: string): Promise<Form | nu
   return data
 }
 
-// Get a form by slug (public access)
-export async function getFormBySlug(slug: string): Promise<Form | null> {
+// Get a form by ID (public access for submissions)
+export async function getPublicFormById(id: string): Promise<Form | null> {
   const supabase = await createClient()
   
   const { data, error } = await supabase
-    .rpc('get_form_by_slug', { form_slug: slug })
+    .rpc('get_form_by_id', { form_id: id })
 
   if (error) {
-    throw new Error(`Failed to fetch form by slug: ${error.message}`)
+    throw new Error(`Failed to fetch form by id: ${error.message}`)
   }
 
   if (!data || data.length === 0) {
@@ -128,7 +110,6 @@ export async function getFormBySlug(slug: string): Promise<Form | null> {
     id: formData.id,
     user_id: formData.user_id,
     name: formData.name,
-    slug: slug,
     description: null,
     email_notifications: formData.email_notifications,
     notification_email: formData.notification_email,
@@ -138,7 +119,7 @@ export async function getFormBySlug(slug: string): Promise<Form | null> {
   }
 }
 
-// Create a new form
+// Create a new form (simplified - no slug generation needed)
 export async function createForm(formData: FormInsert): Promise<Form> {
   const supabase = await createClient()
   
@@ -148,17 +129,7 @@ export async function createForm(formData: FormInsert): Promise<Form> {
     throw new Error(`Validation failed: ${Object.values(validation.errors).join(', ')}`)
   }
 
-  // Check if slug already exists
-  const { data: existingForm } = await supabase
-    .from('forms')
-    .select('id')
-    .eq('slug', formData.slug)
-    .single()
-
-  if (existingForm) {
-    throw new Error('A form with this slug already exists')
-  }
-
+  // Create form with auto-generated UUID id
   const { data, error } = await supabase
     .from('forms')
     .insert(formData)
@@ -172,27 +143,15 @@ export async function createForm(formData: FormInsert): Promise<Form> {
   return data
 }
 
-// Update a form
+// Update a form (simplified - no slug logic)
 export async function updateForm(id: string, userId: string, updates: FormUpdate): Promise<Form> {
   const supabase = await createClient()
   
-  // If updating slug, validate it and check for conflicts
-  if (updates.slug) {
+  // Validate if we have data to validate
+  if (updates.name || updates.notification_email) {
     const validation = validateForm(updates as Partial<FormInsert>)
-    if (!validation.isValid && validation.errors.slug) {
-      throw new Error(validation.errors.slug)
-    }
-
-    // Check if new slug conflicts with existing forms (excluding current form)
-    const { data: existingForm } = await supabase
-      .from('forms')
-      .select('id')
-      .eq('slug', updates.slug)
-      .neq('id', id)
-      .single()
-
-    if (existingForm) {
-      throw new Error('A form with this slug already exists')
+    if (!validation.isValid) {
+      throw new Error(`Validation failed: ${Object.values(validation.errors).join(', ')}`)
     }
   }
 
@@ -224,26 +183,4 @@ export async function deleteForm(id: string, userId: string): Promise<void> {
   if (error) {
     throw new Error(`Failed to delete form: ${error.message}`)
   }
-}
-
-// Check if slug is available
-export async function isSlugAvailable(slug: string, excludeFormId?: string): Promise<boolean> {
-  const supabase = await createClient()
-  
-  let query = supabase
-    .from('forms')
-    .select('id')
-    .eq('slug', slug)
-
-  if (excludeFormId) {
-    query = query.neq('id', excludeFormId)
-  }
-
-  const { data, error } = await query.single()
-
-  if (error && error.code !== 'PGRST116') {
-    throw new Error(`Failed to check slug availability: ${error.message}`)
-  }
-
-  return !data // Available if no data found
 } 

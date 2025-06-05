@@ -59,10 +59,10 @@ export default function DashboardClient({ user }: DashboardClientProps) {
     setSelectedForm(newForm) // Auto-select the newly created form
   }
 
-  const handleFormDeleted = (slug: string) => {
-    setForms(prev => prev.filter(form => form.slug !== slug))
+  const handleFormDeleted = (id: string) => {
+    setForms(prev => prev.filter(form => form.id !== id))
     // If the deleted form was selected, go back to overview
-    if (selectedForm?.slug === slug) {
+    if (selectedForm?.id === id) {
       setSelectedForm(null)
     }
   }

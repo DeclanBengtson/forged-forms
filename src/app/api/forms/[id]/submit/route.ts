@@ -1,19 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getFormBySlug } from '@/lib/database/forms'
+import { getPublicFormById } from '@/lib/database/forms'
 import { createSubmission, extractClientInfo } from '@/lib/database/submissions'
 import { ApiResponse } from '@/lib/types/database'
 import { sendFormSubmissionNotification } from '@/lib/email/sendgrid'
 
-// POST /api/forms/[slug]/submit - Public endpoint for form submissions
+// POST /api/forms/[id]/submit - Public endpoint for form submissions
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { slug } = await params
+    const { id } = await params
 
-    // Get form by slug (public access)
-    const form = await getFormBySlug(slug)
+    // Get form by ID (public access)
+    const form = await getPublicFormById(id)
     
     if (!form) {
       return NextResponse.json(
@@ -129,7 +129,7 @@ export async function POST(
   }
 }
 
-// OPTIONS /api/forms/[slug]/submit - Handle preflight requests for CORS
+// OPTIONS /api/forms/[id]/submit - Handle preflight requests for CORS
 export async function OPTIONS() {
   const responseHeaders = new Headers()
   responseHeaders.set('Access-Control-Allow-Origin', '*')

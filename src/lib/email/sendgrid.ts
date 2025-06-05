@@ -44,7 +44,7 @@ function generateEmailBody(data: EmailNotificationData): string {
   body += `Submission Info:\n`
   body += `===============\n`
   body += `Submitted at: ${new Date(submission.submitted_at).toLocaleString()}\n`
-  body += `Form: ${form.name} (${form.slug})\n`
+  body += `Form: ${form.name} (${form.id})\n`
   
   if (submission.ip_address) {
     body += `IP Address: ${submission.ip_address}\n`
@@ -117,7 +117,7 @@ function generateEmailHtml(data: EmailNotificationData): string {
           <h3 style="color: #374151; margin: 0 0 15px 0; font-size: 16px;">Additional Information</h3>
           <div style="color: #6b7280; font-size: 14px; line-height: 1.5;">
             <p style="margin: 5px 0;"><strong>Submitted:</strong> ${formatDate(submission.submitted_at)}</p>
-            <p style="margin: 5px 0;"><strong>Form Slug:</strong> ${form.slug}</p>
+            <p style="margin: 5px 0;"><strong>Form ID:</strong> ${form.id}</p>
   `
   
   if (submission.ip_address) {
@@ -156,7 +156,7 @@ export async function sendFormSubmissionNotification(data: EmailNotificationData
   const { form } = data
   
   if (!form.email_notifications || !form.notification_email) {
-    console.log('Email notifications disabled or no notification email set for form:', form.slug)
+    console.log('Email notifications disabled or no notification email set for form:', form.id)
     return
   }
   
@@ -173,7 +173,7 @@ export async function sendFormSubmissionNotification(data: EmailNotificationData
     }
     
     await sgMail.send(msg)
-    console.log('Email notification sent successfully for form:', form.slug)
+    console.log('Email notification sent successfully for form:', form.id)
     
   } catch (error) {
     console.error('Failed to send email notification:', error)

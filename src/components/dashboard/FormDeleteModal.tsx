@@ -22,8 +22,8 @@ export default function FormDeleteModal({ isOpen, onClose, onFormDeleted, form }
 
     setIsDeleting(true)
     try {
-      await deleteForm(form.slug)
-      onFormDeleted(form.slug)
+      await deleteForm(form.id)
+      onFormDeleted(form.id)
       onClose()
       setConfirmText('')
     } catch (error) {

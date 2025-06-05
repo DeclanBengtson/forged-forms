@@ -3,12 +3,12 @@ import { redirect } from 'next/navigation'
 import FormDetailClient from './form-detail-client'
 
 interface FormDetailPageProps {
-  params: Promise<{ slug: string }>
+  params: Promise<{ id: string }>
 }
 
 export default async function FormDetailPage({ params }: FormDetailPageProps) {
   const supabase = await createClient()
-  const { slug } = await params
+  const { id } = await params
 
   const {
     data: { user },
@@ -18,5 +18,5 @@ export default async function FormDetailPage({ params }: FormDetailPageProps) {
     redirect('/login')
   }
 
-  return <FormDetailClient slug={slug} user={user} />
+  return <FormDetailClient id={id} user={user} />
 } 
