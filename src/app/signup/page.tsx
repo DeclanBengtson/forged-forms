@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function Signup() {
+function SignupForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -199,16 +199,14 @@ export default function Signup() {
           ) : (
             <>
               {message && (
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
-                  <div className="flex">
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-6">
+                  <div className="flex items-center mb-4">
                     <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
                     </div>
-                    <div className="ml-3">
-                      <p className="text-blue-800 dark:text-blue-300 text-sm">{message}</p>
-                    </div>
+                    <p className="ml-3 text-blue-800 dark:text-blue-300 text-sm">{message}</p>
                   </div>
                 </div>
               )}
@@ -220,41 +218,59 @@ export default function Signup() {
               )}
 
               <div className="space-y-4">
-                <div className="text-center">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                    What&apos;s next?
-                  </h3>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
-                    <p>1. Check your email inbox (and spam folder)</p>
-                    <p>2. Click the confirmation link in the email</p>
-                    <p>3. You&apos;ll be automatically signed in</p>
-                  </div>
-                </div>
-
                 <button
                   onClick={handleResendEmail}
                   disabled={loading}
-                  className="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {loading ? 'Resending...' : 'Resend confirmation email'}
+                  {loading ? 'Sending...' : 'Resend confirmation email'}
                 </button>
 
                 <div className="text-center">
-                  <Link href="/login" className="text-blue-600 dark:text-blue-400 font-medium hover:underline text-sm">
-                    Back to login
-                  </Link>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    Didn&apos;t receive the email? Check your spam folder or try resending.
+                  </p>
                 </div>
+              </div>
+
+              <div className="mt-6 text-center">
+                <p className="text-gray-600 dark:text-gray-400">
+                  Wrong email address?{' '}
+                  <button 
+                    onClick={() => {
+                      setEmailSent(false)
+                      setMessage('')
+                      setError('')
+                    }}
+                    className="text-blue-600 dark:text-blue-400 font-semibold hover:underline"
+                  >
+                    Go back
+                  </button>
+                </p>
               </div>
             </>
           )}
-
-          <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-              By creating an account, you agree to our Terms of Service and Privacy Policy.
-            </p>
-          </div>
         </div>
       </div>
     </div>
+  )
+}
+
+export default function Signup() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center px-4">
+        <div className="max-w-md w-full">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <SignupForm />
+    </Suspense>
   )
 } 
