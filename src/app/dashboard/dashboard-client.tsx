@@ -8,7 +8,7 @@ import { Form } from '@/lib/types/database'
 import { listForms } from '@/lib/api/client'
 import FormCreateModal from '@/components/dashboard/FormCreateModal'
 import FormDeleteModal from '@/components/dashboard/FormDeleteModal'
-import Sidebar from '@/components/dashboard/Sidebar'
+import DashboardNavigation from '@/components/dashboard/DashboardNavigation'
 import FormsSidebar from '@/components/dashboard/FormsSidebar'
 import DashboardOverview from '@/components/dashboard/DashboardOverview'
 import FormDetails from '@/components/dashboard/FormDetails'
@@ -98,7 +98,7 @@ export default function DashboardClient({ user }: DashboardClientProps) {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dot-grid dark:dot-grid-dark">
       {/* Fixed Top Navigation */}
-      <Sidebar
+      <DashboardNavigation
         forms={forms}
         selectedForm={selectedForm}
         onSelectForm={handleSelectForm}

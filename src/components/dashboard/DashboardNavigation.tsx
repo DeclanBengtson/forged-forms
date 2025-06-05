@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Form } from '@/lib/types/database';
 
-interface NavbarProps {
+interface DashboardNavigationProps {
   forms: Form[];
   selectedForm: Form | null;
   onSelectForm: (form: Form | null) => void;
@@ -16,13 +16,13 @@ interface NavbarProps {
   loading?: boolean;
 }
 
-export default function Navbar({  
+export default function DashboardNavigation({  
   onSelectForm, 
   onCreateForm, 
   onLogout, 
   user, 
   loading = false 
-}: NavbarProps) {
+}: DashboardNavigationProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
 
