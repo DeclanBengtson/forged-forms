@@ -30,25 +30,41 @@ DROP FUNCTION IF EXISTS validate_form_submission(UUID);
 -- Drop tables (CASCADE will handle foreign key constraints)
 DROP TABLE IF EXISTS public.submissions CASCADE;
 DROP TABLE IF EXISTS public.forms CASCADE;
+DROP TABLE IF EXISTS public.user_profiles CASCADE;
 
 -- Create tables
 -- =====================================
 
--- Create forms table
+-- User profiles table with subscription management
+-- =====================================
+CREATE TABLE public.user_profiles (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE,
+  full_name VARCHAR(255),
+  avatar_url TEXT,
+  subscription_status public.subscription_status DEFAULT 'free'::public.subscription_status,
+  subscription_id VARCHAR(255),
+  customer_id VARCHAR(255),
+  current_period_start TIMESTAMP WITH TIME ZONE,
+  current_period_end TIMESTAMP WITH TIME ZONE,
+  cancel_at_period_end BOOLEAN DEFAULT false,
+  trial_end TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Forms table (UUID-based, no slugs)
+-- =====================================
 CREATE TABLE public.forms (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   name VARCHAR(255) NOT NULL,
-  slug VARCHAR(255) NOT NULL UNIQUE,
   description TEXT,
   email_notifications BOOLEAN DEFAULT true,
   notification_email VARCHAR(255),
   is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  
-  -- Ensure slug is URL-safe
-  CONSTRAINT forms_slug_format CHECK (slug ~ '^[a-z0-9-]+$')
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Create submissions table
@@ -65,7 +81,6 @@ CREATE TABLE public.submissions (
 -- Create indexes for better performance
 -- =====================================
 CREATE INDEX idx_forms_user_id ON public.forms(user_id);
-CREATE INDEX idx_forms_slug ON public.forms(slug);
 CREATE INDEX idx_submissions_form_id ON public.submissions(form_id);
 CREATE INDEX idx_submissions_submitted_at ON public.submissions(submitted_at DESC);
 
@@ -86,8 +101,8 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Function to get form by slug (used for public submissions)
-CREATE OR REPLACE FUNCTION get_form_by_slug(form_slug TEXT)
+-- Function to get form by id (used for public submissions)
+CREATE OR REPLACE FUNCTION get_form_by_id(form_id UUID)
 RETURNS TABLE (
   id UUID,
   name VARCHAR(255),
@@ -102,7 +117,7 @@ BEGIN
   RETURN QUERY
   SELECT f.id, f.name, f.is_active, f.email_notifications, f.notification_email, f.user_id
   FROM public.forms f
-  WHERE f.slug = form_slug AND f.is_active = true;
+  WHERE f.id = form_id AND f.is_active = true;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -162,9 +177,10 @@ CREATE POLICY "Users can delete submissions from their forms" ON public.submissi
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
 GRANT ALL ON public.forms TO authenticated;
 GRANT ALL ON public.submissions TO authenticated;
+GRANT ALL ON public.user_profiles TO authenticated;
 GRANT SELECT ON public.forms TO anon;
 GRANT INSERT ON public.submissions TO anon;
-GRANT EXECUTE ON FUNCTION get_form_by_slug(TEXT) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION get_form_by_id(UUID) TO anon, authenticated;
 
 -- =====================================
 -- RESET COMPLETE

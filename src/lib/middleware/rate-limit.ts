@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { RateLimitInfo } from '@/lib/types/database'
+import { createClient } from '@/lib/supabase/server'
+import { getUserProfile } from '@/lib/database/users'
 
 // In-memory rate limit store (in production, use Redis)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
@@ -9,18 +11,21 @@ const RATE_LIMITS = {
   // Form submissions (per IP)
   submission: {
     free: { limit: 10, window: 60 * 1000 }, // 10 per minute
+    starter: { limit: 25, window: 60 * 1000 }, // 25 per minute
     pro: { limit: 50, window: 60 * 1000 }, // 50 per minute
     enterprise: { limit: 200, window: 60 * 1000 }, // 200 per minute
   },
   // API calls (per user)
   api: {
     free: { limit: 100, window: 60 * 60 * 1000 }, // 100 per hour
+    starter: { limit: 500, window: 60 * 60 * 1000 }, // 500 per hour
     pro: { limit: 1000, window: 60 * 60 * 1000 }, // 1000 per hour
     enterprise: { limit: 10000, window: 60 * 60 * 1000 }, // 10000 per hour
   },
   // Form creation (per user)
   formCreation: {
     free: { limit: 5, window: 24 * 60 * 60 * 1000 }, // 5 per day
+    starter: { limit: 25, window: 24 * 60 * 60 * 1000 }, // 25 per day
     pro: { limit: 50, window: 24 * 60 * 60 * 1000 }, // 50 per day
     enterprise: { limit: 500, window: 24 * 60 * 60 * 1000 }, // 500 per day
   }
@@ -28,7 +33,7 @@ const RATE_LIMITS = {
 
 export function createRateLimiter(
   type: keyof typeof RATE_LIMITS,
-  tier: 'free' | 'pro' | 'enterprise' = 'free'
+  tier: 'free' | 'starter' | 'pro' | 'enterprise' = 'free'
 ) {
   return (identifier: string): RateLimitInfo => {
     const config = RATE_LIMITS[type][tier]
@@ -71,12 +76,12 @@ export function createRateLimiter(
 // Middleware function for rate limiting
 export function withRateLimit(
   type: keyof typeof RATE_LIMITS,
-  getIdentifier: (request: NextRequest) => string,
-  getTier: (request: NextRequest) => Promise<'free' | 'pro' | 'enterprise'> = async () => 'free'
+  getIdentifier: (request: NextRequest) => string | Promise<string>,
+  getTier: (request: NextRequest) => Promise<'free' | 'starter' | 'pro' | 'enterprise'> = async () => 'free'
 ) {
   return async (request: NextRequest): Promise<NextResponse | null> => {
     try {
-      const identifier = getIdentifier(request)
+      const identifier = await getIdentifier(request)
       const tier = await getTier(request)
       const rateLimiter = createRateLimiter(type, tier)
       const rateLimitInfo = rateLimiter(identifier)
@@ -94,6 +99,7 @@ export function withRateLimit(
           {
             success: false,
             error: 'Rate limit exceeded',
+            message: `Too many requests. Please try again in ${rateLimitInfo.retryAfter} seconds.`,
             rateLimitInfo
           },
           { 
@@ -102,12 +108,6 @@ export function withRateLimit(
           }
         )
       }
-      
-      // Rate limit passed, add headers to response
-      const response = NextResponse.next()
-      headers.forEach((value, key) => {
-        response.headers.set(key, value)
-      })
       
       return null // Continue to next middleware/handler
     } catch (error) {
@@ -133,16 +133,42 @@ export const getIPAddress = (request: NextRequest): string => {
   return 'unknown'
 }
 
-export const getUserId = (request: NextRequest): string => {
-  // This would typically extract user ID from JWT token or session
-  // For now, return a placeholder - implement based on your auth system
-  const authHeader = request.headers.get('authorization')
-  if (authHeader) {
-    // Extract user ID from token
-    // This is a placeholder - implement actual token parsing
-    return 'user-from-token'
+export const getUserIdFromRequest = async (_request: NextRequest): Promise<string> => {
+  try {
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
+    
+    if (error || !user) {
+      return 'anonymous'
+    }
+    
+    return user.id
+  } catch (error) {
+    console.error('Error getting user from request:', error)
+    return 'anonymous'
   }
-  return 'anonymous'
+}
+
+export const getUserTierFromRequest = async (_request: NextRequest): Promise<'free' | 'starter' | 'pro' | 'enterprise'> => {
+  try {
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
+    
+    if (error || !user) {
+      return 'free'
+    }
+    
+    const profile = await getUserProfile(user.id)
+    
+    if (!profile) {
+      return 'free'
+    }
+    
+    return profile.subscription_status
+  } catch (error) {
+    console.error('Error getting user tier from request:', error)
+    return 'free'
+  }
 }
 
 // Clean up expired entries periodically (call this in a cron job or background task)
@@ -150,6 +176,15 @@ export function cleanupRateLimitStore(): void {
   const now = Date.now()
   for (const [key, entry] of rateLimitStore.entries()) {
     if (now > entry.resetTime) {
+      rateLimitStore.delete(key)
+    }
+  }
+}
+
+// Cleanup user-specific rate limits (useful after subscription upgrades)
+export function cleanupUserRateLimits(userId: string): void {
+  for (const [key] of rateLimitStore.entries()) {
+    if (key.includes(userId)) {
       rateLimitStore.delete(key)
     }
   }

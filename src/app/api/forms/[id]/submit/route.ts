@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPublicFormById } from '@/lib/database/forms'
 import { createSubmission, extractClientInfo } from '@/lib/database/submissions'
+import { canUserReceiveSubmission } from '@/lib/database/users'
 import { ApiResponse } from '@/lib/types/database'
 import { sendFormSubmissionNotification } from '@/lib/email/sendgrid'
+import { withRateLimit, getIPAddress, getUserTierFromRequest } from '@/lib/middleware/rate-limit'
 
 // POST /api/forms/[id]/submit - Public endpoint for form submissions
 export async function POST(
@@ -11,6 +13,17 @@ export async function POST(
 ) {
   try {
     const { id } = await params
+
+    // Apply rate limiting based on IP address and subscription tier
+    const rateLimitResponse = await withRateLimit(
+      'submission',
+      getIPAddress,
+      getUserTierFromRequest
+    )(request)
+    
+    if (rateLimitResponse) {
+      return rateLimitResponse
+    }
 
     // Get form by ID (public access)
     const form = await getPublicFormById(id)
@@ -25,6 +38,15 @@ export async function POST(
     if (!form.is_active) {
       return NextResponse.json(
         { success: false, error: 'Form is not accepting submissions' },
+        { status: 403 }
+      )
+    }
+
+    // Check if form owner can receive more submissions
+    const { canReceive, reason } = await canUserReceiveSubmission(form.user_id, form.id)
+    if (!canReceive) {
+      return NextResponse.json(
+        { success: false, error: reason },
         { status: 403 }
       )
     }
@@ -129,16 +151,17 @@ export async function POST(
   }
 }
 
-// OPTIONS /api/forms/[id]/submit - Handle preflight requests for CORS
+// Handle CORS preflight requests
 export async function OPTIONS() {
-  const responseHeaders = new Headers()
-  responseHeaders.set('Access-Control-Allow-Origin', '*')
-  responseHeaders.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
-  responseHeaders.set('Access-Control-Allow-Headers', 'Content-Type')
-  responseHeaders.set('Access-Control-Max-Age', '86400') // Cache for 24 hours
-
-  return new NextResponse(null, {
-    status: 200,
-    headers: responseHeaders
-  })
+  return NextResponse.json(
+    {},
+    {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    }
+  )
 } 

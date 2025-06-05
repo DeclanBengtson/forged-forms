@@ -104,8 +104,9 @@ Visit `http://localhost:3000` to access the application.
 
 ### Form Submission Endpoint
 ```
-POST /api/forms/[form-slug]/submit
+POST /api/forms/[form-id]/submit
 ```
+**Note**: Form IDs are UUIDs (e.g., `550e8400-e29b-41d4-a716-446655440000`)
 
 ### Management API (Authenticated)
 - `GET /api/forms` - List user's forms
@@ -125,7 +126,7 @@ curl -X POST http://localhost:3000/api/email/test \
 
 ### HTML Form Integration
 ```html
-<form action="https://your-domain.com/api/forms/contact-form/submit" method="POST">
+<form action="https://your-domain.com/api/forms/550e8400-e29b-41d4-a716-446655440000/submit" method="POST">
   <input name="name" placeholder="Your Name" required />
   <input name="email" type="email" placeholder="Email" required />
   <textarea name="message" placeholder="Message" required></textarea>
@@ -140,11 +141,13 @@ formData.append('name', 'John Doe');
 formData.append('email', 'john@example.com');
 formData.append('message', 'Hello World!');
 
-fetch('https://your-domain.com/api/forms/contact-form/submit', {
+fetch('https://your-domain.com/api/forms/550e8400-e29b-41d4-a716-446655440000/submit', {
   method: 'POST',
   body: formData
 });
 ```
+
+**Pro Tip**: Copy the form URL directly from your dashboard - each form has a unique, secure UUID that prevents unauthorized access.
 
 ## 🔧 Development Scripts
 
