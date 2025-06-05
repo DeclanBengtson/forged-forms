@@ -66,15 +66,31 @@ export async function POST(request: NextRequest) {
         user.user_metadata?.full_name || user.user_metadata?.name
       );
       customerId = customer.id;
-      
-      // Update user profile with customer ID
-      if (profile) {
-        await supabase
-          .from('user_profiles')
-          .update({ customer_id: customerId })
-          .eq('user_id', user.id);
-      }
+      console.log(`Created new Stripe customer: ${customerId} for user ${user.id}`);
+    } else {
+      console.log(`Using existing Stripe customer: ${customerId} for user ${user.id}`);
     }
+
+    // Always ensure customer_id is linked to user profile (for both new and existing customers)
+    const { error: updateError } = await supabase
+      .from('user_profiles')
+      .upsert({ 
+        user_id: user.id,
+        customer_id: customerId,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id'
+      });
+
+    if (updateError) {
+      console.error('Error updating user profile with customer ID:', updateError);
+      return NextResponse.json(
+        { error: 'Failed to link customer ID to user profile' },
+        { status: 500 }
+      );
+    }
+
+    console.log(`Successfully linked customer ${customerId} to user ${user.id}`);
 
     // Get the origin for success/cancel URLs
     const headersList = await headers();

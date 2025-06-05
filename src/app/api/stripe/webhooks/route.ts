@@ -257,7 +257,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     const priceId = subscription.items.data[0]?.price.id;
     const subscriptionTier = getSubscriptionTierFromPrice(priceId);
 
-    // Issue #5 Fix: Get period info from subscription items (latest Stripe API structure)
+    // Get period info from subscription items (latest Stripe API structure)
     const firstItem = subscription.items.data[0];
     const currentPeriodStart = firstItem?.current_period_start 
       ? new Date(firstItem.current_period_start * 1000).toISOString() 
@@ -305,7 +305,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     const priceId = subscription.items.data[0]?.price.id;
     const subscriptionTier = getSubscriptionTierFromPrice(priceId);
 
-    // Issue #5 Fix: Get period info from subscription items (latest Stripe API structure)
+    // Get period info from subscription items (latest Stripe API structure)
     const firstItem = subscription.items.data[0];
     const currentPeriodStart = firstItem?.current_period_start 
       ? new Date(firstItem.current_period_start * 1000).toISOString() 
