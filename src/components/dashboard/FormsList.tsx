@@ -65,14 +65,16 @@ export default function FormsList({ forms, onFormDeleted, onFormUpdated: _onForm
 
   if (forms.length === 0) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center">
-        <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-          <span className="text-2xl">📝</span>
+      <div className="bg-white border border-gray-200 rounded-sm p-12 text-center">
+        <div className="w-12 h-12 bg-gray-50 border border-gray-200 rounded-sm flex items-center justify-center mx-auto mb-4">
+          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
         </div>
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h3 className="text-lg font-medium text-gray-900 mb-2">
           No forms yet
         </h3>
-        <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+        <p className="text-sm text-gray-500 font-light mb-6 max-w-md mx-auto">
           Create your first form to start collecting submissions from your website or application.
         </p>
       </div>
@@ -83,24 +85,24 @@ export default function FormsList({ forms, onFormDeleted, onFormUpdated: _onForm
     <div className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {forms.map((form) => (
-          <div key={form.id} className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow">
+          <div key={form.id} className="bg-white border border-gray-200 rounded-sm hover:border-gray-300 transition-all duration-300">
             <div className="p-6">
               {/* Header */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                  <h3 className="text-lg font-medium text-gray-900 truncate">
                     {form.name}
                   </h3>
                   {form.description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                    <p className="text-sm text-gray-500 font-light mt-1 line-clamp-2">
                       {form.description}
                     </p>
                   )}
                 </div>
-                <div className={`ml-2 px-2 py-1 text-xs rounded-full ${
+                <div className={`ml-2 px-2 py-1 text-xs font-normal rounded-sm ${
                   form.is_active 
-                    ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                    ? 'bg-gray-100 text-gray-900' 
+                    : 'bg-gray-50 text-gray-500'
                 }`}>
                   {form.is_active ? 'Active' : 'Inactive'}
                 </div>
@@ -108,8 +110,8 @@ export default function FormsList({ forms, onFormDeleted, onFormUpdated: _onForm
 
               {/* URL Preview */}
               <div className="mb-4">
-                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Form URL:</div>
-                <div className="bg-gray-50 dark:bg-gray-700 rounded p-2 text-xs font-mono text-gray-700 dark:text-gray-300 break-all">
+                <div className="text-xs text-gray-400 font-normal uppercase tracking-wide mb-1">Form URL:</div>
+                <div className="bg-gray-50 border border-gray-200 rounded-sm p-2 text-xs font-mono text-gray-700 break-all">
                   /api/forms/{form.slug}/submit
                 </div>
               </div>
@@ -117,16 +119,16 @@ export default function FormsList({ forms, onFormDeleted, onFormUpdated: _onForm
               {/* Stats */}
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  <div className="text-2xl font-medium text-gray-900">
                     {formStats[form.slug]?.total ?? '-'}
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">Submissions</div>
+                  <div className="text-xs text-gray-400 font-normal">Submissions</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                  <div className="text-2xl font-medium text-gray-900">
                     {formStats[form.slug]?.thisWeek ?? '-'}
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">This Week</div>
+                  <div className="text-xs text-gray-400 font-normal">This Week</div>
                 </div>
               </div>
 
@@ -135,31 +137,33 @@ export default function FormsList({ forms, onFormDeleted, onFormUpdated: _onForm
                 <div className="flex space-x-2">
                   <Link
                     href={`/dashboard/forms/${form.slug}`}
-                    className="flex-1 bg-blue-600 text-white text-sm px-3 py-2 rounded-md hover:bg-blue-700 transition-colors text-center"
+                    className="flex-1 bg-gray-900 text-white text-sm font-normal px-3 py-2.5 rounded-sm hover:bg-gray-800 transition-all duration-300 text-center"
                     onMouseEnter={() => loadFormStats(form.slug)}
                   >
                     View Details
                   </Link>
                   <button
                     onClick={() => handleCopyUrl(form.slug)}
-                    className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    className="px-3 py-2.5 text-sm text-gray-600 hover:text-gray-900 border border-gray-200 rounded-sm hover:bg-gray-50 hover:border-gray-300 transition-all duration-300"
                     title="Copy form URL"
                   >
-                    📋
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5A3.375 3.375 0 006.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-1.5a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 00-9-9z" />
+                    </svg>
                   </button>
                 </div>
 
                 <div className="flex space-x-2">
                   <Link
                     href={`/dashboard/forms/${form.slug}/edit`}
-                    className="flex-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-center"
+                    className="flex-1 text-sm font-normal text-gray-700 border border-gray-200 px-3 py-2.5 rounded-sm hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 text-center"
                   >
                     Edit
                   </Link>
                   <button
                     onClick={() => handleExportCsv(form.slug)}
                     disabled={loadingStates[`export-${form.slug}`]}
-                    className="flex-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                    className="flex-1 text-sm font-normal text-gray-700 border border-gray-200 px-3 py-2.5 rounded-sm hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 disabled:opacity-50"
                   >
                     {loadingStates[`export-${form.slug}`] ? 'Exporting...' : 'Export CSV'}
                   </button>
@@ -168,15 +172,15 @@ export default function FormsList({ forms, onFormDeleted, onFormUpdated: _onForm
                 <button
                   onClick={() => handleDelete(form)}
                   disabled={loadingStates[form.slug]}
-                  className="w-full text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 border border-red-300 dark:border-red-600 px-3 py-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
+                  className="w-full text-sm font-normal text-red-700 border border-red-200 px-3 py-2.5 rounded-sm hover:bg-red-50 hover:border-red-300 transition-all duration-300 disabled:opacity-50"
                 >
                   {loadingStates[form.slug] ? 'Deleting...' : 'Delete Form'}
                 </button>
               </div>
 
               {/* Created Date */}
-              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <div className="text-xs text-gray-500 dark:text-gray-400">
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="text-xs text-gray-400 font-normal">
                   Created {new Date(form.created_at).toLocaleDateString()}
                 </div>
               </div>

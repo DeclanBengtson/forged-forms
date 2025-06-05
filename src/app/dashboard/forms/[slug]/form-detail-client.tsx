@@ -111,20 +111,28 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-gray-600 dark:text-gray-400">Loading form details...</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center py-16">
+          <div className="w-8 h-8 mx-auto mb-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+          <p className="text-sm text-gray-500 font-normal">Loading form details...</p>
+        </div>
       </div>
     )
   }
 
   if (error || !form) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-600 dark:text-red-400 mb-4">{error || 'Form not found'}</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center py-16">
+          <div className="w-12 h-12 bg-gray-50 border border-gray-200 rounded-sm flex items-center justify-center mx-auto mb-4">
+            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+          </div>
+          <div className="text-sm text-gray-700 font-normal mb-1">{error || 'Form not found'}</div>
           <Link 
             href="/dashboard"
-            className="text-blue-600 dark:text-blue-400 hover:underline"
+            className="text-sm font-normal text-gray-500 hover:text-gray-700 transition-colors duration-300"
           >
             ← Back to Dashboard
           </Link>
@@ -136,37 +144,34 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
   const formUrl = apiHelpers.getFormSubmissionUrl(slug)
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/dashboard" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 mr-4">
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-8 py-6">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <Link href="/dashboard" className="text-sm font-normal text-gray-500 hover:text-gray-700 transition-colors duration-300">
                 ← Dashboard
               </Link>
-              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <div className="w-px h-4 bg-gray-300"></div>
+              <h1 className="text-xl font-medium text-gray-900">
                 {form.name}
               </h1>
-              <div className={`ml-3 px-2 py-1 text-xs rounded-full ${
-                form.is_active 
-                  ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-              }`}>
-                {form.is_active ? 'Active' : 'Inactive'}
-              </div>
+              <div className={`w-2 h-2 rounded-full ${
+                form.is_active ? 'bg-gray-900' : 'bg-gray-300'
+              }`} />
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center space-x-3">
               <button
                 onClick={handleCopyUrl}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                className="inline-flex items-center px-5 py-2.5 text-sm font-normal text-gray-700 border border-gray-200 rounded-sm hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300"
               >
                 Copy URL
               </button>
               <Link
                 href={`/dashboard/forms/${slug}/edit`}
-                className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
+                className="inline-flex items-center px-5 py-2.5 text-sm font-normal text-gray-700 border border-gray-200 rounded-sm hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300"
               >
                 Edit
               </Link>
@@ -176,45 +181,62 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto py-12 px-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Submissions</div>
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-              {stats?.total_submissions ?? 0}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+          <div className="bg-white border border-gray-200 rounded-sm p-6 hover:border-gray-300 transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-xs font-normal text-gray-400 uppercase tracking-wide mb-2">Total</div>
+                <div className="text-2xl font-medium text-gray-900">{stats?.total_submissions ?? 0}</div>
+              </div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
             </div>
           </div>
           
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">This Week</div>
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-              {stats?.submissions_this_week ?? 0}
+          <div className="bg-white border border-gray-200 rounded-sm p-6 hover:border-gray-300 transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-xs font-normal text-gray-400 uppercase tracking-wide mb-2">This Week</div>
+                <div className="text-2xl font-medium text-gray-900">{stats?.submissions_this_week ?? 0}</div>
+              </div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
             </div>
           </div>
           
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">This Month</div>
-            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-              {stats?.submissions_this_month ?? 0}
+          <div className="bg-white border border-gray-200 rounded-sm p-6 hover:border-gray-300 transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-xs font-normal text-gray-400 uppercase tracking-wide mb-2">This Month</div>
+                <div className="text-2xl font-medium text-gray-900">{stats?.submissions_this_month ?? 0}</div>
+              </div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
             </div>
           </div>
           
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Latest Submission</div>
-            <div className="text-sm font-medium text-gray-900 dark:text-white">
-              {stats?.latest_submission 
-                ? new Date(stats.latest_submission).toLocaleDateString()
-                : 'Never'
-              }
+          <div className="bg-white border border-gray-200 rounded-sm p-6 hover:border-gray-300 transition-all duration-300">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-xs font-normal text-gray-400 uppercase tracking-wide mb-2">Latest</div>
+                <div className="text-sm font-normal text-gray-900">
+                  {stats?.latest_submission 
+                    ? new Date(stats.latest_submission).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric' 
+                      })
+                    : 'Never'
+                  }
+                </div>
+              </div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
             </div>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-          <div className="border-b border-gray-200 dark:border-gray-700">
-            <nav className="flex space-x-8 px-6">
+        <div className="bg-white border border-gray-200 rounded-sm hover:border-gray-300 transition-all duration-300">
+          <div className="border-b border-gray-100">
+            <nav className="flex px-6">
               {[
                 { id: 'overview', label: 'Overview' },
                 { id: 'submissions', label: 'Submissions' },
@@ -223,10 +245,10 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  className={`py-4 px-8 border-b-2 text-sm font-normal transition-all duration-300 ${
                     activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
+                      ? 'border-gray-900 text-gray-900'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
                   {tab.label}
@@ -236,41 +258,41 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
           </div>
 
           {/* Tab Content */}
-          <div className="p-6">
+          <div className="p-8">
             {activeTab === 'overview' && (
-              <div className="space-y-6">
+              <div className="space-y-12">
                 {/* Form Details */}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Form Details</h3>
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-3">
+                  <div className="text-sm font-normal text-gray-600 uppercase tracking-wide mb-6">Form Details</div>
+                  <div className="bg-gray-50 border border-gray-200 rounded-sm p-6 space-y-6">
                     <div>
-                      <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Form URL</label>
-                      <div className="mt-1 font-mono text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800 border rounded px-3 py-2">
+                      <label className="text-xs font-normal text-gray-400 uppercase tracking-wide">Form URL</label>
+                      <div className="mt-2 font-mono text-sm text-gray-900 bg-white border border-gray-200 rounded-sm px-4 py-3">
                         {formUrl}
                       </div>
                     </div>
                     
                     {form.description && (
                       <div>
-                        <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Description</label>
-                        <div className="mt-1 text-sm text-gray-900 dark:text-white">
+                        <label className="text-xs font-normal text-gray-400 uppercase tracking-wide">Description</label>
+                        <div className="mt-2 text-sm font-normal text-gray-900">
                           {form.description}
                         </div>
                       </div>
                     )}
                     
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-6">
                       <div>
-                        <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Email Notifications</label>
-                        <div className="mt-1 text-sm text-gray-900 dark:text-white">
+                        <label className="text-xs font-normal text-gray-400 uppercase tracking-wide">Email Notifications</label>
+                        <div className="mt-2 text-sm font-normal text-gray-900">
                           {form.email_notifications ? 'Enabled' : 'Disabled'}
                         </div>
                       </div>
                       
                       {form.notification_email && (
                         <div>
-                          <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Notification Email</label>
-                          <div className="mt-1 text-sm text-gray-900 dark:text-white">
+                          <label className="text-xs font-normal text-gray-400 uppercase tracking-wide">Notification Email</label>
+                          <div className="mt-2 text-sm font-normal text-gray-900">
                             {form.notification_email}
                           </div>
                         </div>
@@ -281,20 +303,23 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
 
                 {/* Example Implementation */}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Example Implementation</h3>
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <h4 className="font-medium text-gray-900 dark:text-white mb-2">HTML Form</h4>
-                    <pre className="text-sm text-gray-600 dark:text-gray-400 overflow-x-auto bg-white dark:bg-gray-800 rounded border p-3">
+                  <div className="text-sm font-normal text-gray-600 uppercase tracking-wide mb-6">Example Implementation</div>
+                  <div className="bg-gray-50 border border-gray-200 rounded-sm p-6 space-y-8">
+                    <div>
+                      <div className="text-xs font-normal text-gray-400 uppercase tracking-wide mb-3">HTML Form</div>
+                      <pre className="text-xs font-mono text-gray-600 overflow-x-auto bg-white border border-gray-200 rounded-sm p-4">
 {`<form action="${formUrl}" method="POST">
   <input name="name" placeholder="Name" required>
   <input name="email" type="email" placeholder="Email" required>
   <textarea name="message" placeholder="Message"></textarea>
   <button type="submit">Submit</button>
 </form>`}
-                    </pre>
+                      </pre>
+                    </div>
                     
-                    <h4 className="font-medium text-gray-900 dark:text-white mb-2 mt-4">JavaScript Fetch</h4>
-                    <pre className="text-sm text-gray-600 dark:text-gray-400 overflow-x-auto bg-white dark:bg-gray-800 rounded border p-3">
+                    <div>
+                      <div className="text-xs font-normal text-gray-400 uppercase tracking-wide mb-3">JavaScript Fetch</div>
+                      <pre className="text-xs font-mono text-gray-600 overflow-x-auto bg-white border border-gray-200 rounded-sm p-4">
 {`fetch('${formUrl}', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
@@ -304,7 +329,8 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
     message: 'Hello!'
   })
 })`}
-                    </pre>
+                      </pre>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -312,49 +338,55 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
 
             {activeTab === 'submissions' && (
               <div>
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">Recent Submissions</h3>
+                <div className="flex justify-between items-center mb-8">
+                  <div className="text-sm font-normal text-gray-600 uppercase tracking-wide">Recent Submissions</div>
                   <button
                     onClick={handleExportCsv}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm"
+                    className="inline-flex items-center px-5 py-2.5 text-sm font-normal text-gray-700 border border-gray-200 rounded-sm hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300"
                   >
                     Export CSV
                   </button>
                 </div>
 
                 {submissionsLoading ? (
-                  <div className="text-center py-8 text-gray-600 dark:text-gray-400">
-                    Loading submissions...
+                  <div className="text-center py-16">
+                    <div className="w-8 h-8 mx-auto mb-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                    <p className="text-sm text-gray-500 font-normal">Loading submissions...</p>
                   </div>
                 ) : submissions.length === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="text-gray-500 dark:text-gray-400">No submissions yet</div>
-                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
+                  <div className="text-center py-16">
+                    <div className="w-12 h-12 bg-gray-50 border border-gray-200 rounded-sm flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <div className="text-sm font-normal text-gray-700 mb-1">No submissions yet</div>
+                    <p className="text-xs text-gray-500 font-light">
                       Share your form URL to start receiving submissions
                     </p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {submissions.map((submission) => (
-                      <div key={submission.id} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                        <div className="flex justify-between items-start mb-3">
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                      <div key={submission.id} className="bg-gray-50 border border-gray-200 rounded-sm p-6">
+                        <div className="flex justify-between items-start mb-4">
+                          <div className="text-xs font-normal text-gray-400">
                             {new Date(submission.submitted_at).toLocaleString()}
                           </div>
                           {submission.ip_address && (
-                            <div className="text-xs text-gray-400 dark:text-gray-500">
-                              IP: {submission.ip_address}
+                            <div className="text-xs font-normal text-gray-400">
+                              {submission.ip_address}
                             </div>
                           )}
                         </div>
                         
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           {Object.entries(submission.data).map(([key, value]) => (
                             <div key={key} className="flex">
-                              <div className="font-medium text-gray-700 dark:text-gray-300 w-24 flex-shrink-0">
+                              <div className="font-normal text-sm text-gray-500 w-24 flex-shrink-0">
                                 {key}:
                               </div>
-                              <div className="text-gray-900 dark:text-white flex-1">
+                              <div className="font-normal text-sm text-gray-900 flex-1">
                                 {Array.isArray(value) ? value.join(', ') : String(value)}
                               </div>
                             </div>
@@ -368,16 +400,16 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
             )}
 
             {activeTab === 'settings' && (
-              <div className="space-y-6">
+              <div className="space-y-12">
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Form Settings</h3>
+                  <div className="text-sm font-normal text-gray-600 uppercase tracking-wide mb-6">Form Settings</div>
                   <div className="space-y-4">
                     <Link
                       href={`/dashboard/forms/${slug}/edit`}
-                      className="block bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+                      className="block bg-gray-50 border border-gray-200 rounded-sm p-6 hover:bg-gray-100 hover:border-gray-300 transition-all duration-300"
                     >
-                      <div className="font-medium text-blue-900 dark:text-blue-300">Edit Form Details</div>
-                      <div className="text-sm text-blue-700 dark:text-blue-400">
+                      <div className="font-normal text-sm text-gray-900">Edit Form Details</div>
+                      <div className="text-xs text-gray-500 font-light mt-2">
                         Update form name, description, and notification settings
                       </div>
                     </Link>
@@ -385,19 +417,19 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
                 </div>
 
                 {/* Danger Zone */}
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                  <h3 className="text-lg font-medium text-red-900 dark:text-red-300 mb-4">Danger Zone</h3>
-                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4">
+                <div className="border-t border-gray-200 pt-12">
+                  <div className="text-sm font-normal text-gray-600 uppercase tracking-wide mb-6">Danger Zone</div>
+                  <div className="bg-red-50 border border-red-200 rounded-sm p-6">
                     <div className="flex justify-between items-start">
                       <div>
-                        <div className="font-medium text-red-900 dark:text-red-300">Delete this form</div>
-                        <div className="text-sm text-red-700 dark:text-red-400 mt-1">
+                        <div className="font-normal text-sm text-red-900">Delete this form</div>
+                        <div className="text-xs text-red-700 font-light mt-2">
                           This action cannot be undone. All submissions will be permanently deleted.
                         </div>
                       </div>
                       <button
                         onClick={handleDeleteForm}
-                        className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm"
+                        className="inline-flex items-center px-5 py-2.5 text-sm font-normal text-white bg-red-600 border border-red-600 rounded-sm hover:bg-red-700 hover:border-red-700 focus:outline-none focus:ring-1 focus:ring-red-500 focus:ring-offset-2 transition-all duration-300"
                       >
                         Delete Form
                       </button>
