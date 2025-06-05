@@ -1,6 +1,9 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Form } from '@/lib/types/database';
+import SubscriptionStatus from './SubscriptionStatus';
+import UpgradePrompt from './UpgradePrompt';
 
 interface DashboardOverviewProps {
   forms: Form[];
@@ -16,10 +19,34 @@ interface DashboardStats {
   activeForms: number;
 }
 
-interface ActivityItem {
-  type: 'submission' | 'form_created';
-  form: string;
-  time: string;
+interface SubscriptionData {
+  subscription: {
+    status: 'free' | 'starter' | 'pro' | 'enterprise';
+    subscription_id?: string;
+    current_period_end?: string;
+    cancel_at_period_end?: boolean;
+    trial_end?: string;
+  };
+  limits: {
+    maxForms: number;
+    maxSubmissionsPerMonth: number;
+    maxSubmissionsPerForm: number;
+    emailNotifications: boolean;
+    customDomains: boolean;
+    apiAccess: boolean;
+    exportData: boolean;
+    priority_support: boolean;
+  };
+}
+
+interface UsageData {
+  usage: {
+    formsCount: number;
+    monthlySubmissions: number;
+    submissionsThisWeek: number;
+    totalSubmissions: number;
+    submissionTrend: Array<{ date: string; count: number }>;
+  };
 }
 
 // Utility function to format UUID for display
@@ -28,14 +55,46 @@ function formatUUID(uuid: string): string {
 }
 
 export default function DashboardOverview({ forms, onCreateForm, onDeleteForm, user }: DashboardOverviewProps) {
-  const stats: DashboardStats = {
-    totalForms: forms.length,
-    totalSubmissions: 0, // This would come from API in real implementation
-    submissionsThisWeek: 0, // This would come from API in real implementation
-    activeForms: forms.filter(form => form.is_active).length
+  const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null);
+  const [usageData, setUsageData] = useState<UsageData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch subscription data and usage data in parallel
+      const [subscriptionResponse, usageResponse] = await Promise.all([
+        fetch('/api/user/subscription'),
+        fetch('/api/user/usage')
+      ]);
+
+      if (subscriptionResponse.ok) {
+        const subData = await subscriptionResponse.json();
+        setSubscriptionData(subData);
+      }
+
+      if (usageResponse.ok) {
+        const usageData = await usageResponse.json();
+        setUsageData(usageData);
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const recentActivity: ActivityItem[] = [];
+  const stats: DashboardStats = {
+    totalForms: forms.length,
+    totalSubmissions: usageData?.usage.totalSubmissions || 0,
+    submissionsThisWeek: usageData?.usage.submissionsThisWeek || 0,
+    activeForms: forms.filter(form => form.is_active).length
+  };
 
   return (
     <div className="h-full overflow-y-auto">
@@ -76,7 +135,7 @@ export default function DashboardOverview({ forms, onCreateForm, onDeleteForm, u
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs font-normal text-gray-400 uppercase tracking-wide mb-2">Submissions</div>
-                <div className="text-2xl font-medium text-gray-900">{stats.totalSubmissions}</div>
+                <div className="text-2xl font-medium text-gray-900">{loading ? '...' : stats.totalSubmissions}</div>
               </div>
               <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
             </div>
@@ -86,39 +145,78 @@ export default function DashboardOverview({ forms, onCreateForm, onDeleteForm, u
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs font-normal text-gray-400 uppercase tracking-wide mb-2">This Week</div>
-                <div className="text-2xl font-medium text-gray-900">{stats.submissionsThisWeek}</div>
+                <div className="text-2xl font-medium text-gray-900">{loading ? '...' : stats.submissionsThisWeek}</div>
               </div>
               <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
             </div>
           </div>
         </div>
 
+        {/* Upgrade Prompt */}
+        {!loading && subscriptionData && usageData && (
+          <div className="mb-8">
+            <UpgradePrompt
+              subscription={subscriptionData.subscription}
+              limits={subscriptionData.limits}
+              usage={usageData.usage}
+            />
+          </div>
+        )}
+
         {forms.length === 0 ? (
-          // Getting Started Section
-          <div className="bg-white border border-gray-200 rounded-sm p-16 hover:border-gray-300 transition-all duration-300">
-            <div className="text-center max-w-md mx-auto">
-              <div className="w-12 h-12 bg-gray-50 border border-gray-200 rounded-sm flex items-center justify-center mx-auto mb-6">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
+          // Getting Started Section with Subscription Info
+          <div className="grid lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <div className="bg-white border border-gray-200 rounded-sm p-16 hover:border-gray-300 transition-all duration-300">
+                <div className="text-center max-w-md mx-auto">
+                  <div className="w-12 h-12 bg-gray-50 border border-gray-200 rounded-sm flex items-center justify-center mx-auto mb-6">
+                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                  </div>
+                  
+                  <h2 className="text-lg font-medium text-gray-900 mb-4">
+                    No forms yet
+                  </h2>
+                  <p className="text-sm text-gray-500 font-light mb-8 leading-relaxed">
+                    Create your first form endpoint to start collecting submissions and managing your data workflow.
+                  </p>
+                  
+                  <button
+                    onClick={onCreateForm}
+                    className="inline-flex items-center px-5 py-2.5 text-sm font-normal text-white bg-gray-900 border border-gray-900 rounded-sm hover:bg-gray-800 hover:border-gray-800 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300"
+                  >
+                    <svg className="w-3.5 h-3.5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Create Form
+                  </button>
+                </div>
               </div>
+            </div>
+
+            {/* Subscription Status for New Users */}
+            <div className="space-y-6">
+              {!loading && subscriptionData && usageData && (
+                <SubscriptionStatus
+                  subscription={subscriptionData.subscription}
+                  limits={subscriptionData.limits}
+                  usage={usageData.usage}
+                />
+              )}
               
-              <h2 className="text-lg font-medium text-gray-900 mb-4">
-                No forms yet
-              </h2>
-              <p className="text-sm text-gray-500 font-light mb-8 leading-relaxed">
-                Create your first form endpoint to start collecting submissions and managing your data workflow.
-              </p>
-              
-              <button
-                onClick={onCreateForm}
-                className="inline-flex items-center px-5 py-2.5 text-sm font-normal text-white bg-gray-900 border border-gray-900 rounded-sm hover:bg-gray-800 hover:border-gray-800 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300"
-              >
-                <svg className="w-3.5 h-3.5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-                Create Form
-              </button>
+              {loading && (
+                <div className="bg-white border border-gray-200 rounded-sm p-6">
+                  <div className="animate-pulse">
+                    <div className="h-4 bg-gray-200 rounded mb-4"></div>
+                    <div className="h-8 bg-gray-200 rounded mb-4"></div>
+                    <div className="space-y-3">
+                      <div className="h-3 bg-gray-200 rounded"></div>
+                      <div className="h-3 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ) : (
@@ -161,7 +259,7 @@ export default function DashboardOverview({ forms, onCreateForm, onDeleteForm, u
                         <div className="flex items-center space-x-4">
                           <div className="text-right">
                             <div className="text-xs font-normal text-gray-900">
-                              0
+                              {loading ? '...' : '0'}
                             </div>
                             <div className="text-xs text-gray-400 font-normal">
                               {new Date(form.created_at).toLocaleDateString('en-US', { 
@@ -195,62 +293,80 @@ export default function DashboardOverview({ forms, onCreateForm, onDeleteForm, u
               </div>
             </div>
 
-            {/* Quick Actions & Activity */}
+            {/* Subscription Status & Quick Actions */}
             <div className="space-y-6">
+              {/* Subscription Status */}
+              {!loading && subscriptionData && usageData && (
+                <SubscriptionStatus
+                  subscription={subscriptionData.subscription}
+                  limits={subscriptionData.limits}
+                  usage={usageData.usage}
+                />
+              )}
+              
+              {loading && (
+                <div className="bg-white border border-gray-200 rounded-sm p-6">
+                  <div className="animate-pulse">
+                    <div className="h-4 bg-gray-200 rounded mb-4"></div>
+                    <div className="h-8 bg-gray-200 rounded mb-4"></div>
+                    <div className="space-y-3">
+                      <div className="h-3 bg-gray-200 rounded"></div>
+                      <div className="h-3 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Quick Actions */}
               <div className="bg-white border border-gray-200 rounded-sm hover:border-gray-300 transition-all duration-300">
                 <div className="px-6 py-6 border-b border-gray-100">
                   <div className="text-sm font-normal text-gray-600 uppercase tracking-wide">
-                    Actions
-                  </div>
-                </div>
-                
-                <div className="p-6 space-y-3">
-                  <button
-                    onClick={onCreateForm}
-                    className="w-full flex items-center px-4 py-3 text-sm font-normal text-gray-700 border border-gray-200 rounded-sm hover:bg-gray-50 hover:border-gray-300 transition-all duration-300"
-                  >
-                    <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Create New Form
-                  </button>
-                </div>
-              </div>
-
-              {/* Recent Activity */}
-              <div className="bg-white border border-gray-200 rounded-sm hover:border-gray-300 transition-all duration-300">
-                <div className="px-6 py-6 border-b border-gray-100">
-                  <div className="text-sm font-normal text-gray-600 uppercase tracking-wide">
-                    Activity
+                    Quick Actions
                   </div>
                 </div>
                 
                 <div className="p-6">
-                  {recentActivity.length === 0 ? (
-                    <div className="text-center py-8">
-                      <div className="w-8 h-8 bg-gray-50 border border-gray-200 rounded-sm flex items-center justify-center mx-auto mb-3">
-                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                      <p className="text-xs text-gray-400 font-normal">No recent activity</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {recentActivity.map((activity, index) => (
-                        <div key={index} className="flex items-center space-x-3 py-2">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full flex-shrink-0"></div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-normal text-gray-900 truncate">
-                              {activity.type === 'submission' ? 'New submission' : 'Form created'} for {activity.form}
-                            </p>
-                            <p className="text-xs text-gray-400 font-normal">{activity.time}</p>
-                          </div>
+                  <div className="space-y-4">
+                    <button
+                      onClick={onCreateForm}
+                      className="w-full flex items-center justify-between p-4 border border-gray-200 rounded-sm hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 group"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gray-100 border border-gray-200 rounded-sm flex items-center justify-center group-hover:bg-gray-200 transition-colors duration-300">
+                          <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                          </svg>
                         </div>
-                      ))}
-                    </div>
-                  )}
+                        <div className="text-left">
+                          <div className="text-sm font-normal text-gray-900">Create New Form</div>
+                          <div className="text-xs text-gray-500">Set up a new endpoint</div>
+                        </div>
+                      </div>
+                      <svg className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                      </svg>
+                    </button>
+
+                    <a
+                      href="/pricing?from=dashboard"
+                      className="w-full flex items-center justify-between p-4 border border-gray-200 rounded-sm hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 group"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gray-100 border border-gray-200 rounded-sm flex items-center justify-center group-hover:bg-gray-200 transition-colors duration-300">
+                          <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.94" />
+                          </svg>
+                        </div>
+                        <div className="text-left">
+                          <div className="text-sm font-normal text-gray-900">View Plans</div>
+                          <div className="text-xs text-gray-500">Upgrade or manage</div>
+                        </div>
+                      </div>
+                      <svg className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                      </svg>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
