@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { Form } from '@/lib/types/database';
 import SubscriptionStatus from './SubscriptionStatus';
-import UpgradePrompt from './UpgradePrompt';
 
 interface DashboardOverviewProps {
   forms: Form[];
@@ -151,17 +150,6 @@ export default function DashboardOverview({ forms, onCreateForm, onDeleteForm, u
             </div>
           </div>
         </div>
-
-        {/* Upgrade Prompt */}
-        {!loading && subscriptionData && usageData && (
-          <div className="mb-8">
-            <UpgradePrompt
-              subscription={subscriptionData.subscription}
-              limits={subscriptionData.limits}
-              usage={usageData.usage}
-            />
-          </div>
-        )}
 
         {forms.length === 0 ? (
           // Getting Started Section with Subscription Info

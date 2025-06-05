@@ -429,11 +429,11 @@ function PricingPageContent() {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Is there a trial period?
+                  When will my subscription become active?
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Yes! All paid plans come with a 7-day free trial. You can cancel anytime during 
-                  the trial without being charged.
+                  Your subscription becomes active immediately upon successful payment. You&apos;ll get 
+                  instant access to all plan features and increased limits.
                 </p>
               </div>
               <div>
