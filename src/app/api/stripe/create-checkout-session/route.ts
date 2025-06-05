@@ -66,9 +66,8 @@ export async function POST(request: NextRequest) {
         user.user_metadata?.full_name || user.user_metadata?.name
       );
       customerId = customer.id;
-      console.log(`Created new Stripe customer: ${customerId} for user ${user.id}`);
-    } else {
-      console.log(`Using existing Stripe customer: ${customerId} for user ${user.id}`);
+      // Log customer creation for audit purposes
+      console.log(`[STRIPE] Created customer ${customerId} for user ${user.id}`);
     }
 
     // Always ensure customer_id is linked to user profile (for both new and existing customers)
@@ -83,14 +82,12 @@ export async function POST(request: NextRequest) {
       });
 
     if (updateError) {
-      console.error('Error updating user profile with customer ID:', updateError);
+      console.error('[STRIPE] Error linking customer to user profile:', updateError);
       return NextResponse.json(
         { error: 'Failed to link customer ID to user profile' },
         { status: 500 }
       );
     }
-
-    console.log(`Successfully linked customer ${customerId} to user ${user.id}`);
 
     // Get the origin for success/cancel URLs
     const headersList = await headers();
