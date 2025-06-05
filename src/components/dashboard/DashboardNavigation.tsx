@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Form } from '@/lib/types/database';
 
-interface NavbarProps {
+interface DashboardNavigationProps {
   forms: Form[];
   selectedForm: Form | null;
   onSelectForm: (form: Form | null) => void;
@@ -16,13 +16,13 @@ interface NavbarProps {
   loading?: boolean;
 }
 
-export default function Navbar({  
+export default function DashboardNavigation({  
   onSelectForm, 
   onCreateForm, 
   onLogout, 
   user, 
   loading = false 
-}: NavbarProps) {
+}: DashboardNavigationProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
 
@@ -65,8 +65,8 @@ export default function Navbar({
           >
             Dashboard
           </button>
-          <button
-            onClick={() => setActiveTab('documentation')}
+          <Link
+            href="/documentation"
             className={`px-6 py-3 text-sm font-normal rounded-none border-b-2 transition-all duration-300 ${
               activeTab === 'documentation'
                 ? 'text-gray-900 border-gray-900'
@@ -74,7 +74,7 @@ export default function Navbar({
             }`}
           >
             Documentation
-          </button>
+          </Link>
         </div>
 
         {/* Right Side - Create Form Button and Profile */}

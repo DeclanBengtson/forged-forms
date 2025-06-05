@@ -12,7 +12,6 @@ export function generateSampleSubmissionData(): {
     form: {
       id: 'sample-form-id',
       name: 'Contact Form',
-      slug: 'contact-form',
       email_notifications: true,
       notification_email: 'owner@example.com'
     },
@@ -49,7 +48,7 @@ export const EMAIL_TEMPLATES = {
       formName: string
       submissionData: Record<string, any>
       submittedAt: string
-      formSlug: string
+      formId: string
       ipAddress?: string
       userAgent?: string
       referrer?: string
@@ -65,7 +64,7 @@ export const EMAIL_TEMPLATES = {
       
       text += `\nSubmission Info:\n===============\n`
       text += `Submitted at: ${new Date(data.submittedAt).toLocaleString()}\n`
-      text += `Form: ${data.formName} (${data.formSlug})\n`
+      text += `Form: ${data.formName} (${data.formId})\n`
       
       if (data.ipAddress) text += `IP Address: ${data.ipAddress}\n`
       if (data.userAgent) text += `User Agent: ${data.userAgent}\n`
@@ -81,7 +80,7 @@ export const EMAIL_TEMPLATES = {
       formName: string
       submissionData: Record<string, any>
       submittedAt: string
-      formSlug: string
+      formId: string
       ipAddress?: string
       userAgent?: string
       referrer?: string
@@ -163,7 +162,7 @@ export const EMAIL_TEMPLATES = {
                     <strong style="color: #374151;">Submitted:</strong> ${formatDate(data.submittedAt)}
                   </div>
                   <div style="margin-bottom: 8px;">
-                    <strong style="color: #374151;">Form Slug:</strong> <code style="background: #e5e7eb; padding: 2px 6px; border-radius: 4px; font-size: 12px;">${data.formSlug}</code>
+                    <strong style="color: #374151;">Form ID:</strong> ${data.formId}
                   </div>
                   ${data.ipAddress ? `<div style="margin-bottom: 8px;"><strong style="color: #374151;">IP Address:</strong> ${data.ipAddress}</div>` : ''}
                   ${data.referrer ? `<div style="margin-bottom: 8px;"><strong style="color: #374151;">Referrer:</strong> <a href="${data.referrer}" style="color: #3b82f6; text-decoration: none;">${data.referrer}</a></div>` : ''}

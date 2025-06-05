@@ -20,6 +20,11 @@ interface FormStats {
 
 type TabType = 'setup' | 'submissions' | 'settings';
 
+// Utility function to format UUID for display
+function formatUUID(uuid: string): string {
+  return `${uuid.substring(0, 8)}...${uuid.substring(uuid.length - 8)}`
+}
+
 export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDeleteForm }: FormDetailsProps) {
   const [copied, setCopied] = useState<string | null>(null);
   const [_isEditing] = useState(false);
@@ -34,13 +39,13 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
   const [stats, setStats] = useState<FormStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(false);
 
-  const endpointUrl = `${window.location.origin}/api/forms/${form.slug}`;
+  const endpointUrl = `${window.location.origin}/api/forms/${form.id}`;
 
   // Load form stats when component mounts
   const loadFormStats = useCallback(async () => {
     setStatsLoading(true);
     try {
-      const result = await getFormStats(form.slug);
+      const result = await getFormStats(form.id);
       if (result.success && result.data) {
         setStats(result.data.stats);
       }
@@ -49,7 +54,7 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
     } finally {
       setStatsLoading(false);
     }
-  }, [form.slug]);
+  }, [form.id]);
 
   useEffect(() => {
     loadFormStats();
@@ -63,7 +68,7 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
     setSubmissionsError(null);
     
     try {
-      const result = await listSubmissions(form.slug, { 
+      const result = await listSubmissions(form.id, { 
         page, 
         limit: submissionsPerPage, 
         sortOrder: 'desc' 
@@ -84,7 +89,7 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
     } finally {
       setSubmissionsLoading(false);
     }
-  }, [form.slug, submissionsPerPage, activeTab]);
+  }, [form.id, submissionsPerPage, activeTab]);
 
   // Load submissions when switching to submissions tab
   useEffect(() => {
@@ -100,7 +105,7 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
 
   const handleExportCsv = async () => {
     try {
-      const response = await fetch(`/api/forms/${form.slug}/submissions/export`);
+      const response = await fetch(`/api/forms/${form.id}/submissions/export`);
       if (!response.ok) {
         throw new Error('Failed to export submissions');
       }
@@ -110,7 +115,7 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
       const a = document.createElement('a');
       a.style.display = 'none';
       a.href = url;
-      a.download = `${form.slug}-submissions.csv`;
+      a.download = `${form.name}-submissions.csv`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -498,14 +503,17 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
                 </div>
                 <div>
                   <label className="block text-sm font-normal text-gray-700 mb-1">
-                    Form Slug
+                    Form ID
                   </label>
                   <input
                     type="text"
-                    value={form.slug}
+                    value={form.id}
                     className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-gray-50 text-gray-500 text-sm font-mono"
                     readOnly
                   />
+                  <p className="mt-1 text-xs text-gray-500">
+                    Unique identifier used in form URLs (cannot be changed)
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-normal text-gray-700 mb-1">
@@ -551,7 +559,7 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-medium text-gray-900">{form.name}</h1>
-            <p className="text-sm text-gray-500 font-light mt-1">/{form.slug}</p>
+            <p className="text-sm text-gray-500 font-light mt-1">ID: {formatUUID(form.id)}</p>
           </div>
           <div className="flex items-center space-x-3">
             <div className={`w-2 h-2 rounded-full ${

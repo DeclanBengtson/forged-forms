@@ -18,9 +18,9 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      get_form_by_slug: {
+      get_form_by_id: {
         Args: {
-          form_slug: string
+          form_id: string
         }
         Returns: {
           id: string
@@ -43,7 +43,6 @@ export interface Form {
   id: string
   user_id: string
   name: string
-  slug: string
   description: string | null
   email_notifications: boolean
   notification_email: string | null
@@ -55,7 +54,6 @@ export interface Form {
 export interface FormInsert {
   user_id: string
   name: string
-  slug: string
   description?: string | null
   email_notifications?: boolean
   notification_email?: string | null
@@ -64,7 +62,6 @@ export interface FormInsert {
 
 export interface FormUpdate {
   name?: string
-  slug?: string
   description?: string | null
   email_notifications?: boolean
   notification_email?: string | null

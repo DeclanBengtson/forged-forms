@@ -14,7 +14,6 @@ export default function FormCreateModal({ isOpen, onClose, onFormCreated }: Form
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    slug: '',
     email_notifications: true,
     notification_email: ''
   })
@@ -35,7 +34,6 @@ export default function FormCreateModal({ isOpen, onClose, onFormCreated }: Form
         setFormData({
           name: '',
           description: '',
-          slug: '',
           email_notifications: true,
           notification_email: ''
         })
@@ -47,24 +45,6 @@ export default function FormCreateModal({ isOpen, onClose, onFormCreated }: Form
     } finally {
       setLoading(false)
     }
-  }
-
-  const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '')
-  }
-
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.value
-    setFormData(prev => ({
-      ...prev,
-      name,
-      slug: prev.slug === '' ? generateSlug(name) : prev.slug
-    }))
   }
 
   if (!isOpen) return null
@@ -100,36 +80,11 @@ export default function FormCreateModal({ isOpen, onClose, onFormCreated }: Form
                 type="text"
                 id="name"
                 value={formData.name}
-                onChange={handleNameChange}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="Contact Form"
                 required
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
-            </div>
-
-            <div>
-              <label htmlFor="slug" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                URL Slug *
-              </label>
-              <div className="flex">
-                <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-400 text-sm">
-                  /api/forms/
-                </span>
-                <input
-                  type="text"
-                  id="slug"
-                  value={formData.slug}
-                  onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                  placeholder="contact-form"
-                  pattern="^[a-z0-9-]+$"
-                  title="Only lowercase letters, numbers, and hyphens allowed"
-                  required
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-r-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                This will be your form endpoint URL
-              </p>
             </div>
 
             <div>
@@ -174,6 +129,21 @@ export default function FormCreateModal({ isOpen, onClose, onFormCreated }: Form
               <label htmlFor="email_notifications" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                 Enable email notifications for new submissions
               </label>
+            </div>
+
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-md p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    Your form will be assigned a unique URL automatically that you can use to receive submissions.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="flex justify-end space-x-3 pt-4">

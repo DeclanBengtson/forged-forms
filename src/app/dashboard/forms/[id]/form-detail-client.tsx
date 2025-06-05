@@ -8,7 +8,7 @@ import { Form, Submission } from '@/lib/types/database'
 import { getForm, getFormStats, listSubmissions, deleteForm, apiHelpers } from '@/lib/api/client'
 
 interface FormDetailClientProps {
-  slug: string
+  id: string
   user: User
 }
 
@@ -19,7 +19,7 @@ interface FormStats {
   latest_submission: string | null
 }
 
-export default function FormDetailClient({ slug, user: _user }: FormDetailClientProps) {
+export default function FormDetailClient({ id, user: _user }: FormDetailClientProps) {
   const [form, setForm] = useState<Form | null>(null)
   const [stats, setStats] = useState<FormStats | null>(null)
   const [submissions, setSubmissions] = useState<Submission[]>([])
@@ -33,7 +33,7 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
     setSubmissionsLoading(true)
     
     try {
-      const result = await listSubmissions(slug, { page, limit: 10, sortOrder: 'desc' })
+      const result = await listSubmissions(id, { page, limit: 10, sortOrder: 'desc' })
       if (result.success && result.data) {
         setSubmissions(result.data)
       }
@@ -42,7 +42,7 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
     } finally {
       setSubmissionsLoading(false)
     }
-  }, [slug])
+  }, [id])
 
   const loadFormData = useCallback(async () => {
     setLoading(true)
@@ -51,8 +51,8 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
     try {
       // Load form details and stats in parallel
       const [formResult, statsResult] = await Promise.all([
-        getForm(slug),
-        getFormStats(slug)
+        getForm(id),
+        getFormStats(id)
       ])
 
       if (formResult.success && formResult.data) {
@@ -74,7 +74,7 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
     } finally {
       setLoading(false)
     }
-  }, [slug, loadSubmissions])
+  }, [id, loadSubmissions])
 
   useEffect(() => {
     loadFormData()
@@ -88,7 +88,7 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
     }
 
     try {
-      await deleteForm(slug)
+      await deleteForm(id)
       router.push('/dashboard')
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to delete form')
@@ -96,14 +96,14 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
   }
 
   const handleCopyUrl = () => {
-    const url = apiHelpers.getFormSubmissionUrl(slug)
+    const url = apiHelpers.getFormSubmissionUrl(id)
     navigator.clipboard.writeText(url)
     alert('Form submission URL copied to clipboard!')
   }
 
   const handleExportCsv = async () => {
     try {
-      await apiHelpers.downloadCsvExport(slug)
+      await apiHelpers.downloadCsvExport(id)
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to export submissions')
     }
@@ -141,7 +141,7 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
     )
   }
 
-  const formUrl = apiHelpers.getFormSubmissionUrl(slug)
+  const formUrl = apiHelpers.getFormSubmissionUrl(id)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -170,7 +170,7 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
                 Copy URL
               </button>
               <Link
-                href={`/dashboard/forms/${slug}/edit`}
+                href={`/dashboard/forms/${id}/edit`}
                 className="inline-flex items-center px-5 py-2.5 text-sm font-normal text-gray-700 border border-gray-200 rounded-sm hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300"
               >
                 Edit
@@ -405,7 +405,7 @@ export default function FormDetailClient({ slug, user: _user }: FormDetailClient
                   <div className="text-sm font-normal text-gray-600 uppercase tracking-wide mb-6">Form Settings</div>
                   <div className="space-y-4">
                     <Link
-                      href={`/dashboard/forms/${slug}/edit`}
+                      href={`/dashboard/forms/${id}/edit`}
                       className="block bg-gray-50 border border-gray-200 rounded-sm p-6 hover:bg-gray-100 hover:border-gray-300 transition-all duration-300"
                     >
                       <div className="font-normal text-sm text-gray-900">Edit Form Details</div>

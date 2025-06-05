@@ -10,6 +10,11 @@ interface FormsSidebarProps {
   onDeleteForm: (form: Form) => void;
 }
 
+// Utility function to format UUID for display
+function formatUUID(uuid: string): string {
+  return `${uuid.substring(0, 8)}...${uuid.substring(uuid.length - 8)}`
+}
+
 export default function FormsSidebar({ 
   forms, 
   selectedForm, 
@@ -92,7 +97,7 @@ export default function FormsSidebar({
                     <div className="flex-1 min-w-0 ml-4 text-left">
                       <div className="font-normal truncate">{form.name}</div>
                       <div className="text-xs text-gray-400 font-light truncate mt-1">
-                        /{form.slug}
+                        ID: {formatUUID(form.id)}
                       </div>
                     </div>
                   </button>
