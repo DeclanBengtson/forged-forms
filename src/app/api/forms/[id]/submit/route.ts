@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPublicFormById } from '@/lib/database/forms'
 import { createSubmission, extractClientInfo } from '@/lib/database/submissions'
-import { canUserReceiveSubmission } from '@/lib/database/users'
 import { ApiResponse } from '@/lib/types/database'
 import { sendFormSubmissionNotification } from '@/lib/email/sendgrid'
-import { withRateLimit, getIPAddress, getUserTierFromRequest } from '@/lib/middleware/rate-limit'
 
 // POST /api/forms/[id]/submit - Public endpoint for form submissions
 export async function POST(
@@ -13,17 +11,6 @@ export async function POST(
 ) {
   try {
     const { id } = await params
-
-    // Apply rate limiting based on IP address and subscription tier
-    const rateLimitResponse = await withRateLimit(
-      'submission',
-      getIPAddress,
-      getUserTierFromRequest
-    )(request)
-    
-    if (rateLimitResponse) {
-      return rateLimitResponse
-    }
 
     // Get form by ID (public access)
     const form = await getPublicFormById(id)
@@ -38,15 +25,6 @@ export async function POST(
     if (!form.is_active) {
       return NextResponse.json(
         { success: false, error: 'Form is not accepting submissions' },
-        { status: 403 }
-      )
-    }
-
-    // Check if form owner can receive more submissions
-    const { canReceive, reason } = await canUserReceiveSubmission(form.user_id, form.id)
-    if (!canReceive) {
-      return NextResponse.json(
-        { success: false, error: reason },
         { status: 403 }
       )
     }
@@ -93,7 +71,7 @@ export async function POST(
     // Extract client information
     const clientInfo = extractClientInfo(request)
 
-    // Create the submission
+    // Create the submission (always store, regardless of user's plan limits)
     const submission = await createSubmission(form.id, submissionData, clientInfo)
 
     // Send email notification if enabled
