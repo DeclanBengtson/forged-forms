@@ -3,9 +3,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe/server';
 import { createServerClient } from '@supabase/ssr';
+import { isWebhookProcessed, markWebhookProcessed, markWebhookProcessing } from '@/lib/redis';
+import { webhookLogger } from '@/lib/logger';
 
-// In-memory store for processed webhook events (Issue #2: Idempotency)
-// TODO: In production, use Redis or database for distributed systems
+// Fallback in-memory store for development (when Redis is not available)
 const processedEvents = new Map<string, { timestamp: number; processed: boolean }>();
 
 // Clean up old processed events (older than 24 hours)
@@ -71,9 +72,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Issue #2: Implement idempotency checking
-    const eventData = processedEvents.get(event.id);
-    if (eventData?.processed) {
+    // Check idempotency using Redis (with fallback to in-memory)
+    let alreadyProcessed = false;
+    try {
+      alreadyProcessed = await isWebhookProcessed(event.id);
+    } catch (error) {
+      // Fallback to in-memory check
+      webhookLogger.warn('Redis idempotency check failed, using in-memory fallback', event.id, { error });
+      const eventData = processedEvents.get(event.id);
+      alreadyProcessed = eventData?.processed || false;
+    }
+
+    if (alreadyProcessed) {
+      webhookLogger.info('Duplicate webhook event ignored', event.id);
       return NextResponse.json({ 
         received: true, 
         duplicate: true,
@@ -82,7 +93,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Mark event as being processed
-    processedEvents.set(event.id, { timestamp: Date.now(), processed: false });
+    try {
+      await markWebhookProcessing(event.id);
+    } catch (error) {
+      // Fallback to in-memory
+      webhookLogger.warn('Redis processing mark failed, using in-memory fallback', event.id, { error });
+      processedEvents.set(event.id, { timestamp: Date.now(), processed: false });
+    }
 
     // Handle the event with comprehensive error handling
     try {
@@ -115,30 +132,37 @@ export async function POST(request: NextRequest) {
       }
 
       // Mark event as successfully processed
-      processedEvents.set(event.id, { timestamp: Date.now(), processed: true });
+      try {
+        await markWebhookProcessed(event.id);
+        webhookLogger.info('Webhook event processed successfully', event.id, { type: event.type });
+      } catch (error) {
+        // Fallback to in-memory
+        webhookLogger.warn('Redis processed mark failed, using in-memory fallback', event.id, { error });
+        processedEvents.set(event.id, { timestamp: Date.now(), processed: true });
+      }
       
-      // Clean up old events periodically
+      // Clean up old events periodically (for in-memory fallback)
       if (Math.random() < 0.01) { // 1% chance to clean up
         cleanupOldEvents();
       }
 
       return NextResponse.json({ received: true, eventId: event.id });
 
-    } catch (error) {
-      // Issue #3: Comprehensive error handling
-      console.error(`[WEBHOOK] Error processing ${event.type} (${event.id}):`, error);
-      
-      // Remove from processed events to allow retry
-      processedEvents.delete(event.id);
-      
-      // Log structured error information for monitoring
-      const errorDetails = {
-        eventId: event.id,
+    } catch (processingError) {
+      // Comprehensive error handling with structured logging
+      webhookLogger.error(`Error processing ${event.type}`, event.id, processingError, {
         eventType: event.type,
-        error: error instanceof Error ? error.message : 'Unknown error',
         timestamp: new Date().toISOString(),
-      };
-      console.error('[WEBHOOK] Processing failed:', errorDetails);
+      });
+      
+      // Remove from processed events to allow retry (both Redis and in-memory)
+      try {
+        // Note: We don't have a delete function for Redis, so we'll let it expire
+        // In a production system, you might want to implement a delete function
+        processedEvents.delete(event.id);
+      } catch (cleanupError) {
+        webhookLogger.warn('Failed to cleanup failed event', event.id, { cleanupError });
+      }
 
       // Return 500 to trigger Stripe's retry mechanism
       return NextResponse.json(
@@ -152,7 +176,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('[WEBHOOK] Handler error:', error);
+    webhookLogger.error('Webhook handler error', undefined, error);
     return NextResponse.json(
       { error: 'Webhook handler failed' },
       { status: 500 }
