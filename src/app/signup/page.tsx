@@ -13,6 +13,7 @@ function SignupForm() {
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [emailSent, setEmailSent] = useState(false)
+  const [agreeToTerms, setAgreeToTerms] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -35,6 +36,12 @@ function SignupForm() {
 
     if (password.length < 6) {
       setError('Password must be at least 6 characters long')
+      setLoading(false)
+      return
+    }
+
+    if (!agreeToTerms) {
+      setError('You must agree to the terms of use and privacy policy')
       setLoading(false)
       return
     }
@@ -161,6 +168,31 @@ function SignupForm() {
                     className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                     placeholder="Confirm your password"
                   />
+                </div>
+
+                <div className="flex items-start">
+                  <div className="flex items-center h-5">
+                    <input
+                      id="terms"
+                      type="checkbox"
+                      checked={agreeToTerms}
+                      onChange={(e) => setAgreeToTerms(e.target.checked)}
+                      required
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                  </div>
+                  <div className="ml-3 text-sm">
+                    <label htmlFor="terms" className="text-gray-700 dark:text-gray-300">
+                      I understand and agree to the{' '}
+                      <Link href="/terms" className="text-blue-600 dark:text-blue-400 hover:underline">
+                        terms of use
+                      </Link>
+                      {' '}and{' '}
+                      <Link href="/privacy" className="text-blue-600 dark:text-blue-400 hover:underline">
+                        privacy policy
+                      </Link>
+                    </label>
+                  </div>
                 </div>
 
                 {error && (
