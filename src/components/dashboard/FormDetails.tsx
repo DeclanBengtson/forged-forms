@@ -433,7 +433,7 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
                   </div>
                 </div>
                 
-                <div className="bg-white border border-gray-200 rounded-sm p-6 hover:border-gray-300 transition-all duration-300">
+                <div className="bg-white border border-gray-200 rounded-sm p-6 hover:border-gray-300">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-xs font-normal text-gray-400 uppercase tracking-wide mb-2">This Week</div>
