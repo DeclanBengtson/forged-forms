@@ -23,7 +23,7 @@ export default function FormsSidebar({
   onDeleteForm 
 }: FormsSidebarProps) {
   return (
-    <div className="w-64 fixed left-0 top-[73px] bg-white border-r border-gray-200 h-[calc(100vh-73px)] z-10">
+    <div className="w-64 fixed left-0 top-[73px] bg-white border-r border-gray-200 h-[calc(100vh-73px)] z-10 pt-4">
       <div className="flex flex-col h-full">
         {/* Sidebar Header */}
         <div className="px-6 py-8 border-b border-gray-100">
