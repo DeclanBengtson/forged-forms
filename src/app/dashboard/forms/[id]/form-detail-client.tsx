@@ -373,11 +373,6 @@ export default function FormDetailClient({ id, user: _user }: FormDetailClientPr
                           <div className="text-xs font-normal text-gray-400">
                             {new Date(submission.submitted_at).toLocaleString()}
                           </div>
-                          {submission.ip_address && (
-                            <div className="text-xs font-normal text-gray-400">
-                              {submission.ip_address}
-                            </div>
-                          )}
                         </div>
                         
                         <div className="space-y-3">
