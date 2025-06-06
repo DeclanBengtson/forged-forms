@@ -58,7 +58,7 @@ const createServiceClient = () => {
   )
 }
 
-// Create a new submission
+// Optimized submission creation for serverless environment
 export async function createSubmission(
   formId: string,
   data: PublicFormSubmission,
@@ -68,11 +68,11 @@ export async function createSubmission(
     referrer?: string | null
   }
 ): Promise<Submission> {
-  // Use service role client for form submissions (bypasses RLS issues)
+  // Create fresh service client for each request (serverless-friendly)
   const serviceSupabase = createServiceClient()
   
-  // Sanitize the submission data
-  const sanitizedData = sanitizeSubmissionData(data)
+  // Use fast sanitization optimized for high volume
+  const sanitizedData = sanitizeSubmissionDataFast(data)
   
   const submissionData: SubmissionInsert = {
     form_id: formId,
@@ -85,7 +85,7 @@ export async function createSubmission(
   const { data: submission, error } = await serviceSupabase
     .from('submissions')
     .insert(submissionData)
-    .select()
+    .select() // Select all fields to match Submission type
     .single()
 
   if (error) {
@@ -94,6 +94,82 @@ export async function createSubmission(
   }
 
   return submission
+}
+
+// Faster sanitization for high-volume scenarios (optimized for serverless)
+function sanitizeSubmissionDataFast(data: Record<string, any>): Record<string, any> {
+  const sanitized: Record<string, any> = {}
+  
+  for (const [key, value] of Object.entries(data)) {
+    // Skip system fields and potential security risks (fast checks)
+    if (key[0] === '_' || key.includes('password') || key.includes('token')) {
+      continue
+    }
+    
+    // Fast type checking and sanitization
+    const valueType = typeof value
+    if (valueType === 'string') {
+      const trimmed = value.trim()
+      if (trimmed.length > 0) {
+        sanitized[key] = trimmed.length > 5000 ? trimmed.slice(0, 5000) : trimmed
+      }
+    } else if (valueType === 'number' || valueType === 'boolean') {
+      sanitized[key] = value
+    } else if (Array.isArray(value) && value.length > 0) {
+      // Handle arrays efficiently
+      const cleanArray = value
+        .filter(item => typeof item === 'string' && item.trim().length > 0)
+        .map(item => {
+          const trimmed = item.trim()
+          return trimmed.length > 1000 ? trimmed.slice(0, 1000) : trimmed
+        })
+        .slice(0, 50) // Limit array size
+      
+      if (cleanArray.length > 0) {
+        sanitized[key] = cleanArray
+      }
+    }
+  }
+  
+  return sanitized
+}
+
+// Batch submission creation for webhooks/integrations (serverless-optimized)
+export async function createSubmissionsBatch(
+  submissions: Array<{
+    formId: string
+    data: PublicFormSubmission
+    clientInfo: {
+      ip_address?: string | null
+      user_agent?: string | null
+      referrer?: string | null
+    }
+  }>
+): Promise<Submission[]> {
+  if (submissions.length === 0) return []
+  
+  // Create fresh service client for batch operation
+  const serviceSupabase = createServiceClient()
+  
+  const submissionData: SubmissionInsert[] = submissions.map(({ formId, data, clientInfo }) => ({
+    form_id: formId,
+    data: sanitizeSubmissionDataFast(data),
+    ip_address: clientInfo.ip_address,
+    user_agent: clientInfo.user_agent,
+    referrer: clientInfo.referrer
+  }))
+
+  const { data: results, error } = await serviceSupabase
+    .from('submissions')
+    .insert(submissionData)
+    .select()
+
+  if (error) {
+    console.error('Batch submission insert failed:', error.message)
+    throw new Error(`Failed to create submissions: ${error.message}`)
+  }
+
+  return results || []
 }
 
 // Get submissions for a form with pagination, respecting plan limits
@@ -123,7 +199,7 @@ export async function getFormSubmissions(
 }> {
   // Use regular client to verify form ownership (respects RLS)
   const supabase = await createClient()
-  // Use service role client for submissions queries (bypasses RLS)
+  // Create fresh service role client for submissions queries (bypasses RLS)
   const serviceSupabase = createServiceClient()
   
   const page = options.page || 1

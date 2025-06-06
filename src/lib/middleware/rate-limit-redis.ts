@@ -5,12 +5,13 @@ import { getUserProfile } from '@/lib/database/users'
 import { redisRateLimit, getRedisClient } from '@/lib/redis'
 import { rateLimitLogger } from '@/lib/logger'
 
-// Fallback in-memory store for development (when Redis is not available)
+// Fallback in-memory store for development (when Vercel KV is not available)
+// Note: This will reset on each cold start in serverless environments
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
 
-// Rate limit configurations
+// Rate limit configurations optimized for serverless
 const RATE_LIMITS = {
-  // Form submissions (per IP)
+  // Form submissions (per IP) - optimized for high volume
   submission: {
     free: { limit: 10, window: 60 * 1000 }, // 10 per minute
     starter: { limit: 25, window: 60 * 1000 }, // 25 per minute
@@ -33,7 +34,8 @@ const RATE_LIMITS = {
   }
 }
 
-// In-memory rate limiter (fallback)
+// In-memory rate limiter (fallback for when Vercel KV is unavailable)
+// Note: Limited effectiveness in serverless due to cold starts
 function inMemoryRateLimit(
   type: keyof typeof RATE_LIMITS,
   tier: 'free' | 'starter' | 'pro' | 'enterprise',
@@ -67,16 +69,18 @@ function inMemoryRateLimit(
   const remaining = Math.max(0, config.limit - entry.count)
   const isLimited = entry.count > config.limit
   
-  return {
+  const result: RateLimitInfo = {
     limit: config.limit,
     remaining,
     resetTime: entry.resetTime,
     retryAfter: isLimited ? Math.ceil((entry.resetTime - now) / 1000) : undefined
   }
+  
+  return result
 }
 
-// Redis-based rate limiter
-async function redisBasedRateLimit(
+// Vercel KV-based rate limiter (recommended for production on Vercel)
+async function vercelKVRateLimit(
   type: keyof typeof RATE_LIMITS,
   tier: 'free' | 'starter' | 'pro' | 'enterprise',
   identifier: string
@@ -86,14 +90,16 @@ async function redisBasedRateLimit(
   
   try {
     const result = await redisRateLimit(key, config.limit, config.window)
-    return {
+    const rateLimitInfo: RateLimitInfo = {
       limit: result.limit,
       remaining: result.remaining,
       resetTime: result.resetTime,
       retryAfter: result.retryAfter
     }
+    
+    return rateLimitInfo
   } catch (error) {
-    rateLimitLogger.error('Redis rate limiting failed, falling back to in-memory', identifier, error)
+    rateLimitLogger.error('Vercel KV rate limiting failed, falling back to in-memory', identifier, error)
     // Fallback to in-memory rate limiting
     return inMemoryRateLimit(type, tier, identifier)
   }
@@ -104,11 +110,14 @@ export function createRateLimiter(
   tier: 'free' | 'starter' | 'pro' | 'enterprise' = 'free'
 ) {
   return async (identifier: string): Promise<RateLimitInfo> => {
-    const redisClient = getRedisClient()
+    const kvClient = getRedisClient()
     
-    if (redisClient) {
-      return await redisBasedRateLimit(type, tier, identifier)
+    if (kvClient) {
+      // Prefer Vercel KV for persistent rate limiting across serverless invocations
+      return await vercelKVRateLimit(type, tier, identifier)
     } else {
+      // Fallback to in-memory (limited effectiveness on serverless)
+      rateLimitLogger.warn('Using in-memory rate limiting - consider enabling Vercel KV for production', identifier)
       return inMemoryRateLimit(type, tier, identifier)
     }
   }
@@ -127,7 +136,7 @@ export function withRateLimit(
       const rateLimiter = createRateLimiter(type, tier)
       const rateLimitInfo = await rateLimiter(identifier)
       
-      // Add rate limit headers
+      // Add rate limit headers for debugging and client awareness
       const headers = new Headers()
       headers.set('X-RateLimit-Limit', rateLimitInfo.limit.toString())
       headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
@@ -160,7 +169,7 @@ export function withRateLimit(
       return null // Continue to next middleware/handler
     } catch (error) {
       rateLimitLogger.error('Rate limiting error', undefined, error)
-      return null // Continue on error
+      return null // Continue on error (fail open)
     }
   }
 }
@@ -178,6 +187,7 @@ export const getIPAddress = (request: NextRequest): string => {
     return realIP
   }
   
+  // Fallback for development/testing
   return 'unknown'
 }
 
@@ -206,48 +216,43 @@ export const getUserTierFromRequest = async (_request: NextRequest): Promise<'fr
       return 'free'
     }
     
-    const profile = await getUserProfile(user.id)
-    
-    if (!profile) {
+    const userProfile = await getUserProfile(user.id)
+    if (!userProfile) {
       return 'free'
     }
     
-    return profile.subscription_status
+    // Map subscription status to tier
+    switch (userProfile.subscription_status) {
+      case 'starter':
+        return 'starter'
+      case 'pro':
+        return 'pro'
+      case 'enterprise':
+        return 'enterprise'
+      default:
+        return 'free'
+    }
   } catch (error) {
     rateLimitLogger.error('Error getting user tier from request', undefined, error)
     return 'free'
   }
 }
 
-// Clean up expired entries periodically (for in-memory fallback)
+// Cleanup function for in-memory store (useful for development)
 export function cleanupRateLimitStore(): void {
   const now = Date.now()
-  let cleanedCount = 0
-  
   for (const [key, entry] of rateLimitStore.entries()) {
     if (now > entry.resetTime) {
       rateLimitStore.delete(key)
-      cleanedCount++
     }
-  }
-  
-  if (cleanedCount > 0) {
-    rateLimitLogger.info(`Cleaned up ${cleanedCount} expired rate limit entries`)
   }
 }
 
-// Cleanup user-specific rate limits (useful after subscription upgrades)
+// Clean up rate limits for a specific user (useful for testing)
 export function cleanupUserRateLimits(userId: string): void {
-  let cleanedCount = 0
-  
   for (const [key] of rateLimitStore.entries()) {
     if (key.includes(userId)) {
       rateLimitStore.delete(key)
-      cleanedCount++
     }
-  }
-  
-  if (cleanedCount > 0) {
-    rateLimitLogger.info(`Cleaned up ${cleanedCount} rate limit entries for user ${userId}`)
   }
 } 
