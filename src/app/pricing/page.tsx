@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { getSubscriptionFeatures, redirectToCheckout } from '@/lib/stripe/client';
 import Navigation from '@/components/navigation';
 import { toast } from 'react-hot-toast';
+import Footer from '@/components/footer';
 
 interface UserSubscription {
   status: 'free' | 'starter' | 'pro' | 'enterprise';
@@ -261,6 +262,7 @@ function DashboardPricingLayout({ userSubscription, loading, onPlanSelect, onMan
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
@@ -449,6 +451,7 @@ function PricingPageContent() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
