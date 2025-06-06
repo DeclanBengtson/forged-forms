@@ -48,7 +48,7 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-8 py-6 pt-8">
+      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-8 py-6 pt-16 pb-8">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-medium text-gray-900">{form.name}</h1>
