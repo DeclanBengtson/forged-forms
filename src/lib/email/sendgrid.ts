@@ -46,10 +46,6 @@ function generateEmailBody(data: EmailNotificationData): string {
   body += `Submitted at: ${new Date(submission.submitted_at).toLocaleString()}\n`
   body += `Form: ${form.name} (${form.id})\n`
   
-  if (submission.ip_address) {
-    body += `IP Address: ${submission.ip_address}\n`
-  }
-  
   if (submission.user_agent) {
     body += `User Agent: ${submission.user_agent}\n`
   }
@@ -119,10 +115,6 @@ function generateEmailHtml(data: EmailNotificationData): string {
             <p style="margin: 5px 0;"><strong>Submitted:</strong> ${formatDate(submission.submitted_at)}</p>
             <p style="margin: 5px 0;"><strong>Form ID:</strong> ${form.id}</p>
   `
-  
-  if (submission.ip_address) {
-    html += `<p style="margin: 5px 0;"><strong>IP Address:</strong> ${submission.ip_address}</p>`
-  }
   
   if (submission.referrer) {
     html += `<p style="margin: 5px 0;"><strong>Referrer:</strong> ${submission.referrer}</p>`
