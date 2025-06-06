@@ -263,9 +263,6 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
                     {field}
                   </th>
                 ))}
-                <th className="px-6 py-3 text-left text-xs font-normal text-gray-400 uppercase tracking-wide">
-                  IP Address
-                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -286,9 +283,6 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
                       </div>
                     </td>
                   ))}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-normal">
-                    {submission.ip_address || '-'}
-                  </td>
                 </tr>
               ))}
             </tbody>
