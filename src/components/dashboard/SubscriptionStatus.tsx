@@ -214,36 +214,6 @@ export default function SubscriptionStatus({ subscription, limits, usage }: Subs
         />
       </div>
 
-      {/* Features */}
-      <div className="mb-6">
-        <h4 className="text-sm font-medium text-gray-700 mb-3">Plan Features</h4>
-        <div className="space-y-2">
-          <div className="flex items-center text-sm">
-            <div className={`w-2 h-2 rounded-full mr-3 ${limits.emailNotifications ? 'bg-green-500' : 'bg-gray-300'}`} />
-            <span className={limits.emailNotifications ? 'text-gray-700' : 'text-gray-400'}>
-              Email Notifications
-            </span>
-          </div>
-          <div className="flex items-center text-sm">
-            <div className={`w-2 h-2 rounded-full mr-3 ${limits.apiAccess ? 'bg-green-500' : 'bg-gray-300'}`} />
-            <span className={limits.apiAccess ? 'text-gray-700' : 'text-gray-400'}>
-              API Access
-            </span>
-          </div>
-          <div className="flex items-center text-sm">
-            <div className={`w-2 h-2 rounded-full mr-3 ${limits.exportData ? 'bg-green-500' : 'bg-gray-300'}`} />
-            <span className={limits.exportData ? 'text-gray-700' : 'text-gray-400'}>
-              Data Export
-            </span>
-          </div>
-          <div className="flex items-center text-sm">
-            <div className={`w-2 h-2 rounded-full mr-3 ${limits.priority_support ? 'bg-green-500' : 'bg-gray-300'}`} />
-            <span className={limits.priority_support ? 'text-gray-700' : 'text-gray-400'}>
-              Priority Support
-            </span>
-          </div>
-        </div>
-      </div>
 
       {/* Action Buttons */}
       <div className="space-y-3">
