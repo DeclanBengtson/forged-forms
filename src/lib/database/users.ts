@@ -231,5 +231,15 @@ export async function updateUserSubscription(
     trial_end?: string | null
   }
 ): Promise<UserProfile> {
-  return await updateUserProfile(userId, subscriptionData)
+  const result = await updateUserProfile(userId, subscriptionData)
+  
+  // Clear rate limits for the user to allow immediate access to new limits
+  try {
+    const { cleanupUserRateLimits } = await import('@/lib/middleware/rate-limit')
+    cleanupUserRateLimits(userId)
+  } catch (error) {
+    console.error('Failed to cleanup user rate limits:', error)
+  }
+  
+  return result
 } 

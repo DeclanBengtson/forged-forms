@@ -1,11 +1,17 @@
 import { createClient } from './src/lib/supabase/middleware'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { cleanupRateLimitStore } from './src/lib/middleware/rate-limit'
 
 export async function middleware(request: NextRequest) {
   const { supabase, supabaseResponse } = createClient(request)
 
   // This will refresh session if expired - required for Server Components
   await supabase.auth.getUser()
+
+  // Periodically cleanup expired rate limit entries (1% chance per request)
+  if (Math.random() < 0.01) {
+    cleanupRateLimitStore()
+  }
 
   return supabaseResponse
 }

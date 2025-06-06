@@ -43,6 +43,21 @@ export interface Database {
   }
 }
 
+// Plan limits types for submission viewing restrictions
+export interface SubmissionPlanLimits {
+  isLimited: boolean
+  maxAllowed: number
+  totalStored: number
+  upgradeRequired: boolean
+}
+
+export interface SubmissionStatsPlanLimits {
+  isLimited: boolean
+  maxAllowed: number
+  totalStored: number
+  hiddenCount: number
+}
+
 // User Profile types
 export interface UserProfile {
   id: string
@@ -159,6 +174,7 @@ export interface PaginatedResponse<T = any> extends ApiResponse<T[]> {
     total: number
     totalPages: number
   }
+  planLimits?: SubmissionPlanLimits
 }
 
 // Form validation types
