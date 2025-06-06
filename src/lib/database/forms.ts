@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { Form, FormInsert, FormUpdate, FormWithStats } from '@/lib/types/database'
+import { invalidateFormCache } from '@/lib/cache/forms'
 
 // Validate form data (simplified - no slug validation needed)
 export function validateForm(data: Partial<FormInsert>): {
@@ -167,6 +168,9 @@ export async function updateForm(id: string, userId: string, updates: FormUpdate
     throw new Error(`Failed to update form: ${error.message}`)
   }
 
+  // Invalidate cache when form is updated
+  await invalidateFormCache(id)
+
   return data
 }
 
@@ -183,4 +187,7 @@ export async function deleteForm(id: string, userId: string): Promise<void> {
   if (error) {
     throw new Error(`Failed to delete form: ${error.message}`)
   }
+
+  // Invalidate cache when form is deleted
+  await invalidateFormCache(id)
 } 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getPublicFormById } from '@/lib/database/forms'
+import { getCachedForm } from '@/lib/cache/forms'
 import { createSubmission, extractClientInfo } from '@/lib/database/submissions'
 import { ApiResponse } from '@/lib/types/database'
 import { sendFormSubmissionNotification } from '@/lib/email/sendgrid'
@@ -7,11 +7,19 @@ import { validateFormSubmission } from '@/lib/validation'
 import { apiLogger } from '@/lib/logger'
 import { withRateLimit, getIPAddress } from '@/lib/middleware/rate-limit-redis'
 
+// Configure for Node.js runtime to support winston and sendgrid
+// export const runtime = 'edge'  // Disabled: incompatible with winston/sendgrid dependencies
+
+// Prefer regions close to your database for lower latency
+export const preferredRegion = ['iad1'] // US East - adjust based on your Supabase region
+
 // POST /api/forms/[id]/submit - Public endpoint for form submissions
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const startTime = Date.now()
+  
   try {
     const { id } = await params
     const endpoint = `/api/forms/${id}/submit`
@@ -31,8 +39,8 @@ export async function POST(
       return rateLimitResponse;
     }
 
-    // Get form by ID (public access)
-    const form = await getPublicFormById(id)
+    // Get form by ID (with Upstash Redis caching for performance)
+    const form = await getCachedForm(id)
     
     if (!form) {
       return NextResponse.json(
@@ -48,7 +56,7 @@ export async function POST(
       )
     }
 
-    // Parse submission data
+    // Parse submission data with efficient processing
     let submissionData: Record<string, string | string[]>
 
     // Handle both JSON and form-encoded data
@@ -111,29 +119,34 @@ export async function POST(
     // Extract client information
     const clientInfo = extractClientInfo(request)
 
-    // Create the submission (always store, regardless of user's plan limits)
+    // Create the submission (optimized for serverless)
     const submission = await createSubmission(form.id, submissionData, clientInfo)
 
-    // Send email notification if enabled
+    // Send email notification asynchronously (non-blocking)
     if (form.email_notifications && form.notification_email) {
-      try {
-        await sendFormSubmissionNotification({
-          form,
-          submission,
-          submissionData
-        })
-        apiLogger.info('Email notification sent successfully', endpoint, { 
-          formId: id, 
-          submissionId: submission.id 
-        });
-      } catch (error) {
-        // Log error but don't fail the submission
-        apiLogger.error('Failed to send email notification', endpoint, error, {
-          formId: id,
-          submissionId: submission.id
-        });
-      }
+      // Use Promise.resolve().then() to make it truly async without awaiting
+      Promise.resolve().then(async () => {
+        try {
+          await sendFormSubmissionNotification({
+            form,
+            submission,
+            submissionData
+          })
+          apiLogger.info('Email notification sent successfully', endpoint, { 
+            formId: id, 
+            submissionId: submission.id 
+          });
+        } catch (error) {
+          // Log error but don't affect the submission response
+          apiLogger.error('Failed to send email notification', endpoint, error, {
+            formId: id,
+            submissionId: submission.id
+          });
+        }
+      })
     }
+
+    const responseTime = Date.now() - startTime
 
     const response: ApiResponse = {
       success: true,
@@ -144,11 +157,12 @@ export async function POST(
       }
     }
 
-    // Add CORS headers for cross-origin requests
+    // Add performance and CORS headers
     const responseHeaders = new Headers()
     responseHeaders.set('Access-Control-Allow-Origin', '*')
     responseHeaders.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
     responseHeaders.set('Access-Control-Allow-Headers', 'Content-Type')
+    responseHeaders.set('X-Response-Time', `${responseTime}ms`)
 
     return NextResponse.json(response, { 
       status: 201,
@@ -156,6 +170,7 @@ export async function POST(
     })
     
   } catch (error) {
+    const responseTime = Date.now() - startTime
     apiLogger.error('Error processing form submission', `/api/forms/${(await params).id}/submit`, error);
     
     const response: ApiResponse = {
@@ -168,6 +183,7 @@ export async function POST(
     responseHeaders.set('Access-Control-Allow-Origin', '*')
     responseHeaders.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
     responseHeaders.set('Access-Control-Allow-Headers', 'Content-Type')
+    responseHeaders.set('X-Response-Time', `${responseTime}ms`)
     
     return NextResponse.json(response, { 
       status: 500,
