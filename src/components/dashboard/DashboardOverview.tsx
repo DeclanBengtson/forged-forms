@@ -1,6 +1,9 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Form } from '@/lib/types/database';
+import { getDashboardAnalytics } from '@/lib/api/client';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface DashboardOverviewProps {
   forms: Form[];
@@ -24,11 +27,35 @@ function formatUUID(uuid: string): string {
 }
 
 export default function DashboardOverview({ forms, onCreateForm, onDeleteForm, user }: DashboardOverviewProps) {
+  const [analytics, setAnalytics] = useState<any>(null);
+  const [_analyticsLoading, setAnalyticsLoading] = useState(false);
+
+  // Load analytics when component mounts and there are forms
+  useEffect(() => {
+    if (forms.length > 0) {
+      loadAnalytics();
+    }
+  }, [forms.length]);
+
+  const loadAnalytics = async () => {
+    setAnalyticsLoading(true);
+    try {
+      const result = await getDashboardAnalytics();
+      if (result.success && result.data) {
+        setAnalytics(result.data.analytics);
+      }
+    } catch (err) {
+      console.error('Failed to load dashboard analytics:', err);
+    } finally {
+      setAnalyticsLoading(false);
+    }
+  };
+
   const stats: DashboardStats = {
-    totalForms: forms.length,
-    totalSubmissions: 0,
-    submissionsThisWeek: 0,
-    activeForms: forms.filter(form => form.is_active).length
+    totalForms: analytics?.totalForms || forms.length,
+    totalSubmissions: analytics?.totalSubmissions || 0,
+    submissionsThisWeek: analytics?.submissionsThisWeek || 0,
+    activeForms: analytics?.activeForms || forms.filter(form => form.is_active).length
   };
 
   return (
@@ -86,6 +113,119 @@ export default function DashboardOverview({ forms, onCreateForm, onDeleteForm, u
             </div>
           </div>
         </div>
+
+        {/* Analytics Section - Only show when there are forms and submissions */}
+        {forms.length > 0 && analytics && analytics.totalSubmissions > 0 && (
+          <div className="mb-12">
+            <div className="mb-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-2">Analytics Overview</h2>
+              <p className="text-sm text-gray-500 font-light">
+                Insights across all your forms
+              </p>
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Submission Trends Chart */}
+              <div className="lg:col-span-2">
+                <div className="bg-white border border-gray-200 rounded-sm p-6 hover:border-gray-300 transition-all duration-300">
+                  <h3 className="text-sm font-normal text-gray-600 uppercase tracking-wide mb-4">
+                    Submission Trends (Last 7 Days)
+                  </h3>
+                  <div className="h-48">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={analytics.formPerformanceChart}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                        <XAxis 
+                          dataKey="displayDate" 
+                          stroke="#6b7280"
+                          fontSize={11}
+                        />
+                        <YAxis stroke="#6b7280" fontSize={11} />
+                        <Tooltip 
+                          contentStyle={{
+                            backgroundColor: '#f9fafb',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '4px',
+                            fontSize: '12px'
+                          }}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="submissions" 
+                          stroke="#1f2937" 
+                          strokeWidth={2}
+                          dot={{ fill: '#1f2937', r: 3 }}
+                          activeDot={{ r: 4 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+
+              {/* Top Performing Forms */}
+              <div>
+                <div className="bg-white border border-gray-200 rounded-sm p-6 hover:border-gray-300 transition-all duration-300">
+                  <h3 className="text-sm font-normal text-gray-600 uppercase tracking-wide mb-4">
+                    Top Performing Forms
+                  </h3>
+                  <div className="space-y-3">
+                    {analytics.topPerformingForms.slice(0, 5).map((form: any, index: number) => (
+                      <div key={form.id} className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-6 h-6 bg-gray-100 border border-gray-200 rounded-sm flex items-center justify-center">
+                            <span className="text-xs font-medium text-gray-600">{index + 1}</span>
+                          </div>
+                          <div>
+                            <div className="text-sm font-normal text-gray-900 truncate max-w-32">
+                              {form.name}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {form.submissions} submissions
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Activity */}
+            {analytics.recentActivity.length > 0 && (
+              <div className="mt-8">
+                <div className="bg-white border border-gray-200 rounded-sm p-6 hover:border-gray-300 transition-all duration-300">
+                  <h3 className="text-sm font-normal text-gray-600 uppercase tracking-wide mb-4">
+                    Recent Activity
+                  </h3>
+                  <div className="space-y-3">
+                    {analytics.recentActivity.slice(0, 5).map((activity: any, index: number) => (
+                      <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                          <div>
+                            <div className="text-sm font-normal text-gray-900">
+                              New submission to <span className="font-medium">{activity.formName}</span>
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {activity.fieldsCount} fields • {new Date(activity.submittedAt).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                hour: 'numeric',
+                                minute: '2-digit'
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {forms.length === 0 ? (
           // Getting Started Section with Subscription Info
@@ -214,7 +354,7 @@ export default function DashboardOverview({ forms, onCreateForm, onDeleteForm, u
                         <div className="flex items-center space-x-4">
                           <div className="text-right">
                             <div className="text-xs font-normal text-gray-900">
-                              0
+                              {analytics?.topPerformingForms?.find((f: any) => f.id === form.id)?.submissions || 0}
                             </div>
                             <div className="text-xs text-gray-400 font-normal">
                               {new Date(form.created_at).toLocaleDateString('en-US', { 

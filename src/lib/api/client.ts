@@ -81,6 +81,17 @@ export const formsApi = {
       },
     })
     return handleResponse<ApiResponse<any>>(response)
+  },
+
+  // Get form analytics
+  async getAnalytics(id: string): Promise<ApiResponse<any>> {
+    const response = await fetch(`${API_BASE}/forms/${id}/analytics`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    return handleResponse<ApiResponse<any>>(response)
   }
 }
 
@@ -184,6 +195,23 @@ export const getForm = formsApi.get
 export const updateForm = formsApi.update
 export const deleteForm = formsApi.delete
 export const getFormStats = formsApi.getStats
+export const getFormAnalytics = formsApi.getAnalytics
+
+// Dashboard API
+export const dashboardApi = {
+  // Get dashboard analytics
+  async getAnalytics(): Promise<ApiResponse<any>> {
+    const response = await fetch(`${API_BASE}/dashboard/analytics`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    return handleResponse<ApiResponse<any>>(response)
+  }
+}
+
+export const getDashboardAnalytics = dashboardApi.getAnalytics
 
 export const listSubmissions = submissionsApi.list
 export const exportSubmissions = submissionsApi.export
