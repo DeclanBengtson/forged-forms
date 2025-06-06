@@ -331,12 +331,12 @@ export default function DashboardOverview({ forms, onCreateForm, onDeleteForm, u
                   </button>
                 </div>
                 
-                <div className="p-6">
+                <div className="p-8">
                   <div className="space-y-4">
                     {forms.slice(0, 5).map((form) => (
                       <div
                         key={form.id}
-                        className="flex items-center justify-between py-4 border-b border-gray-100 last:border-b-0 group"
+                        className="flex items-center justify-between pt-6 pb-4 border-b border-gray-100 last:border-b-0 group"
                       >
                         <div className="flex items-center space-x-4">
                           <div className={`w-2 h-2 rounded-full ${

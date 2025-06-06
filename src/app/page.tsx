@@ -37,21 +37,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Trust Indicators */}
-      <section className="py-12 border-y border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-sm font-medium text-gray-500 dark:text-gray-400 mb-8">
-            Trusted by developers from companies worldwide
-          </p>
-          <div className="flex items-center justify-center space-x-12 opacity-60">
-            <div className="text-2xl font-bold text-gray-400">Vercel</div>
-            <div className="text-2xl font-bold text-gray-400">Netlify</div>
-            <div className="text-2xl font-bold text-gray-400">GitHub</div>
-            <div className="text-2xl font-bold text-gray-400">AWS</div>
-          </div>
-        </div>
-      </section>
-
       {/* Code Preview */}
       <section className="py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -64,30 +49,65 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-2xl blur-xl"></div>
-              <div className="relative bg-gray-900 dark:bg-gray-800 rounded-2xl p-8 shadow-2xl border border-gray-700">
-                <div className="flex items-center gap-2 mb-6">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="ml-4 text-gray-400 text-sm font-mono">contact-form.html</span>
+              <div className="absolute -inset-6 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-3xl blur-2xl"></div>
+              <div className="relative bg-gray-900 dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 overflow-hidden">
+                <div className="flex items-center justify-between px-6 py-4 bg-gray-800 dark:bg-gray-700 border-b border-gray-700">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-400 text-sm font-mono">contact-form.html</span>
+                  <div className="w-6"></div>
                 </div>
-                <pre className="text-green-400 font-mono text-sm sm:text-base leading-relaxed overflow-x-auto">
-{`<form action="https://formflow.dev/api/forms/contact" method="POST">
-  <input name="name" placeholder="Your Name" required />
-  <input name="email" type="email" placeholder="Email" required />
-  <textarea name="message" placeholder="Message" required></textarea>
-  <button type="submit">Send Message</button>
-</form>`}
-                </pre>
+                <div className="p-6 overflow-x-auto">
+                  <pre className="text-sm sm:text-base leading-relaxed">
+                    <code>
+                      <span className="text-gray-500">&lt;!-- Beautiful Contact Form --&gt;</span>{'\n'}
+                      <span className="text-blue-400">&lt;form</span> <span className="text-green-400">action=</span><span className="text-yellow-300">&quot;https://formflow.dev/api/forms/contact&quot;</span>{'\n'}
+                      <span className="text-green-400">      method=</span><span className="text-yellow-300">&quot;POST&quot;</span> <span className="text-green-400">class=</span><span className="text-yellow-300">&quot;contact-form&quot;</span><span className="text-blue-400">&gt;</span>{'\n'}
+                      {'\n'}
+                      <span className="text-gray-500">  &lt;!-- Name Input --&gt;</span>{'\n'}
+                      <span className="text-blue-400">  &lt;div</span> <span className="text-green-400">class=</span><span className="text-yellow-300">&quot;form-group&quot;</span><span className="text-blue-400">&gt;</span>{'\n'}
+                      <span className="text-blue-400">    &lt;label</span> <span className="text-green-400">for=</span><span className="text-yellow-300">&quot;name&quot;</span><span className="text-blue-400">&gt;</span><span className="text-white">Full Name</span><span className="text-blue-400">&lt;/label&gt;</span>{'\n'}
+                      <span className="text-blue-400">    &lt;input</span> <span className="text-green-400">type=</span><span className="text-yellow-300">&quot;text&quot;</span> <span className="text-green-400">id=</span><span className="text-yellow-300">&quot;name&quot;</span> <span className="text-green-400">name=</span><span className="text-yellow-300">&quot;name&quot;</span>{'\n'}
+                      <span className="text-green-400">           placeholder=</span><span className="text-yellow-300">&quot;Enter your full name&quot;</span> <span className="text-green-400">required</span><span className="text-blue-400">&gt;</span>{'\n'}
+                      <span className="text-blue-400">  &lt;/div&gt;</span>{'\n'}
+                      {'\n'}
+                      <span className="text-gray-500">  &lt;!-- Email Input --&gt;</span>{'\n'}
+                      <span className="text-blue-400">  &lt;div</span> <span className="text-green-400">class=</span><span className="text-yellow-300">&quot;form-group&quot;</span><span className="text-blue-400">&gt;</span>{'\n'}
+                      <span className="text-blue-400">    &lt;label</span> <span className="text-green-400">for=</span><span className="text-yellow-300">&quot;email&quot;</span><span className="text-blue-400">&gt;</span><span className="text-white">Email Address</span><span className="text-blue-400">&lt;/label&gt;</span>{'\n'}
+                      <span className="text-blue-400">    &lt;input</span> <span className="text-green-400">type=</span><span className="text-yellow-300">&quot;email&quot;</span> <span className="text-green-400">id=</span><span className="text-yellow-300">&quot;email&quot;</span> <span className="text-green-400">name=</span><span className="text-yellow-300">&quot;email&quot;</span>{'\n'}
+                      <span className="text-green-400">           placeholder=</span><span className="text-yellow-300">&quot;your@email.com&quot;</span> <span className="text-green-400">required</span><span className="text-blue-400">&gt;</span>{'\n'}
+                      <span className="text-blue-400">  &lt;/div&gt;</span>{'\n'}
+                      {'\n'}
+                      <span className="text-gray-500">  &lt;!-- Message Textarea --&gt;</span>{'\n'}
+                      <span className="text-blue-400">  &lt;div</span> <span className="text-green-400">class=</span><span className="text-yellow-300">&quot;form-group&quot;</span><span className="text-blue-400">&gt;</span>{'\n'}
+                      <span className="text-blue-400">    &lt;label</span> <span className="text-green-400">for=</span><span className="text-yellow-300">&quot;message&quot;</span><span className="text-blue-400">&gt;</span><span className="text-white">Your Message</span><span className="text-blue-400">&lt;/label&gt;</span>{'\n'}
+                      <span className="text-blue-400">    &lt;textarea</span> <span className="text-green-400">id=</span><span className="text-yellow-300">&quot;message&quot;</span> <span className="text-green-400">name=</span><span className="text-yellow-300">&quot;message&quot;</span> <span className="text-green-400">rows=</span><span className="text-yellow-300">&quot;5&quot;</span>{'\n'}
+                      <span className="text-green-400">              placeholder=</span><span className="text-yellow-300">&quot;Tell us about your project...&quot;</span> <span className="text-green-400">required</span><span className="text-blue-400">&gt;&lt;/textarea&gt;</span>{'\n'}
+                      <span className="text-blue-400">  &lt;/div&gt;</span>{'\n'}
+                      {'\n'}
+                      <span className="text-gray-500">  &lt;!-- Submit Button --&gt;</span>{'\n'}
+                      <span className="text-blue-400">  &lt;button</span> <span className="text-green-400">type=</span><span className="text-yellow-300">&quot;submit&quot;</span> <span className="text-green-400">class=</span><span className="text-yellow-300">&quot;submit-btn&quot;</span><span className="text-blue-400">&gt;</span>{'\n'}
+                      <span className="text-white">    Send Message</span>{'\n'}
+                      <span className="text-blue-400">  &lt;/button&gt;</span>{'\n'}
+                      {'\n'}
+                      <span className="text-blue-400">&lt;/form&gt;</span>
+                    </code>
+                  </pre>
+                </div>
               </div>
             </div>
             <div className="text-center mt-8">
-              <p className="text-gray-600 dark:text-gray-400 text-lg">
-                Point your form to our endpoint. That&apos;s it! ✨
-              </p>
+              <div className="inline-flex items-center gap-3 bg-white dark:bg-gray-800 px-6 py-3 rounded-full shadow-lg border border-gray-200 dark:border-gray-700">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <p className="text-gray-700 dark:text-gray-300 font-medium">
+                  Point your form to our endpoint. That&apos;s it! ✨
+                </p>
+              </div>
             </div>
           </div>
         </div>
