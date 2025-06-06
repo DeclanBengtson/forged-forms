@@ -170,9 +170,93 @@ export const environmentSchema = z.object({
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'debug']).default('info'),
 });
 
+// Fast validation for high-volume submissions (bypasses Zod overhead)
+export function validateFormSubmissionFast(data: unknown): {
+  success: boolean
+  data?: Record<string, any>
+  error?: { message: string; field?: string }
+} {
+  if (!data || typeof data !== 'object') {
+    return { success: false, error: { message: 'Invalid data format' } }
+  }
+
+  const input = data as Record<string, any>
+  const validated: Record<string, any> = {}
+
+  // Basic validation rules without Zod overhead
+  const validationRules = {
+    email: (value: string) => {
+      if (value.length > 254) return 'Email too long'
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Invalid email format'
+      return null
+    },
+    phone: (value: string) => {
+      if (value.length > 20) return 'Phone number too long'
+      if (!/^[\+]?[1-9][\d\s\-\(\)]{0,20}$/.test(value)) return 'Invalid phone format'
+      return null
+    },
+    name: (value: string) => {
+      if (value.length > 100) return 'Name too long'
+      return null
+    },
+    message: (value: string) => {
+      if (value.length > 5000) return 'Message too long'
+      return null
+    },
+    subject: (value: string) => {
+      if (value.length > 200) return 'Subject too long'
+      return null
+    },
+    website: (value: string) => {
+      if (value.length > 2048) return 'URL too long'
+      if (value && !/^https?:\/\/.+/.test(value)) return 'Invalid URL format'
+      return null
+    }
+  }
+
+  // Validate each field
+  for (const [key, value] of Object.entries(input)) {
+    if (typeof value === 'string') {
+      const trimmed = value.trim()
+      if (trimmed.length === 0) continue
+
+      // Apply specific validation if rule exists
+      if (key in validationRules) {
+        const rule = validationRules[key as keyof typeof validationRules]
+        const error = rule(trimmed)
+        if (error) {
+          return { success: false, error: { message: error, field: key } }
+        }
+      }
+
+      validated[key] = trimmed
+    } else if (typeof value === 'number' || typeof value === 'boolean') {
+      validated[key] = value
+    } else if (Array.isArray(value)) {
+      const cleanArray = value
+        .filter(item => typeof item === 'string' && item.trim().length > 0)
+        .map(item => item.trim())
+      
+      if (cleanArray.length > 0) {
+        validated[key] = cleanArray
+      }
+    }
+  }
+
+  return { success: true, data: validated }
+}
+
 // Validation helper functions
 export function validateFormSubmission(data: unknown) {
   return formSubmissionSchema.safeParse(data);
+}
+
+// Use fast validation for high-volume scenarios
+export function validateFormSubmissionOptimized(data: unknown, useFastValidation = false) {
+  if (useFastValidation) {
+    return validateFormSubmissionFast(data);
+  }
+  return validateFormSubmission(data);
 }
 
 export function validateFormCreation(data: unknown) {
