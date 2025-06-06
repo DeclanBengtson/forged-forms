@@ -1,10 +1,68 @@
 import React, { useState } from 'react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-const codeSnippets: Record<string, string> = {
-  html: `<!-- modify this form HTML and place wherever you want your form -->\n<form action=\"https://forgedforms.com/form\" method=\"POST\">\n  <label>\n    Your email:\n    <input type=\"email\" name=\"email\">\n  </label>\n  <label>\n    Your message:\n    <textarea name=\"message\"></textarea>\n  </label>\n  <!-- your other form fields go here -->\n  <button type=\"submit\">Send</button>\n</form>`,
-  ajax: `// Example AJAX form submission (using fetch)\nconst form = document.querySelector('form');\nform.addEventListener('submit', async (e) => {\n  e.preventDefault();\n  const data = new FormData(form);\n  const response = await fetch(form.action, {\n    method: 'POST',\n    body: data,\n    headers: {\n      'Accept': 'application/json'\n    }\n  });\n  if (response.ok) {\n    alert('Form submitted!');\n  } else {\n    alert('Submission failed.');\n  }\n});`,
-  react: `// Example React form (JSX)\nfunction ContactForm() {\n  const handleSubmit = (e) => {\n    e.preventDefault();\n    // handle form submission\n  };\n  return (\n    <form action=\"https://forgedforms.com/form\" method=\"POST\" onSubmit={handleSubmit}>\n      <label>\n        Your email:\n        <input type=\"email\" name=\"email\" />\n      </label>\n      <label>\n        Your message:\n        <textarea name=\"message\" />\n      </label>\n      <button type=\"submit\">Send</button>\n    </form>\n  );\n}`,
- 
+const codeSnippets: Record<string, { code: string; language: string }> = {
+  html: {
+    code: `<!-- modify this form HTML and place wherever you want your form -->
+<form action="https://forgedforms.com/form" method="POST">
+  <label>
+    Your email:
+    <input type="email" name="email">
+  </label>
+  <label>
+    Your message:
+    <textarea name="message"></textarea>
+  </label>
+  <!-- your other form fields go here -->
+  <button type="submit">Send</button>
+</form>`,
+    language: 'html'
+  },
+  ajax: {
+    code: `// Example AJAX form submission (using fetch)
+const form = document.querySelector('form');
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const data = new FormData(form);
+  const response = await fetch(form.action, {
+    method: 'POST',
+    body: data,
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
+  if (response.ok) {
+    alert('Form submitted!');
+  } else {
+    alert('Submission failed.');
+  }
+});`,
+    language: 'javascript'
+  },
+  react: {
+    code: `// Example React form (JSX)
+function ContactForm() {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // handle form submission
+  };
+  return (
+    <form action="https://forgedforms.com/form" method="POST" onSubmit={handleSubmit}>
+      <label>
+        Your email:
+        <input type="email" name="email" />
+      </label>
+      <label>
+        Your message:
+        <textarea name="message" />
+      </label>
+      <button type="submit">Send</button>
+    </form>
+  );
+}`,
+    language: 'jsx'
+  }
 };
 
 const tabs = [
@@ -17,10 +75,6 @@ export default function CodeExample() {
   const [activeTab, setActiveTab] = useState('html');
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Code Example
-        </h3>
       <div className="bg-slate-900 rounded-lg shadow-lg max-w-3xl mx-auto mt-8 overflow-hidden border border-slate-800">
         <div className="flex space-x-6 px-6 pt-4">
           {tabs.map(tab => (
@@ -38,10 +92,22 @@ export default function CodeExample() {
             </button>
           ))}
         </div>
-        <div className="bg-slate-900 px-6 py-6 min-h-[320px] text-sm font-mono text-slate-100 border-t border-slate-800 whitespace-pre overflow-x-auto">
-          {codeSnippets[activeTab]}
+        <div className="bg-slate-900 border-t border-slate-800">
+          <SyntaxHighlighter
+            language={codeSnippets[activeTab].language}
+            style={oneDark}
+            customStyle={{
+              margin: 0,
+              padding: '24px',
+              background: 'transparent',
+              fontSize: '14px',
+              minHeight: '320px'
+            }}
+            showLineNumbers={false}
+          >
+            {codeSnippets[activeTab].code}
+          </SyntaxHighlighter>
         </div>
       </div>
-    </div>
   );
 } 
