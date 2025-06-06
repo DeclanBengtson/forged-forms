@@ -14,13 +14,17 @@
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.9",
+    "ioredis": "^5.4.1",
     "next": "15.3.3",
     "node-fetch": "^3.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-error-boundary": "^4.1.2",
     "react-hot-toast": "^2.5.2",
     "recharts": "^2.15.3",
-    "stripe": "^18.2.1"
+    "stripe": "^18.2.1",
+    "winston": "^3.17.0",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
