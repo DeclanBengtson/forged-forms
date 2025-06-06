@@ -14,6 +14,7 @@ interface DashboardNavigationProps {
   onLogout: () => void;
   user: { email?: string };
   loading?: boolean;
+  activeTab?: 'dashboard' | 'documentation';
 }
 
 export default function DashboardNavigation({  
@@ -21,10 +22,11 @@ export default function DashboardNavigation({
   onCreateForm, 
   onLogout, 
   user, 
-  loading = false 
+  loading = false,
+  activeTab: propActiveTab = 'dashboard'
 }: DashboardNavigationProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState(propActiveTab);
 
   // Get initials for profile picture
   const getInitials = (email: string) => {
@@ -52,7 +54,8 @@ export default function DashboardNavigation({
 
         {/* Center - Navigation Tabs */}
         <div className="flex items-center space-x-2">
-          <button
+          <Link
+            href="/dashboard"
             onClick={() => {
               setActiveTab('dashboard');
               onSelectForm(null);
@@ -64,9 +67,10 @@ export default function DashboardNavigation({
             }`}
           >
             Dashboard
-          </button>
+          </Link>
           <Link
             href="/documentation"
+            onClick={() => setActiveTab('documentation')}
             className={`px-6 py-3 text-sm font-normal rounded-none border-b-2 transition-all duration-300 ${
               activeTab === 'documentation'
                 ? 'text-gray-900 border-gray-900'
@@ -104,6 +108,13 @@ export default function DashboardNavigation({
                   <div className="text-sm font-medium text-gray-900">{user.email?.split('@')[0]}</div>
                   <div className="text-xs text-gray-500 mt-0.5">{user.email}</div>
                 </div>
+                <Link
+                  href="/dashboard/profile"
+                  onClick={() => setShowProfileMenu(false)}
+                  className="w-full text-left px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors duration-300 block"
+                >
+                  Profile Settings
+                </Link>
                 <button
                   onClick={() => {
                     onLogout();

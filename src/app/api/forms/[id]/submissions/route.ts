@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getFormById } from '@/lib/database/forms'
 import { getFormSubmissions } from '@/lib/database/submissions'
 import { PaginatedResponse } from '@/lib/types/database'
+import { withRateLimit, getUserIdFromRequest, getUserTierFromRequest } from '@/lib/middleware/rate-limit'
 
 // GET /api/forms/[id]/submissions - Get submissions for a form
 export async function GET(
@@ -20,6 +21,17 @@ export async function GET(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
       )
+    }
+
+    // Apply rate limiting for API calls
+    const rateLimitResponse = await withRateLimit(
+      'api',
+      getUserIdFromRequest,
+      getUserTierFromRequest
+    )(request)
+    
+    if (rateLimitResponse) {
+      return rateLimitResponse
     }
 
     const { id } = await params

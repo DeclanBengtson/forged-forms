@@ -71,7 +71,7 @@ export async function POST(
     // Extract client information
     const clientInfo = extractClientInfo(request)
 
-    // Create the submission
+    // Create the submission (always store, regardless of user's plan limits)
     const submission = await createSubmission(form.id, submissionData, clientInfo)
 
     // Send email notification if enabled
@@ -129,16 +129,17 @@ export async function POST(
   }
 }
 
-// OPTIONS /api/forms/[id]/submit - Handle preflight requests for CORS
+// Handle CORS preflight requests
 export async function OPTIONS() {
-  const responseHeaders = new Headers()
-  responseHeaders.set('Access-Control-Allow-Origin', '*')
-  responseHeaders.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
-  responseHeaders.set('Access-Control-Allow-Headers', 'Content-Type')
-  responseHeaders.set('Access-Control-Max-Age', '86400') // Cache for 24 hours
-
-  return new NextResponse(null, {
-    status: 200,
-    headers: responseHeaders
-  })
+  return NextResponse.json(
+    {},
+    {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    }
+  )
 } 

@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createForm, getUserForms } from '@/lib/database/forms'
+import { canUserCreateForm } from '@/lib/database/users'
 import { ApiResponse, FormInsert } from '@/lib/types/database'
+import { withRateLimit, getUserIdFromRequest, getUserTierFromRequest } from '@/lib/middleware/rate-limit'
 
 // GET /api/forms - List all forms for the authenticated user
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
     
@@ -18,23 +20,34 @@ export async function GET(_request: NextRequest) {
       )
     }
 
-    // Get forms for this user
+    // Apply rate limiting for API calls
+    const rateLimitResponse = await withRateLimit(
+      'api',
+      getUserIdFromRequest,
+      getUserTierFromRequest
+    )(request)
+    
+    if (rateLimitResponse) {
+      return rateLimitResponse
+    }
+
+    // Get user's forms
     const forms = await getUserForms(user.id)
     
     const response: ApiResponse = {
       success: true,
       data: forms,
-      message: 'Forms retrieved successfully'
+      message: `Found ${forms.length} forms`
     }
 
     return NextResponse.json(response)
     
   } catch (error) {
-    console.error('Error listing forms:', error)
+    console.error('Error fetching forms:', error)
     
     const response: ApiResponse = {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to retrieve forms'
+      error: error instanceof Error ? error.message : 'Failed to fetch forms'
     }
     
     return NextResponse.json(response, { status: 500 })
@@ -53,6 +66,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
+      )
+    }
+
+    // Apply rate limiting for form creation
+    const rateLimitResponse = await withRateLimit(
+      'formCreation',
+      getUserIdFromRequest,
+      getUserTierFromRequest
+    )(request)
+    
+    if (rateLimitResponse) {
+      return rateLimitResponse
+    }
+
+    // Check if user can create more forms
+    const { canCreate, reason } = await canUserCreateForm(user.id)
+    if (!canCreate) {
+      return NextResponse.json(
+        { success: false, error: reason },
+        { status: 403 }
       )
     }
 
