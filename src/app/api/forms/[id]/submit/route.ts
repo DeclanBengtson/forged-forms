@@ -3,6 +3,9 @@ import { getPublicFormById } from '@/lib/database/forms'
 import { createSubmission, extractClientInfo } from '@/lib/database/submissions'
 import { ApiResponse } from '@/lib/types/database'
 import { sendFormSubmissionNotification } from '@/lib/email/sendgrid'
+import { validateFormSubmission } from '@/lib/validation'
+import { apiLogger } from '@/lib/logger'
+import { withRateLimit, getIPAddress } from '@/lib/middleware/rate-limit-redis'
 
 // POST /api/forms/[id]/submit - Public endpoint for form submissions
 export async function POST(
@@ -11,6 +14,22 @@ export async function POST(
 ) {
   try {
     const { id } = await params
+    const endpoint = `/api/forms/${id}/submit`
+
+    // Apply rate limiting for form submissions (IP-based)
+    const rateLimitResponse = await withRateLimit(
+      'submission',
+      getIPAddress,
+      async () => 'free' // Public submissions use free tier limits
+    )(request);
+    
+    if (rateLimitResponse) {
+      apiLogger.warn('Rate limit exceeded for form submission', endpoint, {
+        formId: id,
+        ip: getIPAddress(request)
+      });
+      return rateLimitResponse;
+    }
 
     // Get form by ID (public access)
     const form = await getPublicFormById(id)
@@ -62,11 +81,32 @@ export async function POST(
 
     // Validate that we have some data
     if (!submissionData || Object.keys(submissionData).length === 0) {
+      apiLogger.warn('Empty form submission received', endpoint, { formId: id });
       return NextResponse.json(
         { success: false, error: 'No form data provided' },
         { status: 400 }
       )
     }
+
+    // Validate and sanitize form data
+    const validationResult = validateFormSubmission(submissionData);
+    if (!validationResult.success) {
+      apiLogger.warn('Invalid form submission data', endpoint, {
+        formId: id,
+        errors: validationResult.error.errors.map(e => e.message)
+      });
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Invalid form data',
+          details: validationResult.error.errors.map(e => e.message)
+        },
+        { status: 400 }
+      )
+    }
+
+    // Use validated and sanitized data
+    submissionData = validationResult.data;
 
     // Extract client information
     const clientInfo = extractClientInfo(request)
@@ -82,9 +122,16 @@ export async function POST(
           submission,
           submissionData
         })
+        apiLogger.info('Email notification sent successfully', endpoint, { 
+          formId: id, 
+          submissionId: submission.id 
+        });
       } catch (error) {
         // Log error but don't fail the submission
-        console.error('Failed to send email notification:', error)
+        apiLogger.error('Failed to send email notification', endpoint, error, {
+          formId: id,
+          submissionId: submission.id
+        });
       }
     }
 
@@ -109,7 +156,7 @@ export async function POST(
     })
     
   } catch (error) {
-    console.error('Error processing form submission:', error)
+    apiLogger.error('Error processing form submission', `/api/forms/${(await params).id}/submit`, error);
     
     const response: ApiResponse = {
       success: false,

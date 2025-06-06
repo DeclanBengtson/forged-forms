@@ -1,6 +1,6 @@
 import { createClient } from './src/lib/supabase/middleware'
 import { NextRequest, NextResponse } from 'next/server'
-import { cleanupRateLimitStore } from './src/lib/middleware/rate-limit'
+import { cleanupRateLimitStore } from './src/lib/middleware/rate-limit-redis'
 
 export async function middleware(request: NextRequest) {
   const { supabase, supabaseResponse } = createClient(request)
