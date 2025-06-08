@@ -14,7 +14,7 @@ interface DashboardNavigationProps {
   onLogout: () => void;
   user: { email?: string };
   loading?: boolean;
-  activeTab?: 'dashboard' | 'documentation';
+  activeTab?: 'dashboard' | 'documentation' | 'templates';
 }
 
 export default function DashboardNavigation({  
@@ -68,6 +68,17 @@ export default function DashboardNavigation({
             }`}
           >
             Dashboard
+          </Link>
+          <Link
+            href="/templates"
+            onClick={() => setActiveTab('templates')}
+            className={`px-6 py-3 text-sm font-normal rounded-none border-b-2 transition-colors duration-200 ${
+              activeTab === 'templates'
+                ? 'text-gray-900 border-gray-900'
+                : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Templates
           </Link>
           <Link
             href="/documentation"
@@ -216,6 +227,20 @@ export default function DashboardNavigation({
               }`}
             >
               Dashboard
+            </Link>
+            <Link
+              href="/templates"
+              onClick={() => {
+                setActiveTab('templates');
+                setIsMobileMenuOpen(false);
+              }}
+              className={`text-left px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                activeTab === 'templates'
+                  ? 'text-gray-900 bg-gray-50 rounded-lg'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg'
+              }`}
+            >
+              Templates
             </Link>
             <Link
               href="/documentation"

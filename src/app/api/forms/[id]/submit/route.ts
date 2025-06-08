@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCachedForm } from '@/lib/cache/forms'
-import { createSubmission, extractClientInfo } from '@/lib/database/submissions'
+import { createSubmission } from '@/lib/database/submissions'
 import { ApiResponse } from '@/lib/types/database'
 import { sendFormSubmissionNotification } from '@/lib/email/sendgrid'
 import { validateFormSubmissionOptimized } from '@/lib/validation'
@@ -26,7 +26,7 @@ const CIRCUIT_BREAKER_TIMEOUT = 30000; // 30 seconds
 
 function updateCircuitBreaker(service: string, success: boolean): boolean {
   const now = Date.now();
-  let breaker = circuitBreakers.get(service) || { failures: 0, lastFailTime: 0, state: 'CLOSED' };
+  const breaker = circuitBreakers.get(service) || { failures: 0, lastFailTime: 0, state: 'CLOSED' };
   
   if (success) {
     breaker.failures = 0;
@@ -58,7 +58,7 @@ const performanceMetrics = {
   totalTime: 0
 };
 
-function trackPerformance(operation: string, startTime: number): number {
+function _trackPerformance(operation: string, startTime: number): number {
   const duration = Date.now() - startTime;
   (performanceMetrics as any)[`${operation}Time`] = duration;
   return duration;
@@ -211,7 +211,7 @@ export async function POST(
     }
 
     // **OPTIMIZATION: Performance monitoring**
-    const metricsStart = Date.now();
+    const _metricsStart = Date.now();
 
     // Log metrics at the end:
     apiLogger.info('Performance metrics', endpoint, {

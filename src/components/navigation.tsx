@@ -22,10 +22,10 @@ export default function Navigation() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link
-              href="#features"
+              href="/templates"
               className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors duration-200 font-medium"
             >
-              Features
+              Templates
             </Link>
             <Link
               href="/documentation"
@@ -92,11 +92,11 @@ export default function Navigation() {
           <div className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700">
             <div className="flex flex-col space-y-4">
               <Link
-                href="#features"
+                href="/templates"
                 className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors duration-200 font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Features
+                Templates
               </Link>
               <Link
                 href="/documentation"
