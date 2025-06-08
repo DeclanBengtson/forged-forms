@@ -11,104 +11,100 @@ export default function Home() {
       {/* Hero Section */}
       <section className="pt-24 pb-16 lg:pt-32 lg:pb-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-4xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white mb-8">
-              Handle Form Submissions
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                Without Backend Code
-              </span>
-            </h1>
-            
-            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-              A lightweight, developer-friendly service that handles form submissions from any static or client-rendered website. 
-              No server setup required, no complex configurations—just clean, simple form handling.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link
-                href="/signup"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              >
-                Start Building Today
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Code Preview */}
-      <section className="py-16 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              It&apos;s as Simple as This
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              No backend setup, no complex configurations. Just point and submit.
-            </p>
-          </div>
-          
-          <div className="max-w-5xl mx-auto">
-            <div className="relative">
-              <div className="absolute -inset-6 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-3xl blur-2xl"></div>
-              <div className="relative bg-gray-900 dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 overflow-hidden">
-                <div className="flex items-center justify-between px-6 py-4 bg-gray-800 dark:bg-gray-700 border-b border-gray-700">
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  </div>
-                  <span className="text-gray-400 text-sm font-mono">contact-form.html</span>
-                  <div className="w-6"></div>
-                </div>
-                <div className="p-6 overflow-x-auto">
-                  <pre className="text-sm sm:text-base leading-relaxed">
-                    <code>
-                      <span className="text-gray-500">&lt;!-- Beautiful Contact Form --&gt;</span>{'\n'}
-                      <span className="text-blue-400">&lt;form</span> <span className="text-green-400">action=</span><span className="text-yellow-300">&quot;https://formflow.dev/api/forms/contact&quot;</span>{'\n'}
-                      <span className="text-green-400">      method=</span><span className="text-yellow-300">&quot;POST&quot;</span> <span className="text-green-400">class=</span><span className="text-yellow-300">&quot;contact-form&quot;</span><span className="text-blue-400">&gt;</span>{'\n'}
-                      {'\n'}
-                      <span className="text-gray-500">  &lt;!-- Name Input --&gt;</span>{'\n'}
-                      <span className="text-blue-400">  &lt;div</span> <span className="text-green-400">class=</span><span className="text-yellow-300">&quot;form-group&quot;</span><span className="text-blue-400">&gt;</span>{'\n'}
-                      <span className="text-blue-400">    &lt;label</span> <span className="text-green-400">for=</span><span className="text-yellow-300">&quot;name&quot;</span><span className="text-blue-400">&gt;</span><span className="text-white">Full Name</span><span className="text-blue-400">&lt;/label&gt;</span>{'\n'}
-                      <span className="text-blue-400">    &lt;input</span> <span className="text-green-400">type=</span><span className="text-yellow-300">&quot;text&quot;</span> <span className="text-green-400">id=</span><span className="text-yellow-300">&quot;name&quot;</span> <span className="text-green-400">name=</span><span className="text-yellow-300">&quot;name&quot;</span>{'\n'}
-                      <span className="text-green-400">           placeholder=</span><span className="text-yellow-300">&quot;Enter your full name&quot;</span> <span className="text-green-400">required</span><span className="text-blue-400">&gt;</span>{'\n'}
-                      <span className="text-blue-400">  &lt;/div&gt;</span>{'\n'}
-                      {'\n'}
-                      <span className="text-gray-500">  &lt;!-- Email Input --&gt;</span>{'\n'}
-                      <span className="text-blue-400">  &lt;div</span> <span className="text-green-400">class=</span><span className="text-yellow-300">&quot;form-group&quot;</span><span className="text-blue-400">&gt;</span>{'\n'}
-                      <span className="text-blue-400">    &lt;label</span> <span className="text-green-400">for=</span><span className="text-yellow-300">&quot;email&quot;</span><span className="text-blue-400">&gt;</span><span className="text-white">Email Address</span><span className="text-blue-400">&lt;/label&gt;</span>{'\n'}
-                      <span className="text-blue-400">    &lt;input</span> <span className="text-green-400">type=</span><span className="text-yellow-300">&quot;email&quot;</span> <span className="text-green-400">id=</span><span className="text-yellow-300">&quot;email&quot;</span> <span className="text-green-400">name=</span><span className="text-yellow-300">&quot;email&quot;</span>{'\n'}
-                      <span className="text-green-400">           placeholder=</span><span className="text-yellow-300">&quot;your@email.com&quot;</span> <span className="text-green-400">required</span><span className="text-blue-400">&gt;</span>{'\n'}
-                      <span className="text-blue-400">  &lt;/div&gt;</span>{'\n'}
-                      {'\n'}
-                      <span className="text-gray-500">  &lt;!-- Message Textarea --&gt;</span>{'\n'}
-                      <span className="text-blue-400">  &lt;div</span> <span className="text-green-400">class=</span><span className="text-yellow-300">&quot;form-group&quot;</span><span className="text-blue-400">&gt;</span>{'\n'}
-                      <span className="text-blue-400">    &lt;label</span> <span className="text-green-400">for=</span><span className="text-yellow-300">&quot;message&quot;</span><span className="text-blue-400">&gt;</span><span className="text-white">Your Message</span><span className="text-blue-400">&lt;/label&gt;</span>{'\n'}
-                      <span className="text-blue-400">    &lt;textarea</span> <span className="text-green-400">id=</span><span className="text-yellow-300">&quot;message&quot;</span> <span className="text-green-400">name=</span><span className="text-yellow-300">&quot;message&quot;</span> <span className="text-green-400">rows=</span><span className="text-yellow-300">&quot;5&quot;</span>{'\n'}
-                      <span className="text-green-400">              placeholder=</span><span className="text-yellow-300">&quot;Tell us about your project...&quot;</span> <span className="text-green-400">required</span><span className="text-blue-400">&gt;&lt;/textarea&gt;</span>{'\n'}
-                      <span className="text-blue-400">  &lt;/div&gt;</span>{'\n'}
-                      {'\n'}
-                      <span className="text-gray-500">  &lt;!-- Submit Button --&gt;</span>{'\n'}
-                      <span className="text-blue-400">  &lt;button</span> <span className="text-green-400">type=</span><span className="text-yellow-300">&quot;submit&quot;</span> <span className="text-green-400">class=</span><span className="text-yellow-300">&quot;submit-btn&quot;</span><span className="text-blue-400">&gt;</span>{'\n'}
-                      <span className="text-white">    Send Message</span>{'\n'}
-                      <span className="text-blue-400">  &lt;/button&gt;</span>{'\n'}
-                      {'\n'}
-                      <span className="text-blue-400">&lt;/form&gt;</span>
-                    </code>
-                  </pre>
-                </div>
+            {/* Left Column - Text Content */}
+            <div className="text-center lg:text-left">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white mb-8">
+                Handle Form Submissions
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                  Without Backend Code
+                </span>
+              </h1>
+              
+              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+                A lightweight, developer-friendly service that handles form submissions from any static or client-rendered website. 
+                No server setup required, no complex configurations—just clean, simple form handling.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center mb-8">
+                <Link
+                  href="/signup"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  Start Building Today
+                </Link>
               </div>
-            </div>
-            <div className="text-center mt-8">
-              <div className="inline-flex items-center gap-3 bg-white dark:bg-gray-800 px-6 py-3 rounded-full shadow-lg border border-gray-200 dark:border-gray-700">
+
+              <div className="inline-flex items-center gap-3 bg-green-50 dark:bg-green-900/20 px-4 py-2 rounded-full border border-green-200 dark:border-green-800">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <p className="text-gray-700 dark:text-gray-300 font-medium">
-                  Point your form to our endpoint. That&apos;s it! ✨
+                <p className="text-green-700 dark:text-green-300 text-sm font-medium">
+                  Just point your form to our endpoint. That&apos;s it! ✨
                 </p>
               </div>
             </div>
+
+            {/* Right Column - Simple Form Example */}
+            <div className="lg:order-last">
+              <div className="relative">
+                <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-2xl blur-xl"></div>
+                <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                  
+                  
+                  {/* Code Content */}
+                  <div className="p-4 font-mono text-sm bg-slate-900 dark:bg-slate-950">
+                    <div className="space-y-1">
+                      <div>
+                        <span className="text-rose-400">{'<form'}</span>{' '}
+                        <span className="text-emerald-400">action=</span>
+                        <span className="text-amber-300">{'"https://forgedforms.com/api/forms{form_id}/submit"'}</span>{' '}
+                        <span className="text-emerald-400">method=</span>
+                        <span className="text-amber-300">{'"post"'}</span>
+                        <span className="text-rose-400">{'>'}</span>
+                      </div>
+                      <div className="pl-2">
+                        <span className="text-rose-400">{'<label'}</span>{' '}
+                        <span className="text-emerald-400">for=</span>
+                        <span className="text-amber-300">{'"email"'}</span>
+                        <span className="text-rose-400">{'>'}</span>
+                        <span className="text-slate-100">Your Email</span>
+                        <span className="text-rose-400">{'</label>'}</span>
+                      </div>
+                      <div className="pl-2">
+                        <span className="text-rose-400">{'<input'}</span>{' '}
+                        <span className="text-emerald-400">name=</span>
+                        <span className="text-amber-300">{'"email"'}</span>{' '}
+                        <span className="text-emerald-400">id=</span>
+                        <span className="text-amber-300">{'"email"'}</span>{' '}
+                        <span className="text-emerald-400">type=</span>
+                        <span className="text-amber-300">{'"email"'}</span>
+                        <span className="text-rose-400">{'>'}</span>
+                      </div>
+                      <div className="pl-2">
+                        <span className="text-rose-400">{'<button'}</span>{' '}
+                        <span className="text-emerald-400">type=</span>
+                        <span className="text-amber-300">{'"submit"'}</span>
+                        <span className="text-rose-400">{'>'}</span>
+                        <span className="text-slate-100">Submit</span>
+                        <span className="text-rose-400">{'</button>'}</span>
+                      </div>
+                      <div><span className="text-rose-400">{'</form>'}</span></div>
+                    </div>
+                  </div>
+                  
+                  {/* Bottom Highlight */}
+                  <div className="px-4 py-3 bg-blue-50 dark:bg-blue-900/20 border-t border-blue-200 dark:border-blue-800">
+                    <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300 text-sm">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span className="font-medium">That&apos;s it! No backend required.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
           </div>
         </div>
       </section>
