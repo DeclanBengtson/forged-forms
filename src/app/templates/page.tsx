@@ -1,39 +1,108 @@
+"use client";
+
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
 import CopyButton from "@/components/CopyButton";
+import { useState } from 'react';
 
-const TemplateCard = ({ title, description, code, preview }: {
-  title: string;
-  description: string;
-  code: string;
-  preview?: React.ReactNode;
-}) => (
-  <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-    <div className="p-8">
-      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">{title}</h3>
-      <p className="text-gray-600 dark:text-gray-300 mb-6">{description}</p>
-      
-      {preview && (
-        <div className="mb-6 p-6 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700">
-          <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 uppercase tracking-wide">Preview</h4>
-          {preview}
+// Component to safely render HTML forms
+const FormPreview = ({ code }: { code: string }) => {
+  return (
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/50 dark:to-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-8">
+      <div className="max-w-2xl mx-auto">
+        <div className="mb-6 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs font-medium rounded-full">
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            Example Form
+          </div>
         </div>
-      )}
-      
-      <div className="relative">
-        <div className="bg-gray-900 dark:bg-gray-800 rounded-xl p-6 overflow-x-auto">
-          <CopyButton code={code} />
-          <pre className="text-green-400 text-sm">
-            <code>{code}</code>
-          </pre>
+        <div 
+          dangerouslySetInnerHTML={{ __html: code }}
+          className="form-preview"
+        />
+        <div className="mt-6 text-center">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            This form connects to your ForgedForms endpoint
+          </p>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
+
+const TemplateCard = ({ title, description, code, category }: {
+  title: string;
+  description: string;
+  code: string;
+  category: string;
+}) => {
+  const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
+
+  return (
+    <div className="mb-12" id={title.toLowerCase().replace(/\s+/g, '-')}>
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-3">
+          <h3 className="text-xl font-medium text-gray-900 dark:text-white">{title}</h3>
+          <span className="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2 py-1 rounded-full">
+            {category}
+          </span>
+        </div>
+        <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{description}</p>
+      </div>
+      
+      <div className="relative">
+        {/* Tab Navigation */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+            <button
+              onClick={() => setActiveTab('preview')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                activeTab === 'preview'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              Preview
+            </button>
+            <button
+              onClick={() => setActiveTab('code')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                activeTab === 'code'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              Code
+            </button>
+          </div>
+          
+          {activeTab === 'code' && <CopyButton code={code} />}
+        </div>
+
+        {/* Content */}
+        {activeTab === 'preview' ? (
+          <FormPreview code={code} />
+        ) : (
+          <div className="bg-gray-900 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 bg-gray-800 dark:bg-gray-700 border-b border-gray-700 dark:border-gray-600">
+              <span className="text-xs font-medium text-gray-300">HTML</span>
+            </div>
+            <div className="p-4 overflow-x-auto">
+              <pre className="text-green-400 text-sm font-mono leading-relaxed">
+                <code>{code}</code>
+              </pre>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default function Templates() {
-  const contactFormCode = `<form action="https://forgedforms.com/api/forms/your-form-id" method="POST" class="max-w-lg mx-auto space-y-6">
+  const contactFormCode = `<form onsubmit="event.preventDefault(); alert('This is just an example form - replace with your ForgedForms endpoint!');" class="max-w-lg mx-auto space-y-6">
   <div>
     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
     <input 
@@ -89,7 +158,7 @@ export default function Templates() {
   </button>
 </form>`;
 
-  const newsletterCode = `<form action="https://forgedforms.com/api/forms/your-form-id" method="POST" class="max-w-md mx-auto">
+  const newsletterCode = `<form onsubmit="event.preventDefault(); alert('This is just an example form - replace with your ForgedForms endpoint!');" class="max-w-md mx-auto">
   <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-8 text-white">
     <h3 class="text-2xl font-bold mb-4">Stay Updated</h3>
     <p class="mb-6 opacity-90">Get the latest news and updates delivered to your inbox.</p>
@@ -120,7 +189,7 @@ export default function Templates() {
   </div>
 </form>`;
 
-  const feedbackCode = `<form action="https://forgedforms.com/api/forms/your-form-id" method="POST" class="max-w-2xl mx-auto space-y-6">
+  const feedbackCode = `<form onsubmit="event.preventDefault(); alert('This is just an example form - replace with your ForgedForms endpoint!');" class="max-w-2xl mx-auto space-y-6">
   <div class="text-center mb-8">
     <h3 class="text-2xl font-bold text-gray-900 mb-2">How was your experience?</h3>
     <p class="text-gray-600">Your feedback helps us improve our service.</p>
@@ -178,7 +247,7 @@ export default function Templates() {
   </button>
 </form>`;
 
-  const supportCode = `<form action="https://forgedforms.com/api/forms/your-form-id" method="POST" class="max-w-2xl mx-auto space-y-6">
+  const supportCode = `<form onsubmit="event.preventDefault(); alert('This is just an example form - replace with your ForgedForms endpoint!');" class="max-w-2xl mx-auto space-y-6">
   <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
     <div class="flex">
       <div class="text-red-400 mr-3">
@@ -272,7 +341,7 @@ export default function Templates() {
   </button>
 </form>`;
 
-  const surveyCode = `<form action="https://forgedforms.com/api/forms/your-form-id" method="POST" class="max-w-3xl mx-auto space-y-8">
+  const surveyCode = `<form onsubmit="event.preventDefault(); alert('This is just an example form - replace with your ForgedForms endpoint!');" class="max-w-3xl mx-auto space-y-8">
   <div class="text-center mb-8">
     <h3 class="text-3xl font-bold text-gray-900 mb-4">Product Survey</h3>
     <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mb-4 rounded-full"></div>
@@ -396,61 +465,352 @@ export default function Templates() {
   </button>
 </form>`;
 
+  const leadGenerationCode = `<form onsubmit="event.preventDefault(); alert('This is just an example form - replace with your ForgedForms endpoint!');" class="max-w-lg mx-auto space-y-6">
+  <div class="text-center mb-6">
+    <h3 class="text-2xl font-bold text-gray-900 mb-2">Get Your Free Quote</h3>
+    <p class="text-gray-600">Tell us about your project and we'll get back to you within 24 hours.</p>
+  </div>
+  
+  <div class="grid md:grid-cols-2 gap-4">
+    <div>
+      <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+      <input 
+        id="first_name" 
+        name="first_name" 
+        type="text" 
+        required
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        placeholder="John"
+      />
+    </div>
+    
+    <div>
+      <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+      <input 
+        id="last_name" 
+        name="last_name" 
+        type="text" 
+        required
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        placeholder="Doe"
+      />
+    </div>
+  </div>
+  
+  <div>
+    <label for="company" class="block text-sm font-medium text-gray-700 mb-2">Company</label>
+    <input 
+      id="company" 
+      name="company" 
+      type="text" 
+      required
+      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      placeholder="Your Company"
+    />
+  </div>
+  
+  <div>
+    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Business Email</label>
+    <input 
+      id="email" 
+      name="email" 
+      type="email" 
+      required
+      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      placeholder="john@company.com"
+    />
+  </div>
+  
+  <div>
+    <label for="budget" class="block text-sm font-medium text-gray-700 mb-2">Project Budget</label>
+    <select 
+      id="budget" 
+      name="budget" 
+      required
+      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+    >
+      <option value="">Select budget range</option>
+      <option value="under-5k">Under $5,000</option>
+      <option value="5k-15k">$5,000 - $15,000</option>
+      <option value="15k-50k">$15,000 - $50,000</option>
+      <option value="50k-plus">$50,000+</option>
+    </select>
+  </div>
+  
+  <div>
+    <label for="project_details" class="block text-sm font-medium text-gray-700 mb-2">Project Details</label>
+    <textarea 
+      id="project_details" 
+      name="project_details" 
+      rows="4" 
+      required
+      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+      placeholder="Tell us about your project requirements..."
+    ></textarea>
+  </div>
+  
+  <input type="hidden" name="_subject" value="New Lead Generation Form" />
+  
+  <button 
+    type="submit"
+    class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+  >
+    Get My Free Quote
+  </button>
+</form>`;
+
+  const eventRegistrationCode = `<form onsubmit="event.preventDefault(); alert('This is just an example form - replace with your ForgedForms endpoint!');" class="max-w-2xl mx-auto space-y-6">
+  <div class="text-center mb-8">
+    <h3 class="text-2xl font-bold text-gray-900 mb-2">Event Registration</h3>
+    <p class="text-gray-600">Register for our upcoming conference and secure your spot.</p>
+  </div>
+  
+  <div class="grid md:grid-cols-2 gap-6">
+    <div>
+      <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+      <input 
+        id="first_name" 
+        name="first_name" 
+        type="text" 
+        required
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        placeholder="John"
+      />
+    </div>
+    
+    <div>
+      <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+      <input 
+        id="last_name" 
+        name="last_name" 
+        type="text" 
+        required
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        placeholder="Doe"
+      />
+    </div>
+  </div>
+  
+  <div>
+    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+    <input 
+      id="email" 
+      name="email" 
+      type="email" 
+      required
+      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      placeholder="john@example.com"
+    />
+  </div>
+  
+  <div>
+    <label for="company" class="block text-sm font-medium text-gray-700 mb-2">Company/Organization</label>
+    <input 
+      id="company" 
+      name="company" 
+      type="text"
+      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      placeholder="Your Company"
+    />
+  </div>
+  
+  <div>
+    <label for="job_title" class="block text-sm font-medium text-gray-700 mb-2">Job Title</label>
+    <input 
+      id="job_title" 
+      name="job_title" 
+      type="text"
+      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      placeholder="Your Job Title"
+    />
+  </div>
+  
+  <div>
+    <label for="ticket_type" class="block text-sm font-medium text-gray-700 mb-2">Ticket Type</label>
+    <select 
+      id="ticket_type" 
+      name="ticket_type" 
+      required
+      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+    >
+      <option value="">Select ticket type</option>
+      <option value="early-bird">Early Bird - $99</option>
+      <option value="standard">Standard - $149</option>
+      <option value="vip">VIP - $299</option>
+      <option value="student">Student - $49</option>
+    </select>
+  </div>
+  
+  <div>
+    <label class="block text-sm font-medium text-gray-700 mb-3">Dietary Restrictions</label>
+    <div class="space-y-2">
+      <label class="flex items-center">
+        <input type="checkbox" name="dietary_restrictions" value="vegetarian" class="text-blue-600 focus:ring-blue-500 rounded" />
+        <span class="ml-3 text-gray-700">Vegetarian</span>
+      </label>
+      <label class="flex items-center">
+        <input type="checkbox" name="dietary_restrictions" value="vegan" class="text-blue-600 focus:ring-blue-500 rounded" />
+        <span class="ml-3 text-gray-700">Vegan</span>
+      </label>
+      <label class="flex items-center">
+        <input type="checkbox" name="dietary_restrictions" value="gluten-free" class="text-blue-600 focus:ring-blue-500 rounded" />
+        <span class="ml-3 text-gray-700">Gluten-free</span>
+      </label>
+      <label class="flex items-center">
+        <input type="checkbox" name="dietary_restrictions" value="none" class="text-blue-600 focus:ring-blue-500 rounded" />
+        <span class="ml-3 text-gray-700">None</span>
+      </label>
+    </div>
+  </div>
+  
+  <input type="hidden" name="_subject" value="New Event Registration" />
+  
+  <button 
+    type="submit"
+    class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+  >
+    Register for Event
+  </button>
+</form>`;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-white dark:bg-gray-950">
       <Navigation />
       
-      {/* Hero Section */}
-      <section className="pt-24 pb-12 lg:pt-32 lg:pb-16">
+      {/* Simplified Hero Section */}
+      <section className="pt-20 pb-12 border-b border-gray-100 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white mb-8">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                Form Templates
-              </span>
+          <div className="max-w-3xl">
+            <h1 className="text-3xl sm:text-4xl font-medium text-gray-900 dark:text-white mb-4">
+              Form Templates
             </h1>
-            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
               Ready-to-use form templates for common use cases. Copy, customize, and deploy in minutes.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Templates Grid */}
-      <section className="pb-24">
+      {/* Templates Content */}
+      <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-16">
+          <div className="grid lg:grid-cols-4 gap-12">
             
-            <TemplateCard 
-              title="Contact Form"
-              description="A comprehensive contact form with name, email, subject, and message fields. Perfect for business websites and portfolios."
-              code={contactFormCode}
-            />
-            
-            <TemplateCard 
-              title="Newsletter Signup"
-              description="A beautiful newsletter subscription form with gradient styling. Great for building your email list."
-              code={newsletterCode}
-            />
-            
-            <TemplateCard 
-              title="Feedback Form"
-              description="Collect user feedback with ratings and comments. Ideal for product feedback and service reviews."
-              code={feedbackCode}
-            />
-            
-            <TemplateCard 
-              title="Support Request"
-              description="A detailed support form with priority levels and categories. Perfect for customer service teams."
-              code={supportCode}
-            />
-            
-            <TemplateCard 
-              title="Product Survey"
-              description="A comprehensive survey form with multiple question types. Great for market research and user insights."
-              code={surveyCode}
-            />
-            
+            {/* Sidebar Navigation */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-24">
+                <nav className="space-y-1">
+                  <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Categories</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900 dark:text-gray-200 mb-2">Business</h4>
+                      <div className="space-y-1 ml-3">
+                        <a href="#contact-form" className="block text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 py-1 transition-colors">
+                          Contact Form
+                        </a>
+                        <a href="#lead-generation-form" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 py-1 transition-colors">
+                          Lead Generation
+                        </a>
+                        <a href="#support-request" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 py-1 transition-colors">
+                          Support Request
+                        </a>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900 dark:text-gray-200 mb-2">Marketing</h4>
+                      <div className="space-y-1 ml-3">
+                        <a href="#newsletter-signup" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 py-1 transition-colors">
+                          Newsletter Signup
+                        </a>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900 dark:text-gray-200 mb-2">Research</h4>
+                      <div className="space-y-1 ml-3">
+                        <a href="#feedback-form" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 py-1 transition-colors">
+                          Feedback Form
+                        </a>
+                        <a href="#product-survey" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 py-1 transition-colors">
+                          Product Survey
+                        </a>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900 dark:text-gray-200 mb-2">Events</h4>
+                      <div className="space-y-1 ml-3">
+                        <a href="#event-registration" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 py-1 transition-colors">
+                          Event Registration
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <a href="/documentation" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 py-1 transition-colors border-t border-gray-200 dark:border-gray-700 pt-3 mt-4">
+                    Documentation
+                  </a>
+                </nav>
+              </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="lg:col-span-3">
+              <div className="space-y-16">
+                
+                <TemplateCard 
+                  title="Contact Form"
+                  description="A comprehensive contact form with name, email, subject, and message fields. Perfect for business websites and portfolios."
+                  code={contactFormCode}
+                  category="Business"
+                />
+                
+                <TemplateCard 
+                  title="Lead Generation Form"
+                  description="Capture qualified leads with budget information and project details. Ideal for agencies and service providers."
+                  code={leadGenerationCode}
+                  category="Business"
+                />
+                
+                <TemplateCard 
+                  title="Newsletter Signup"
+                  description="A beautiful newsletter subscription form with gradient styling. Great for building your email list."
+                  code={newsletterCode}
+                  category="Marketing"
+                />
+                
+                <TemplateCard 
+                  title="Feedback Form"
+                  description="Collect user feedback with ratings and comments. Ideal for product feedback and service reviews."
+                  code={feedbackCode}
+                  category="Research"
+                />
+                
+                <TemplateCard 
+                  title="Support Request"
+                  description="A detailed support form with priority levels and categories. Perfect for customer service teams."
+                  code={supportCode}
+                  category="Business"
+                />
+                
+                <TemplateCard 
+                  title="Product Survey"
+                  description="A comprehensive survey form with multiple question types. Great for market research and user insights."
+                  code={surveyCode}
+                  category="Research"
+                />
+                
+                <TemplateCard 
+                  title="Event Registration"
+                  description="Complete event registration form with ticket selection and dietary preferences. Perfect for conferences and events."
+                  code={eventRegistrationCode}
+                  category="Events"
+                />
+                
+              </div>
+            </div>
           </div>
         </div>
       </section>
