@@ -4,6 +4,8 @@ import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
 import CopyButton from "@/components/CopyButton";
 import { useState } from 'react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 // Component to safely render HTML forms
 const FormPreview = ({ code }: { code: string }) => {
@@ -85,15 +87,24 @@ const TemplateCard = ({ title, description, code, category }: {
         {activeTab === 'preview' ? (
           <FormPreview code={code} />
         ) : (
-          <div className="bg-gray-900 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 bg-gray-800 dark:bg-gray-700 border-b border-gray-700 dark:border-gray-600">
-              <span className="text-xs font-medium text-gray-300">HTML</span>
+          <div className="bg-slate-900 rounded-lg shadow-lg overflow-hidden border border-slate-800">
+            <div className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800">
+              <span className="text-xs font-medium text-slate-300">HTML</span>
             </div>
-            <div className="p-4 overflow-x-auto">
-              <pre className="text-green-400 text-sm font-mono leading-relaxed">
-                <code>{code}</code>
-              </pre>
-            </div>
+            <SyntaxHighlighter
+              language="html"
+              style={oneDark}
+              customStyle={{
+                margin: 0,
+                padding: '24px',
+                background: 'transparent',
+                fontSize: '14px',
+                minHeight: '200px'
+              }}
+              showLineNumbers={false}
+            >
+              {code}
+            </SyntaxHighlighter>
           </div>
         )}
       </div>
