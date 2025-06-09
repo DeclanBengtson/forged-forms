@@ -60,40 +60,7 @@ export default function FormSetupTab({ form }: FormSetupTabProps) {
         <CodeExample />
       </div>
 
-      {/* Form Configuration */}
-      <div className="bg-white border border-gray-200 rounded-sm p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">
-          Form Configuration
-        </h3>
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-normal text-gray-700 mb-1">
-                Redirect URL (optional)
-              </label>
-              <input
-                type="url"
-                placeholder="https://yoursite.com/thank-you"
-                className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-white text-gray-900 text-sm font-normal"
-              />
-              <p className="text-xs text-gray-500 font-light mt-1">
-                Where to redirect users after form submission
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-normal text-gray-700 mb-1">
-                Notification Email
-              </label>
-              <input
-                type="email"
-                value={form.notification_email || ''}
-                placeholder="notifications@yoursite.com"
-                className="w-full px-3 py-2 border border-gray-200 rounded-sm bg-white text-gray-900 text-sm font-normal"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+
     </div>
   );
 } 
