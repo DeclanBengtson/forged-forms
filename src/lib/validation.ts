@@ -94,12 +94,7 @@ export const formCreationSchema = z.object({
   
   email_notifications: z.boolean().default(true),
   
-  redirect_url: z.string()
-    .url('Invalid redirect URL')
-    .max(2048, 'URL too long')
-    .transform(sanitizeString)
-    .optional()
-    .or(z.literal('')),
+
   
   custom_message: z.string()
     .max(1000, 'Custom message too long')
