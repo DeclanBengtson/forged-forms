@@ -39,7 +39,6 @@ export const metadata: Metadata = {
     apple: '/ForgedForms.png', // For iOS devices  
     shortcut: '/favicon.ico',
   },
-  manifest: '/manifest.json',
   openGraph: {
     title: "ForgedForms - Handle Form Submissions Without Backend Code",
     description: "A lightweight, developer-friendly service that handles form submissions from any static or client-rendered website. No server setup required.",
