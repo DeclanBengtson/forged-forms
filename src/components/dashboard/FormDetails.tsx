@@ -38,7 +38,7 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
         return <FormAnalyticsTab formId={form.id} isActive={activeTab === 'analytics'} />;
       
       case 'settings':
-        return <FormSettingsTab form={form} onDeleteForm={onDeleteForm} />;
+        return <FormSettingsTab form={form} onDeleteForm={onDeleteForm} onFormUpdated={_onFormUpdated} />;
       
       default:
         return null;

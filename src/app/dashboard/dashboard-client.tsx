@@ -67,8 +67,23 @@ export default function DashboardClient({ user }: DashboardClientProps) {
     }
   }
 
-  const handleFormUpdated = () => {
-    loadForms() // Reload forms when one is updated
+  const handleFormUpdated = async () => {
+    // Reload forms when one is updated
+    try {
+      const result = await listForms()
+      if (result.success && result.data) {
+        setForms(result.data)
+        // Update the selected form with the latest data
+        if (selectedForm) {
+          const updatedForm = result.data.find(form => form.id === selectedForm.id)
+          if (updatedForm) {
+            setSelectedForm(updatedForm)
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Failed to reload forms:', error)
+    }
   }
 
   const handleSelectForm = (form: Form | null) => {
