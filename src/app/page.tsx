@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
+import InteractiveFeaturesComponent from "@/components/interactive-features-component";
 
 export default function Home() {
   return (
@@ -109,128 +110,133 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section id="features" className="py-16 lg:py-24 bg-gray-50/50 dark:bg-gray-900/20">
+      {/* Interactive Features Section */}
+      <section id="features" className="py-16 lg:py-24 bg-slate-900 dark:bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Everything You Need
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+              Features that<br />
+              you need.
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Powerful features designed to make form handling effortless and reliable.
+            <p className="text-gray-300 text-lg max-w-2xl mx-auto mb-8">
+              Stop building the same contact forms over and over.<br />
+              Focus on what makes you money, not form backends.<br />
+              Ship faster. Bill more. Stress less.
             </p>
           </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                icon: "🔗",
-                title: "Simple Endpoints",
-                description: "Clean REST endpoints that work with any frontend framework or plain HTML forms.",
-                gradient: "from-blue-500 to-cyan-500"
-              },
-              {
-                icon: "📧",
-                title: "Email Notifications",
-                description: "Get instant notifications whenever someone submits your form with customizable templates.",
-                gradient: "from-green-500 to-emerald-500"
-              },
-              {
-                icon: "📊",
-                title: "Clean Dashboard",
-                description: "View and manage all submissions in a beautiful, intuitive dashboard interface.",
-                gradient: "from-purple-500 to-pink-500"
-              },
-              {
-                icon: "🔐",
-                title: "Magic Link Auth",
-                description: "Secure, passwordless authentication system using magic links sent to your email.",
-                gradient: "from-yellow-500 to-orange-500"
-              },
-              {
-                icon: "⚙️",
-                title: "Form Management",
-                description: "Create, organize, and manage multiple forms through our intuitive web interface.",
-                gradient: "from-red-500 to-pink-500"
-              },
-              {
-                icon: "⚡",
-                title: "Lightning Fast",
-                description: "Optimized for performance with global CDN and edge computing for instant responses.",
-                gradient: "from-indigo-500 to-purple-500"
-              }
-            ].map((feature, index) => (
-              <div
-                key={index}
-                className="group bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
-              >
-                <div className={`w-12 h-12 bg-gradient-to-r ${feature.gradient} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  <span className="text-2xl">{feature.icon}</span>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
-          </div>
+
+          {/* Interactive Features Component */}
+          <InteractiveFeaturesComponent />
         </div>
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-16 lg:py-24">
+      <section id="how-it-works" className="py-16 lg:py-24 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              How It Works
+              Seriously, It&apos;s This Simple
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              Get started in three simple steps
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-2">
+              No webpack configs. No database migrations. No server deployments.
+            </p>
+            <p className="text-xl font-semibold text-blue-600 dark:text-blue-400">
+              Just copy, paste, done. ⚡
             </p>
           </div>
           
-          <div className="max-w-4xl mx-auto">
-            <div className="space-y-12">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
               {[
                 {
-                  number: "01",
-                  title: "Sign Up & Create Your Form",
-                  description: "Create your account with our secure magic link authentication and set up a new form project with a custom name.",
-                  color: "blue"
+                  number: "1",
+                  title: "Copy Your Endpoint",
+                  description: "Sign up, create a form, copy the URL. Takes 30 seconds max.",
+                  time: "30 seconds",
+                  code: `action="forgedforms.com/f/abc123"`,
+                  color: "blue",
+                  icon: "📋"
                 },
                 {
-                  number: "02",
-                  title: "Add the Endpoint to Your Site",
-                  description: "Simply point your HTML form&apos;s action attribute to our endpoint. Works with React, Vue, vanilla HTML, or any framework.",
-                  color: "green"
+                  number: "2", 
+                  title: "Paste Into Your Form",
+                  description: "Replace your old action URL. Works with any framework or plain HTML.",
+                  time: "10 seconds",
+                  code: `method="post" // That's it!`,
+                  color: "green",
+                  icon: "🎯"
                 },
                 {
-                  number: "03",
-                  title: "Receive & Manage Submissions",
-                  description: "Get instant email notifications and view all submissions in your beautiful dashboard. You&apos;re done!",
-                  color: "purple"
+                  number: "3",
+                  title: "Ship & Get Paid",
+                  description: "Deploy your site. Invoice your client. Forms just work. Forever.",
+                  time: "∞ money",
+                  code: `// No maintenance required`,
+                  color: "purple",
+                  icon: "🚀"
                 }
-              ].map((step, index) => (
-                <div key={index} className="flex flex-col lg:flex-row items-start gap-8">
-                  <div className={`flex-shrink-0 w-20 h-20 bg-gradient-to-r ${
-                    step.color === 'blue' ? 'from-blue-500 to-cyan-500' :
-                    step.color === 'green' ? 'from-green-500 to-emerald-500' :
-                    'from-purple-500 to-pink-500'
-                  } rounded-2xl flex items-center justify-center shadow-lg`}>
-                    <span className="text-white text-xl font-bold">{step.number}</span>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                             ].map((step, index) => (
+                 <div key={index} className="group h-full">
+                   <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700 relative overflow-hidden h-full flex flex-col">
+                    
+                    {/* Background decoration */}
+                    <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${
+                      step.color === 'blue' ? 'from-blue-500/10 to-cyan-500/10' :
+                      step.color === 'green' ? 'from-green-500/10 to-emerald-500/10' :
+                      'from-purple-500/10 to-pink-500/10'
+                    } rounded-full -translate-y-16 translate-x-16`}></div>
+                    
+                    {/* Step number and icon */}
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className={`w-14 h-14 bg-gradient-to-r ${
+                        step.color === 'blue' ? 'from-blue-500 to-cyan-500' :
+                        step.color === 'green' ? 'from-green-500 to-emerald-500' :
+                        'from-purple-500 to-pink-500'
+                      } rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                        <span className="text-white text-xl font-bold">{step.number}</span>
+                      </div>
+                      <div className="text-2xl">{step.icon}</div>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
                       {step.title}
                     </h3>
-                    <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                      {step.description}
-                    </p>
+                    
+                                         <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed flex-grow">
+                       {step.description}
+                     </p>
+                     
+                     {/* Code snippet */}
+                     <div className="bg-slate-900 dark:bg-slate-950 rounded-lg p-4 mb-4 font-mono text-sm overflow-x-auto">
+                       <code className="text-green-400">{step.code}</code>
+                     </div>
+                     
+                     {/* Time indicator */}
+                     <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+                       step.color === 'blue' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' :
+                       step.color === 'green' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' :
+                       'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
+                     }`}>
+                       <span>⏱️</span>
+                       <span>{step.time}</span>
+                     </div>
                   </div>
                 </div>
               ))}
+            </div>
+            
+            {/* Bottom CTA */}
+            <div className="text-center mt-16">
+              <div className="inline-flex items-center gap-3 bg-green-50 dark:bg-green-900/20 px-6 py-3 rounded-full border border-green-200 dark:border-green-800 mb-6">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <p className="text-green-700 dark:text-green-300 font-medium">
+                  Total setup time: Less than 2 minutes
+                </p>
+              </div>
+              <p className="text-gray-600 dark:text-gray-300 text-lg">
+                Seriously. Your coffee will still be hot. ☕
+              </p>
             </div>
           </div>
         </div>
