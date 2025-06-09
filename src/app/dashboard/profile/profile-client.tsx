@@ -381,7 +381,9 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                         </div>
                         <div className="text-left">
                           <div className="text-sm font-normal text-gray-900">View Plans</div>
-                          <div className="text-xs text-gray-500">Upgrade or manage</div>
+                          <div className="text-xs text-gray-500">
+                            {subscriptionData?.subscription?.status === 'free' ? 'Upgrade subscription' : 'Manage subscription'}
+                          </div>
                         </div>
                       </div>
                       <svg className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
