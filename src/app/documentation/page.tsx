@@ -74,13 +74,9 @@ export default function Documentation() {
                         Create Your Account
                       </h3>
                       <p className="text-gray-600 dark:text-gray-400 mb-4 ml-9">
-                        Sign up for ForgedForms using our secure magic link authentication system. No passwords required!
+                        Sign up for ForgedForms by pressing the Get Started button above.
                       </p>
-                      <div className="bg-blue-50 dark:bg-blue-950/50 border border-blue-100 dark:border-blue-900/50 p-4 rounded-lg ml-9">
-                        <p className="text-sm text-blue-800 dark:text-blue-200">
-                          💡 <strong>Tip:</strong> Simply enter your email and we&apos;ll send you a secure magic link to sign in. No need to remember another password!
-                        </p>
-                      </div>
+                      
                     </div>
                     
                     <div>
@@ -108,7 +104,7 @@ export default function Documentation() {
                       </p>
                       <div className="bg-gray-900 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-lg ml-9">
                         <code className="text-green-400 text-sm font-mono">
-                          https://forgedforms.com/api/forms/your-form-id
+                          https://forgedforms.com/api/forms/{'{form-id}'}/submit
                         </code>
                       </div>
                     </div>
@@ -138,7 +134,7 @@ export default function Documentation() {
                       
                       <div className="bg-gray-900 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                         <pre className="text-green-400 text-sm overflow-x-auto font-mono">
-{`<form action="https://forgedforms.com/api/forms/your-form-id" method="POST">
+{`<form action="https://forgedforms.com/api/forms/{form-id}/submit" method="POST">
   <input name="name" type="text" placeholder="Your Name" required />
   <input name="email" type="email" placeholder="Email Address" required />
   <textarea name="message" placeholder="Your Message" required></textarea>
@@ -161,7 +157,7 @@ export default function Documentation() {
     e.preventDefault();
     const formData = new FormData(e.target);
     
-    const response = await fetch('https://forgedforms.com/api/forms/your-form-id', {
+    const response = await fetch('https://forgedforms.com/api/forms/{form-id}/submit', {
       method: 'POST',
       body: formData
     });
@@ -194,7 +190,7 @@ export default function Documentation() {
                       <div className="bg-gray-900 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                         <pre className="text-green-400 text-sm overflow-x-auto font-mono">
 {`const submitForm = async (data) => {
-  const response = await fetch('https://forgedforms.com/api/forms/your-form-id', {
+  const response = await fetch('https://forgedforms.com/api/forms/{form-id}/submit', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

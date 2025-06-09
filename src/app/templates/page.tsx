@@ -102,7 +102,7 @@ const TemplateCard = ({ title, description, code, category }: {
 };
 
 export default function Templates() {
-  const contactFormCode = `<form onsubmit="event.preventDefault(); alert('This is just an example form - replace with your ForgedForms endpoint!');" class="max-w-lg mx-auto space-y-6">
+  const contactFormCode = `<form action="https://forgedforms.com/api/forms/{form-id}/submit" method="POST" class="max-w-lg mx-auto space-y-6">
   <div>
     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
     <input 
@@ -158,7 +158,7 @@ export default function Templates() {
   </button>
 </form>`;
 
-  const newsletterCode = `<form onsubmit="event.preventDefault(); alert('This is just an example form - replace with your ForgedForms endpoint!');" class="max-w-md mx-auto">
+  const newsletterCode = `<form action="https://forgedforms.com/api/forms/{form-id}/submit" method="POST" class="max-w-md mx-auto">
   <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-8 text-white">
     <h3 class="text-2xl font-bold mb-4">Stay Updated</h3>
     <p class="mb-6 opacity-90">Get the latest news and updates delivered to your inbox.</p>
@@ -189,7 +189,7 @@ export default function Templates() {
   </div>
 </form>`;
 
-  const feedbackCode = `<form onsubmit="event.preventDefault(); alert('This is just an example form - replace with your ForgedForms endpoint!');" class="max-w-2xl mx-auto space-y-6">
+  const feedbackCode = `<form action="https://forgedforms.com/api/forms/{form-id}/submit" method="POST" class="max-w-2xl mx-auto space-y-6">
   <div class="text-center mb-8">
     <h3 class="text-2xl font-bold text-gray-900 mb-2">How was your experience?</h3>
     <p class="text-gray-600">Your feedback helps us improve our service.</p>
@@ -247,7 +247,7 @@ export default function Templates() {
   </button>
 </form>`;
 
-  const supportCode = `<form onsubmit="event.preventDefault(); alert('This is just an example form - replace with your ForgedForms endpoint!');" class="max-w-2xl mx-auto space-y-6">
+  const supportCode = `<form action="https://forgedforms.com/api/forms/{form-id}/submit" method="POST" class="max-w-2xl mx-auto space-y-6">
   <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
     <div class="flex">
       <div class="text-red-400 mr-3">
@@ -341,7 +341,7 @@ export default function Templates() {
   </button>
 </form>`;
 
-  const surveyCode = `<form onsubmit="event.preventDefault(); alert('This is just an example form - replace with your ForgedForms endpoint!');" class="max-w-3xl mx-auto space-y-8">
+  const surveyCode = `<form action="https://forgedforms.com/api/forms/{form-id}/submit" method="POST" class="max-w-3xl mx-auto space-y-8">
   <div class="text-center mb-8">
     <h3 class="text-3xl font-bold text-gray-900 mb-4">Product Survey</h3>
     <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mb-4 rounded-full"></div>
@@ -465,7 +465,7 @@ export default function Templates() {
   </button>
 </form>`;
 
-  const leadGenerationCode = `<form onsubmit="event.preventDefault(); alert('This is just an example form - replace with your ForgedForms endpoint!');" class="max-w-lg mx-auto space-y-6">
+  const leadGenerationCode = `<form action="https://forgedforms.com/api/forms/{form-id}/submit" method="POST" class="max-w-lg mx-auto space-y-6">
   <div class="text-center mb-6">
     <h3 class="text-2xl font-bold text-gray-900 mb-2">Get Your Free Quote</h3>
     <p class="text-gray-600">Tell us about your project and we'll get back to you within 24 hours.</p>
@@ -559,7 +559,7 @@ export default function Templates() {
   </button>
 </form>`;
 
-  const eventRegistrationCode = `<form onsubmit="event.preventDefault(); alert('This is just an example form - replace with your ForgedForms endpoint!');" class="max-w-2xl mx-auto space-y-6">
+  const eventRegistrationCode = `<form action="https://forgedforms.com/api/forms/{form-id}/submit" method="POST" class="max-w-2xl mx-auto space-y-6">
   <div class="text-center mb-8">
     <h3 class="text-2xl font-bold text-gray-900 mb-2">Event Registration</h3>
     <p class="text-gray-600">Register for our upcoming conference and secure your spot.</p>
