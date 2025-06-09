@@ -2,7 +2,7 @@ import { templateCategories } from '@/data/templates';
 
 const TemplateSidebar = () => {
   return (
-    <div className="sticky top-24">
+    <div className="lg:sticky lg:top-24">
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm p-6">
         <nav className="space-y-6">
           <div className="pb-3 border-b border-gray-100 dark:border-gray-800">
@@ -26,12 +26,12 @@ const TemplateSidebar = () => {
                     <a 
                       key={template.id}
                       href={`#${template.id}`} 
-                      className="group flex items-center text-sm py-2 px-3 rounded-lg transition-all duration-200 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                      className="group flex items-center text-sm py-2 px-3 rounded-lg transition-all duration-200 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 break-words"
                     >
-                      <svg className="w-3 h-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-3 h-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                       </svg>
-                      {template.title}
+                      <span className="min-w-0 flex-1">{template.title}</span>
                     </a>
                   ))}
                 </div>

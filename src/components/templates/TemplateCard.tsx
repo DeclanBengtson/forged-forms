@@ -15,7 +15,7 @@ const TemplateCard = ({ template }: TemplateCardProps) => {
   const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
 
   return (
-    <div className="mb-12" id={template.id}>
+    <div className="mb-12 template-content" id={template.id}>
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-3">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">{template.title}</h3>
@@ -28,7 +28,7 @@ const TemplateCard = ({ template }: TemplateCardProps) => {
       
       <div className="relative">
         {/* Tab Navigation */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             <button
               onClick={() => setActiveTab('preview')}
@@ -59,24 +59,32 @@ const TemplateCard = ({ template }: TemplateCardProps) => {
         {activeTab === 'preview' ? (
           <FormPreview code={template.code} />
         ) : (
-          <div className="bg-slate-900 rounded-lg shadow-lg overflow-hidden border border-slate-800">
+          <div className="bg-slate-900 rounded-lg shadow-lg overflow-hidden border border-slate-800 template-code-block">
             <div className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800">
               <span className="text-xs font-medium text-slate-300">HTML</span>
             </div>
-            <SyntaxHighlighter
-              language="html"
-              style={oneDark}
-              customStyle={{
-                margin: 0,
-                padding: '24px',
-                background: 'transparent',
-                fontSize: '14px',
-                minHeight: '200px'
-              }}
-              showLineNumbers={false}
-            >
-              {template.code}
-            </SyntaxHighlighter>
+            <div className="overflow-x-auto syntax-highlighter-container">
+              <SyntaxHighlighter
+                language="html"
+                style={oneDark}
+                customStyle={{
+                  margin: 0,
+                  padding: '24px',
+                  background: 'transparent',
+                  fontSize: '14px',
+                  minHeight: '200px',
+                  minWidth: '100%',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word'
+                }}
+                showLineNumbers={false}
+                wrapLines={true}
+                wrapLongLines={true}
+              >
+                {template.code}
+              </SyntaxHighlighter>
+            </div>
           </div>
         )}
       </div>

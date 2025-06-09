@@ -7,7 +7,7 @@ import TemplateGrid from "@/components/templates/TemplateGrid";
 
 export default function Templates() {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
+    <div className="min-h-screen bg-white dark:bg-gray-950 overflow-x-hidden">
       <Navigation />
       <TemplateHero />
       <TemplateGrid />
