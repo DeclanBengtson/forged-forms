@@ -25,8 +25,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse request body
-    const { priceId, plan } = await request.json();
+    // Parse request body - only accept plan, not priceId for security
+    const { plan } = await request.json();
 
     // Validate the plan
     if (!plan || !['starter', 'pro', 'enterprise'].includes(plan)) {
@@ -36,8 +36,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the price ID (use provided priceId or lookup from env)
-    const finalPriceId = priceId || PRICE_MAPPING[plan as keyof typeof PRICE_MAPPING];
+    // Get the price ID from server-side mapping only (no client override)
+    const finalPriceId = PRICE_MAPPING[plan as keyof typeof PRICE_MAPPING];
     
     if (!finalPriceId) {
       return NextResponse.json(
