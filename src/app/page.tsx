@@ -53,17 +53,17 @@ export default function Home() {
                   
                   
                   {/* Code Content */}
-                  <div className="p-4 font-mono text-sm bg-slate-900 dark:bg-slate-950">
-                    <div className="space-y-1">
-                      <div>
+                  <div className="p-4 font-mono text-sm bg-slate-900 dark:bg-slate-950 overflow-x-auto">
+                    <div className="space-y-1 min-w-0">
+                      <div className="break-all">
                         <span className="text-rose-400">{'<form'}</span>{' '}
                         <span className="text-emerald-400">action=</span>
-                        <span className="text-amber-300">{'"https://forgedforms.com/api/forms{form_id}/submit"'}</span>{' '}
+                        <span className="text-amber-300">{'"https://forgedforms.com/api/forms/{form_id}/submit"'}</span>{' '}
                         <span className="text-emerald-400">method=</span>
                         <span className="text-amber-300">{'"post"'}</span>
                         <span className="text-rose-400">{'>'}</span>
                       </div>
-                      <div className="pl-2">
+                      <div className="pl-2 break-all">
                         <span className="text-rose-400">{'<label'}</span>{' '}
                         <span className="text-emerald-400">for=</span>
                         <span className="text-amber-300">{'"email"'}</span>
@@ -71,7 +71,7 @@ export default function Home() {
                         <span className="text-slate-100">Your Email</span>
                         <span className="text-rose-400">{'</label>'}</span>
                       </div>
-                      <div className="pl-2">
+                      <div className="pl-2 break-all">
                         <span className="text-rose-400">{'<input'}</span>{' '}
                         <span className="text-emerald-400">name=</span>
                         <span className="text-amber-300">{'"email"'}</span>{' '}
@@ -81,7 +81,7 @@ export default function Home() {
                         <span className="text-amber-300">{'"email"'}</span>
                         <span className="text-rose-400">{'>'}</span>
                       </div>
-                      <div className="pl-2">
+                      <div className="pl-2 break-all">
                         <span className="text-rose-400">{'<button'}</span>{' '}
                         <span className="text-emerald-400">type=</span>
                         <span className="text-amber-300">{'"submit"'}</span>
@@ -89,7 +89,7 @@ export default function Home() {
                         <span className="text-slate-100">Submit</span>
                         <span className="text-rose-400">{'</button>'}</span>
                       </div>
-                      <div><span className="text-rose-400">{'</form>'}</span></div>
+                      <div className="break-all"><span className="text-rose-400">{'</form>'}</span></div>
                     </div>
                   </div>
                   

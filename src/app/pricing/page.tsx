@@ -68,7 +68,7 @@ function PricingCards({ userSubscription, loading, onPlanSelect, onManageSubscri
       {Object.entries(PRICING_PLANS).map(([key, plan]) => (
         <div
           key={key}
-          className={`relative rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl ${
+          className={`relative rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl flex flex-col ${
             plan.popular
               ? 'ring-2 ring-blue-500 transform scale-105 bg-white dark:bg-gray-800'
               : 'bg-white dark:bg-gray-800 hover:scale-105'
@@ -80,7 +80,7 @@ function PricingCards({ userSubscription, loading, onPlanSelect, onManageSubscri
             </div>
           )}
 
-          <div className={`p-6 ${plan.popular ? 'pt-12' : ''}`}>
+          <div className={`p-6 flex flex-col flex-grow ${plan.popular ? 'pt-12' : ''}`}>
             {/* Plan Header */}
             <div className="text-center mb-6">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
@@ -97,7 +97,7 @@ function PricingCards({ userSubscription, loading, onPlanSelect, onManageSubscri
             </div>
 
             {/* Features List */}
-            <ul className="space-y-3 mb-8">
+            <ul className="space-y-3 mb-8 flex-grow">
               {plan.features.map((feature, index) => (
                 <li key={index} className="flex items-start">
                   <svg
@@ -119,7 +119,7 @@ function PricingCards({ userSubscription, loading, onPlanSelect, onManageSubscri
             </ul>
 
             {/* Action Button */}
-            <div className="text-center">
+            <div className="text-center mt-auto">
               {isCurrentPlan(key) ? (
                 <div>
                   <div className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 py-3 px-4 rounded-lg font-medium mb-4 text-sm">
