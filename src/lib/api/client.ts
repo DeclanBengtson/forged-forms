@@ -1,4 +1,4 @@
-import { ApiResponse, PaginatedResponse, Form, FormInsert, FormUpdate, Submission } from '@/lib/types/database'
+import { ApiResponse, PaginatedResponse, Form, FormInsert, FormUpdate, Submission, Project, ProjectInsert, ProjectUpdate } from '@/lib/types/database'
 
 // Base API configuration
 const API_BASE = '/api'
@@ -188,14 +188,65 @@ export const apiHelpers = {
   }
 }
 
-// Convenience exports for easier importing
-export const listForms = formsApi.list
-export const createForm = formsApi.create
-export const getForm = formsApi.get
-export const updateForm = formsApi.update
-export const deleteForm = formsApi.delete
-export const getFormStats = formsApi.getStats
-export const getFormAnalytics = formsApi.getAnalytics
+// Projects API
+export const projectsApi = {
+  // List all projects
+  async list(): Promise<ApiResponse<Project[]>> {
+    const response = await fetch(`${API_BASE}/projects`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    return handleResponse<ApiResponse<Project[]>>(response)
+  },
+
+  // Create a new project
+  async create(projectData: Omit<ProjectInsert, 'user_id'>): Promise<ApiResponse<Project>> {
+    const response = await fetch(`${API_BASE}/projects`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(projectData),
+    })
+    return handleResponse<ApiResponse<Project>>(response)
+  },
+
+  // Get a specific project
+  async get(id: string): Promise<ApiResponse<Project>> {
+    const response = await fetch(`${API_BASE}/projects/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    return handleResponse<ApiResponse<Project>>(response)
+  },
+
+  // Update a project
+  async update(id: string, updates: ProjectUpdate): Promise<ApiResponse<Project>> {
+    const response = await fetch(`${API_BASE}/projects/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updates),
+    })
+    return handleResponse<ApiResponse<Project>>(response)
+  },
+
+  // Delete a project
+  async delete(id: string): Promise<ApiResponse<void>> {
+    const response = await fetch(`${API_BASE}/projects/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    return handleResponse<ApiResponse<void>>(response)
+  }
+}
 
 // Dashboard API
 export const dashboardApi = {
@@ -211,8 +262,23 @@ export const dashboardApi = {
   }
 }
 
-export const getDashboardAnalytics = dashboardApi.getAnalytics
+// Convenience exports for easier importing
+export const listForms = formsApi.list
+export const createForm = formsApi.create
+export const getForm = formsApi.get
+export const updateForm = formsApi.update
+export const deleteForm = formsApi.delete
+export const getFormStats = formsApi.getStats
+export const getFormAnalytics = formsApi.getAnalytics
+
+export const listProjects = projectsApi.list
+export const createProject = projectsApi.create
+export const getProject = projectsApi.get
+export const updateProject = projectsApi.update
+export const deleteProject = projectsApi.delete
 
 export const listSubmissions = submissionsApi.list
 export const exportSubmissions = submissionsApi.export
-export const submitForm = submissionsApi.submit 
+export const submitForm = submissionsApi.submit
+
+export const getDashboardAnalytics = dashboardApi.getAnalytics 
