@@ -1,14 +1,154 @@
+import { useState, useEffect } from 'react';
 import { useFormAnalytics } from '@/hooks/useFormAnalytics';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import UpgradeModal from '../UpgradeModal';
 
 interface FormAnalyticsTabProps {
   formId: string;
   isActive: boolean;
 }
 
-export default function FormAnalyticsTab({ formId, isActive }: FormAnalyticsTabProps) {
-  const { analytics, loading, error } = useFormAnalytics(formId, isActive);
+interface SubscriptionData {
+  subscription: {
+    status: 'free' | 'starter' | 'pro' | 'enterprise';
+    subscription_id?: string;
+  };
+}
 
+// Hook to fetch user subscription status
+function useUserSubscription() {
+  const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSubscription = async () => {
+      try {
+        const response = await fetch('/api/user/subscription');
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && result.data) {
+            setSubscriptionData({
+              subscription: {
+                status: result.data.subscription.status,
+                subscription_id: result.data.subscription.subscription_id
+              }
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch subscription:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSubscription();
+  }, []);
+
+  return { subscriptionData, loading };
+}
+
+function AnalyticsUpgradePrompt({ onUpgrade }: { onUpgrade: () => void }) {
+  return (
+    <div className="text-center py-16">
+      <div className="max-w-md mx-auto">
+        <div className="w-16 h-16 bg-blue-50 border border-blue-200 rounded-sm flex items-center justify-center mx-auto mb-6">
+          <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        </div>
+        
+        <h3 className="text-xl font-medium text-gray-900 mb-3">
+          Unlock Advanced Analytics
+        </h3>
+        
+        <p className="text-gray-600 font-light mb-6 leading-relaxed">
+          Get detailed insights into your form performance with advanced analytics including submission trends, completion rates, and user behavior patterns.
+        </p>
+        
+        <div className="bg-gray-50 border border-gray-200 rounded-sm p-4 mb-6">
+          <h4 className="text-sm font-medium text-gray-900 mb-3">Analytics Features Include:</h4>
+          <ul className="text-sm text-gray-600 space-y-2 text-left">
+            <li className="flex items-center">
+              <svg className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Submission trends and time series data
+            </li>
+            <li className="flex items-center">
+              <svg className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Hourly and daily submission patterns
+            </li>
+            <li className="flex items-center">
+              <svg className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Field completion rate analysis
+            </li>
+            <li className="flex items-center">
+              <svg className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Performance metrics and statistics
+            </li>
+          </ul>
+        </div>
+        
+        <div className="space-y-3">
+          <button
+            onClick={onUpgrade} 
+            className="w-full py-3 px-6 rounded-sm font-medium transition-colors bg-gray-900 hover:bg-gray-800 text-white"
+          >
+            Upgrade to Unlock Analytics
+          </button>
+          
+          <a
+            href="/pricing"
+            className="block w-full py-2 px-4 rounded-sm font-medium transition-colors border border-gray-300 hover:border-gray-400 text-gray-700 hover:text-gray-900 text-sm"
+          >
+            View All Plans
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function FormAnalyticsTab({ formId, isActive }: FormAnalyticsTabProps) {
+  const { subscriptionData, loading: subscriptionLoading } = useUserSubscription();
+  const { analytics, loading, error } = useFormAnalytics(formId, isActive);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  // Show loading state while checking subscription
+  if (subscriptionLoading) {
+    return (
+      <div className="text-center py-16">
+        <div className="w-8 h-8 mx-auto mb-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+        <p className="text-sm text-gray-500 font-normal">Loading...</p>
+      </div>
+    );
+  }
+
+  // Check if user is on free plan - if so, show upgrade prompt
+  const isFreeUser = subscriptionData?.subscription.status === 'free';
+  
+  if (isFreeUser) {
+    return (
+      <>
+        <AnalyticsUpgradePrompt onUpgrade={() => setShowUpgradeModal(true)} />
+        
+        <UpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          userSubscription={subscriptionData?.subscription || null}
+        />
+      </>
+    );
+  }
+
+  // For paid users, show the normal analytics content
   if (loading) {
     return (
       <div className="text-center py-16">

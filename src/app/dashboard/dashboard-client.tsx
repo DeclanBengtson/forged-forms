@@ -31,6 +31,7 @@ export default function DashboardClient({ user }: DashboardClientProps) {
   const [formToDelete, setFormToDelete] = useState<Form | null>(null)
   const [formsLoading, setFormsLoading] = useState(true)
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set())
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
   const supabase = createClient()
   const router = useRouter()
 
@@ -153,6 +154,10 @@ export default function DashboardClient({ user }: DashboardClientProps) {
     setIsDeleteModalOpen(true)
   }
 
+  const handleToggleMobileSidebar = () => {
+    setIsMobileSidebarOpen(prev => !prev)
+  }
+
   if (formsLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dot-grid dark:dot-grid-dark flex items-center justify-center">
@@ -176,6 +181,8 @@ export default function DashboardClient({ user }: DashboardClientProps) {
         onLogout={handleLogout}
         user={user}
         loading={loading}
+        isSidebarOpen={isMobileSidebarOpen}
+        onToggleSidebar={handleToggleMobileSidebar}
       />
 
       {/* Fixed Left Sidebar with Forms */}
@@ -191,10 +198,12 @@ export default function DashboardClient({ user }: DashboardClientProps) {
         onCreateForm={handleCreateForm}
         onCreateProject={handleCreateProject}
         onDeleteForm={handleDeleteForm}
+        isMobileMenuOpen={isMobileSidebarOpen}
+        onToggleMobileMenu={handleToggleMobileSidebar}
       />
 
       {/* Main Content */}
-      <main className="pt-[65px] pl-64">
+      <main className="pt-[65px] pl-0 lg:pl-64 transition-all duration-300 ease-in-out">
         {selectedForm ? (
           <FormDetails
             form={selectedForm}

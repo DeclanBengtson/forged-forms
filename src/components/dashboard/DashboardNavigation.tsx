@@ -15,6 +15,8 @@ interface DashboardNavigationProps {
   user: { email?: string };
   loading?: boolean;
   activeTab?: 'dashboard' | 'documentation' | 'templates';
+  isSidebarOpen?: boolean;
+  onToggleSidebar?: () => void;
 }
 
 export default function DashboardNavigation({  
@@ -23,7 +25,9 @@ export default function DashboardNavigation({
   onLogout, 
   user, 
   loading = false,
-  activeTab: propActiveTab = 'dashboard'
+  activeTab: propActiveTab = 'dashboard',
+  isSidebarOpen: _isSidebarOpen,
+  onToggleSidebar
 }: DashboardNavigationProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [activeTab, setActiveTab] = useState(propActiveTab);
@@ -35,10 +39,33 @@ export default function DashboardNavigation({
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 w-full bg-white/95 backdrop-blur-md border-b border-gray-200 px-4 sm:px-8 py-6 z-20">
+    <nav className="fixed top-0 left-0 right-0 w-full bg-white/95 backdrop-blur-md border-b border-gray-200 px-4 sm:px-8 py-6 z-50">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         {/* Left Side - Logo and Username */}
         <div className="flex items-center space-x-4 sm:space-x-8">
+          {/* Mobile Sidebar Toggle Button */}
+          {onToggleSidebar && (
+            <button
+              onClick={onToggleSidebar}
+              className="lg:hidden p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200"
+              title="Toggle sidebar"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 6h16M4 12h8m-8 6h16"
+                />
+              </svg>
+            </button>
+          )}
+          
           <Link href="/" className="flex items-center space-x-3 group">
             <Image src="/ForgedForms.png" alt="ForgedForms Logo" width={28} height={28} className="opacity-90" />
             <span className="text-xl font-bold text-gray-900">
@@ -115,7 +142,7 @@ export default function DashboardNavigation({
             </button>
 
             {showProfileMenu && (
-              <div className="absolute right-0 mt-2 w-52 bg-white rounded-lg border border-gray-200 py-2 z-50 shadow-lg">
+              <div className="absolute right-0 mt-2 w-52 bg-white rounded-lg border border-gray-200 py-2 z-[60] shadow-lg">
                 <div className="px-4 py-3 border-b border-gray-100">
                   <div className="text-sm font-medium text-gray-900">{user.email?.split('@')[0]}</div>
                   <div className="text-xs text-gray-500 mt-0.5">{user.email}</div>
@@ -153,7 +180,7 @@ export default function DashboardNavigation({
             </button>
 
             {showProfileMenu && (
-              <div className="absolute right-0 mt-2 w-52 bg-white rounded-lg border border-gray-200 py-2 z-50 shadow-lg">
+              <div className="absolute right-0 mt-2 w-52 bg-white rounded-lg border border-gray-200 py-2 z-[60] shadow-lg">
                 <div className="px-4 py-3 border-b border-gray-100">
                   <div className="text-sm font-medium text-gray-900">{user.email?.split('@')[0]}</div>
                   <div className="text-xs text-gray-500 mt-0.5">{user.email}</div>
