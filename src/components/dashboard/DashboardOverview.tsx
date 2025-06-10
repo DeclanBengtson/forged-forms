@@ -248,7 +248,7 @@ export default function DashboardOverview({ forms, onCreateForm, onDeleteForm, u
                   
                   <button
                     onClick={onCreateForm}
-                    className="inline-flex items-center px-5 py-2.5 text-sm font-normal text-white bg-gray-900 border border-gray-900 rounded-sm hover:bg-gray-800 hover:border-gray-800 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300"
+                    className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-1 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl"
                   >
                     <svg className="w-3.5 h-3.5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />

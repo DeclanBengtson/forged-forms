@@ -44,8 +44,23 @@ export async function POST(_request: NextRequest) {
 
   } catch (error) {
     console.error('Error creating portal session:', error);
+    
+    // Check if this is the specific Stripe portal configuration error
+    if (error instanceof Error && error.message.includes('configuration') && error.message.includes('portal')) {
+      return NextResponse.json(
+        { 
+          error: 'Failed to create portal session',
+          message: 'Billing portal is currently being configured. Please contact support for assistance with your subscription.'
+        },
+        { status: 500 }
+      );
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to create portal session' },
+      { 
+        error: 'Failed to create portal session',
+        message: error instanceof Error ? error.message : 'An unexpected error occurred'
+      },
       { status: 500 }
     );
   }

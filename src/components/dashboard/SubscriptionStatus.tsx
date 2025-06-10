@@ -91,8 +91,14 @@ export default function SubscriptionStatus({ subscription, limits, usage }: Subs
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to create portal session');
+        const errorData = await response.json();
+        
+        // Check if this is the specific Stripe portal configuration error
+        if (errorData.message && errorData.message.includes('configuration') && errorData.message.includes('portal')) {
+          throw new Error('Billing portal is currently being set up. Please contact support or try again later.');
+        }
+        
+        throw new Error(errorData.message || 'Failed to create portal session');
       }
 
       const { url } = await response.json();
@@ -100,7 +106,15 @@ export default function SubscriptionStatus({ subscription, limits, usage }: Subs
       window.location.href = url;
     } catch (error) {
       console.error('Error creating portal session:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to open subscription management. Please try again.');
+      
+      const errorMessage = error instanceof Error ? error.message : 'Failed to open subscription management. Please try again.';
+      
+      // Show a more helpful error message for portal configuration issues
+      if (errorMessage.includes('configuration') || errorMessage.includes('portal')) {
+        toast.error('Billing portal is currently being configured. Please contact support for assistance with your subscription.');
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setLoading(null);
     }

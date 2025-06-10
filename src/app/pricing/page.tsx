@@ -7,6 +7,7 @@ import { getSubscriptionFeatures, redirectToCheckout } from '@/lib/stripe/client
 import Navigation from '@/components/navigation';
 import { toast } from 'react-hot-toast';
 import Footer from '@/components/footer';
+import { analytics } from '@/components/analytics/GoogleAnalytics';
 
 interface UserSubscription {
   status: 'free' | 'starter' | 'pro' | 'enterprise';
@@ -279,6 +280,8 @@ function PricingPageContent() {
 
   useEffect(() => {
     checkUserStatus();
+    // Track pricing page view
+    analytics.viewPricing();
   }, []);
 
   const checkUserStatus = async () => {
@@ -326,6 +329,14 @@ function PricingPageContent() {
       }
 
       const { sessionId } = await response.json();
+      
+      // Track subscription attempt
+      analytics.event('begin_checkout', {
+        category: 'ecommerce',
+        item_name: plan,
+        value: plan === 'starter' ? 6 : plan === 'pro' ? 20 : 0,
+      });
+      
       toast.success('Redirecting to checkout...');
       await redirectToCheckout(sessionId);
     } catch (error) {
@@ -347,8 +358,14 @@ function PricingPageContent() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to create portal session');
+        const errorData = await response.json();
+        
+        // Check if this is the specific Stripe portal configuration error
+        if (errorData.message && errorData.message.includes('configuration') && errorData.message.includes('portal')) {
+          throw new Error('Billing portal is currently being set up. Please contact support or try again later.');
+        }
+        
+        throw new Error(errorData.message || 'Failed to create portal session');
       }
 
       const { url } = await response.json();
@@ -356,7 +373,15 @@ function PricingPageContent() {
       window.location.href = url;
     } catch (error) {
       console.error('Error creating portal session:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to open subscription management. Please try again.');
+      
+      const errorMessage = error instanceof Error ? error.message : 'Failed to open subscription management. Please try again.';
+      
+      // Show a more helpful error message for portal configuration issues
+      if (errorMessage.includes('configuration') || errorMessage.includes('portal')) {
+        toast.error('Billing portal is currently being configured. Please contact support for assistance with your subscription.');
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setLoading(null);
     }

@@ -2,20 +2,23 @@
 
 import { useState } from 'react'
 import { createForm } from '@/lib/api/client'
-import { Form } from '@/lib/types/database'
+import { Form, Project } from '@/lib/types/database'
 
 interface FormCreateModalProps {
   isOpen: boolean
   onClose: () => void
   onFormCreated: (form: Form) => void
+  projects?: Project[]
+  selectedProjectId?: string | null
 }
 
-export default function FormCreateModal({ isOpen, onClose, onFormCreated }: FormCreateModalProps) {
+export default function FormCreateModal({ isOpen, onClose, onFormCreated, projects = [], selectedProjectId = null }: FormCreateModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    email_notifications: true,
-    notification_email: ''
+    email_notifications: false,
+    notification_email: '',
+    project_id: selectedProjectId
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -34,8 +37,9 @@ export default function FormCreateModal({ isOpen, onClose, onFormCreated }: Form
         setFormData({
           name: '',
           description: '',
-          email_notifications: true,
-          notification_email: ''
+          email_notifications: false,
+          notification_email: '',
+          project_id: selectedProjectId
         })
       } else {
         setError(result.error || 'Failed to create form')
@@ -99,6 +103,35 @@ export default function FormCreateModal({ isOpen, onClose, onFormCreated }: Form
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
+            </div>
+
+            <div>
+              <label htmlFor="project_id" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Project *
+              </label>
+              {projects.length > 0 ? (
+                <select
+                  id="project_id"
+                  value={formData.project_id || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, project_id: e.target.value || null }))}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                >
+                  <option value="">Select a project...</option>
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-400">
+                  A default project will be created for this form
+                </div>
+              )}
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Forms must be organized under a project
+              </p>
             </div>
 
             <div>

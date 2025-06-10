@@ -92,7 +92,7 @@ export const formCreationSchema = z.object({
   
   notification_email: emailSchema.optional(),
   
-  email_notifications: z.boolean().default(true),
+  email_notifications: z.boolean(),
   
 
   

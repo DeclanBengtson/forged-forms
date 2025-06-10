@@ -85,7 +85,7 @@ export async function PUT(
 
     // Parse request body
     const body = await request.json()
-    const { name, description, email_notifications, notification_email, is_active } = body
+    const { name, description, email_notifications, notification_email, is_active, project_id } = body
 
     // Prepare update data (only include fields that are provided)
     const updateData: FormUpdate = {}
@@ -114,6 +114,10 @@ export async function PUT(
     
     if (is_active !== undefined) {
       updateData.is_active = Boolean(is_active)
+    }
+
+    if (project_id !== undefined) {
+      updateData.project_id = project_id || null
     }
 
     // Update the form
