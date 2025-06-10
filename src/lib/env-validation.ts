@@ -34,6 +34,9 @@ const envSchema = z.object({
   
   // Optional security configuration
   ALLOWED_ORIGINS: z.string().optional(),
+  
+  // Google Analytics configuration (optional)
+  NEXT_PUBLIC_GA_MEASUREMENT_ID: z.string().regex(/^G-[A-Z0-9]+$/, 'Invalid Google Analytics Measurement ID format').optional(),
 });
 
 // Type for validated environment variables

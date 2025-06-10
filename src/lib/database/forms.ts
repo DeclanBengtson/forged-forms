@@ -115,6 +115,7 @@ export async function getPublicFormById(id: string): Promise<Form | null> {
     email_notifications: formData.email_notifications,
     notification_email: formData.notification_email,
     is_active: formData.is_active,
+    project_id: null,
     created_at: '',
     updated_at: ''
   }

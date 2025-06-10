@@ -18,6 +18,11 @@ export interface Database {
         Insert: UserProfileInsert
         Update: UserProfileUpdate
       }
+      projects: {
+        Row: Project
+        Insert: ProjectInsert
+        Update: ProjectUpdate
+      }
     }
     Views: {
       [_ in never]: never
@@ -100,6 +105,27 @@ export interface UserProfileUpdate {
   trial_end?: string | null
 }
 
+// Project types
+export interface Project {
+  id: string
+  user_id: string
+  name: string
+  description: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface ProjectInsert {
+  user_id: string
+  name: string
+  description?: string | null
+}
+
+export interface ProjectUpdate {
+  name?: string
+  description?: string | null
+}
+
 // Form types
 export interface Form {
   id: string
@@ -109,6 +135,7 @@ export interface Form {
   email_notifications: boolean
   notification_email: string | null
   is_active: boolean
+  project_id: string | null
   created_at: string
   updated_at: string
 }
@@ -120,6 +147,7 @@ export interface FormInsert {
   email_notifications?: boolean
   notification_email?: string | null
   is_active?: boolean
+  project_id?: string | null
 }
 
 export interface FormUpdate {
@@ -128,6 +156,7 @@ export interface FormUpdate {
   email_notifications?: boolean
   notification_email?: string | null
   is_active?: boolean
+  project_id?: string | null
 }
 
 // Submission types
@@ -157,6 +186,20 @@ export interface SubmissionUpdate {
 export interface FormWithStats extends Form {
   submission_count: number
   latest_submission: string | null
+}
+
+export interface FormWithProject extends Form {
+  project: Project | null
+}
+
+export interface ProjectWithForms extends Project {
+  forms: Form[]
+  form_count: number
+}
+
+export interface ProjectWithStats extends Project {
+  form_count: number
+  total_submissions: number
 }
 
 // API Response types

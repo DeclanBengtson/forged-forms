@@ -60,7 +60,151 @@ export const businessTemplates: Template[] = [
   >
     Send Message
   </button>
-</form>`
+</form>`,
+    implementations: {
+      react: `import React, { useState } from 'react';
+
+const ContactForm = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState({ type: '', message: '' });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setStatus({ type: '', message: '' });
+
+    try {
+      const formDataToSend = new FormData();
+      Object.keys(formData).forEach(key => {
+        formDataToSend.append(key, formData[key]);
+      });
+
+      const response = await fetch('https://forgedforms.com/api/forms/{form-id}/submit', {
+        method: 'POST',
+        body: formDataToSend
+      });
+
+      if (response.ok) {
+        setStatus({
+          type: 'success',
+          message: 'Message sent successfully! We\'ll get back to you soon.'
+        });
+        setFormData({ name: '', email: '', subject: '', message: '' }); // Reset form
+      } else {
+        throw new Error('Network response was not ok');
+      }
+    } catch (error) {
+      setStatus({
+        type: 'error',
+        message: 'Failed to send message. Please try again.'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="max-w-lg mx-auto space-y-6">
+      <div>
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+          Full Name
+        </label>
+        <input 
+          id="name" 
+          name="name" 
+          type="text" 
+          value={formData.name}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="John Doe"
+        />
+      </div>
+      
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+          Email Address
+        </label>
+        <input 
+          id="email" 
+          name="email" 
+          type="email" 
+          value={formData.email}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="john@example.com"
+        />
+      </div>
+      
+      <div>
+        <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+          Subject
+        </label>
+        <input 
+          id="subject" 
+          name="subject" 
+          type="text"
+          value={formData.subject}
+          onChange={handleChange}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="How can we help?"
+        />
+      </div>
+      
+      <div>
+        <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+          Message
+        </label>
+        <textarea 
+          id="message" 
+          name="message" 
+          rows={5}
+          value={formData.message}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          placeholder="Your message here..."
+        />
+      </div>
+      
+      <button 
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+      >
+        {isSubmitting ? 'Sending...' : 'Send Message'}
+      </button>
+      
+      {status.message && (
+        <div className={\`text-sm text-center p-3 rounded-lg \${
+          status.type === 'success' 
+            ? 'text-green-600 bg-green-50' 
+            : 'text-red-600 bg-red-50'
+        }\`}>
+          {status.message}
+        </div>
+      )}
+    </form>
+  );
+};
+
+export default ContactForm;`
+    }
   },
   {
     id: 'lead-generation-form',
