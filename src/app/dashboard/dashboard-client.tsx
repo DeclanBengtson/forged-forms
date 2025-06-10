@@ -13,6 +13,7 @@ import DashboardNavigation from '@/components/dashboard/DashboardNavigation'
 import FormsSidebar from '@/components/dashboard/FormsSidebar'
 import DashboardOverview from '@/components/dashboard/DashboardOverview'
 import FormDetails from '@/components/dashboard/FormDetails'
+import { analytics } from '@/components/analytics/GoogleAnalytics'
 
 interface DashboardClientProps {
   user: User
@@ -37,6 +38,8 @@ export default function DashboardClient({ user }: DashboardClientProps) {
   useEffect(() => {
     loadForms()
     loadProjects()
+    // Track dashboard view
+    analytics.viewDashboard()
   }, [])
 
   const loadForms = async () => {
@@ -74,6 +77,9 @@ export default function DashboardClient({ user }: DashboardClientProps) {
   const handleFormCreated = (newForm: Form) => {
     setForms(prev => [newForm, ...prev])
     setSelectedForm(newForm) // Auto-select the newly created form
+    
+    // Track form creation
+    analytics.createForm(newForm.name)
     
     // If the form was assigned to a project, auto-expand that project
     if (newForm.project_id) {

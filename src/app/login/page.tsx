@@ -4,6 +4,7 @@ import { useState, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { analytics } from '@/components/analytics/GoogleAnalytics'
 
 function LoginForm() {
   const [email, setEmail] = useState('')
@@ -41,6 +42,9 @@ function LoginForm() {
         }
         return
       }
+
+      // Track successful login
+      analytics.login('email')
 
       // Redirect to the intended page or dashboard
       router.push(redirectUrl)

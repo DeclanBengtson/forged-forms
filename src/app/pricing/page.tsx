@@ -7,6 +7,7 @@ import { getSubscriptionFeatures, redirectToCheckout } from '@/lib/stripe/client
 import Navigation from '@/components/navigation';
 import { toast } from 'react-hot-toast';
 import Footer from '@/components/footer';
+import { analytics } from '@/components/analytics/GoogleAnalytics';
 
 interface UserSubscription {
   status: 'free' | 'starter' | 'pro' | 'enterprise';
@@ -279,6 +280,8 @@ function PricingPageContent() {
 
   useEffect(() => {
     checkUserStatus();
+    // Track pricing page view
+    analytics.viewPricing();
   }, []);
 
   const checkUserStatus = async () => {
@@ -326,6 +329,14 @@ function PricingPageContent() {
       }
 
       const { sessionId } = await response.json();
+      
+      // Track subscription attempt
+      analytics.event('begin_checkout', {
+        category: 'ecommerce',
+        item_name: plan,
+        value: plan === 'starter' ? 6 : plan === 'pro' ? 20 : 0,
+      });
+      
       toast.success('Redirecting to checkout...');
       await redirectToCheckout(sessionId);
     } catch (error) {

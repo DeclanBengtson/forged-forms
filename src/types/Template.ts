@@ -4,6 +4,9 @@ export interface Template {
   description: string;
   code: string;
   category: string;
+  implementations?: {
+    react?: string;
+  };
 }
 
 export interface TemplateCategory {

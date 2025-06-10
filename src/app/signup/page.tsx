@@ -4,6 +4,7 @@ import { useState, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { analytics } from '@/components/analytics/GoogleAnalytics'
 
 function SignupForm() {
   const [email, setEmail] = useState('')
@@ -58,6 +59,9 @@ function SignupForm() {
       if (error) throw error
 
       if (data.user) {
+        // Track successful signup
+        analytics.signup('email')
+        
         if (data.user.email_confirmed_at) {
           // User is immediately confirmed (email verification disabled)
           setMessage('Account created successfully! Redirecting...')

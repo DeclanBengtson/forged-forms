@@ -35,12 +35,12 @@ const securityHeaders = [
 // Content Security Policy
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://www.googletagmanager.com;
   child-src 'none';
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https:;
   media-src 'none';
-  connect-src 'self' https://api.stripe.com https://*.supabase.co wss://*.supabase.co;
+  connect-src 'self' https://api.stripe.com https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://analytics.google.com;
   font-src 'self';
   frame-src https://js.stripe.com https://hooks.stripe.com;
 `.replace(/\s{2,}/g, ' ').trim();
