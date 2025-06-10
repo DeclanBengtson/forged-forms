@@ -109,7 +109,7 @@ export default function UpgradeModal({ isOpen, onClose, userSubscription }: Upgr
       <div className="flex min-h-full items-center justify-center p-4">
         {/* Backdrop */}
         <div 
-          className="fixed inset-0 bg-black bg-opacity-25 transition-opacity"
+          className="fixed inset-0 backdrop-blur-sm transition-all duration-300"
           onClick={onClose}
         />
         
