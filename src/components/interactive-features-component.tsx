@@ -180,9 +180,9 @@ export default function InteractiveFeaturesComponent() {
       </div>
 
       {/* Feature Content */}
-      <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start min-h-[600px]">
         {/* Left Content */}
-        <div>
+        <div className="flex flex-col h-full">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
               <span className="text-2xl">{activeFeature.icon}</span>
@@ -197,13 +197,15 @@ export default function InteractiveFeaturesComponent() {
             {activeFeature.subtitle}
           </h4>
           
-          <p className="text-gray-300 text-lg leading-relaxed mb-8">
-            {activeFeature.description}
-          </p>
+          <div className="flex-1 mb-8">
+            <p className="text-gray-300 text-lg leading-relaxed">
+              {activeFeature.description}
+            </p>
+          </div>
           
           <Link
             href="/documentation"
-            className="inline-flex items-center gap-2 bg-transparent border border-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-all duration-200"
+            className="inline-flex items-center gap-2 bg-transparent border border-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-all duration-200 self-start"
           >
             See Documentation
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -213,11 +215,13 @@ export default function InteractiveFeaturesComponent() {
         </div>
 
         {/* Right Mockup */}
-        <div className="lg:order-last">
-          <div className="relative">
+        <div className="lg:order-last h-full">
+          <div className="relative h-full flex items-center justify-center">
             <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-2xl blur-xl"></div>
-            <div className="relative">
-              {activeFeature.mockup}
+            <div className="relative h-[500px] flex items-center justify-center overflow-hidden">
+              <div className="max-h-full overflow-auto">
+                {activeFeature.mockup}
+              </div>
             </div>
           </div>
         </div>
