@@ -160,7 +160,7 @@ export default function DashboardClient({ user }: DashboardClientProps) {
 
   if (formsLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dot-grid dark:dot-grid-dark flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="text-center py-16">
           <div className="w-8 h-8 mx-auto mb-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
           <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">Loading workspace...</p>
@@ -170,7 +170,7 @@ export default function DashboardClient({ user }: DashboardClientProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dot-grid dark:dot-grid-dark">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Fixed Top Navigation */}
       <DashboardNavigation
         forms={forms}
