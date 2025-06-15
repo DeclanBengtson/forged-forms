@@ -87,7 +87,7 @@ export default function FormDetails({ form, onFormUpdated: _onFormUpdated, onDel
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto bg-gray-50 dot-grid">
+      <div className="flex-1 overflow-y-auto bg-gray-50">
         <div className="max-w-6xl mx-auto p-8">
           {renderTabContent()}
         </div>
