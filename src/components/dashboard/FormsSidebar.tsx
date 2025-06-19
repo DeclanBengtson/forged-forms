@@ -108,7 +108,7 @@ export default function FormsSidebar({
                 </button>
                 <button
                   onClick={onCreateForm}
-                  className="w-7 h-7 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-sm hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-1 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center"
+                  className="w-7 h-7 bg-black text-white rounded-sm hover:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center"
                   title="Create new form"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>

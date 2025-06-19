@@ -207,7 +207,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dot-grid dark:dot-grid-dark">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Fixed Top Navigation */}
       <DashboardNavigation
         forms={[]}
